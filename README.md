@@ -21,8 +21,8 @@ Built and verified against the same page used by the Android build, so both plat
 </tr>
 <tr>
 <td align="center"><img src="screenshots/07-dark.png" width="240" alt="Dark theme"><br><sub>Dark theme</sub></td>
-<td></td>
-<td></td>
+<td align="center"><img src="screenshots/08-motion.png" width="240" alt="Glass and Motion settings"><br><sub>Glass &amp; Motion: bounce 2.5x, 4D depth 2.0x</sub></td>
+<td align="center"><img src="screenshots/09-depth.png" width="240" alt="Tilted start page"><br><sub>4D depth tilting the UI</sub></td>
 </tr>
 </table>
 
