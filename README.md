@@ -4,7 +4,31 @@ A native iOS shell for **Glass Browser**, the glassmorphism browser UI written a
 
 Built and verified against the same page used by the Android build, so both platforms render an identical UI.
 
-![Glass Browser start page](screenshots/start-page.png)
+## Screenshots
+
+<table>
+<tr>
+<td align="center"><img src="screenshots/01-start.png" width="240" alt="Start page"><br><sub>Start page</sub></td>
+<td align="center"><img src="screenshots/02-search.png" width="240" alt="Search results"><br><sub>Search results</sub></td>
+<td align="center"><img src="screenshots/03-settings.png" width="240" alt="Settings"><br><sub>Settings</sub></td>
+</tr>
+<tr>
+<td align="center"><img src="screenshots/04-tabs.png" width="240" alt="Tab overview"><br><sub>Tab overview</sub></td>
+<td align="center"><img src="screenshots/05-site.png" width="240" alt="A page open"><br><sub>A page open</sub></td>
+<td align="center"><img src="screenshots/06-private.png" width="240" alt="Private tab"><br><sub>Private tab</sub></td>
+</tr>
+<tr>
+<td align="center"><img src="screenshots/07-dark.png" width="240" alt="Dark theme"><br><sub>Dark theme</sub></td>
+<td></td>
+<td></td>
+</tr>
+</table>
+
+Captured from the page itself at 390 × 844 (iPhone 14/15 point size), rendered in Chromium — the same engine family as iOS WKWebView — so this is what the app draws, not a mockup.
+
+## Android build
+
+`dist/GlassBrowser.apk` is the signed Android build of the same interface — one HTML file, two shells. It is Android 5.0+ and 62 KB; sideload it, or download it from the [latest release](https://github.com/technicalnihilist-lgtm/glass-browser-ios/releases/latest).
 
 ## Requirements
 
@@ -54,6 +78,8 @@ GlassBrowser/
   Glass_Browser.html             The entire UI, unchanged
   Info.plist                     Bundle metadata, ATS allows web content over http
   Assets.xcassets/               App icon
+screenshots/                     Screenshots used above
+dist/GlassBrowser.apk            Signed Android build of the same UI
 ```
 
 ## One fix carried over from the web prototype
