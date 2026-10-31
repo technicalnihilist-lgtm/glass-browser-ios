@@ -1,5 +1,7 @@
 # Glass Browser — iOS
 
+MIT licensed.
+
 A native iOS shell for **Glass Browser**, the glassmorphism browser UI written as a single self-contained HTML file. The whole interface — start page, tabs, private tabs, bookmarks, history, reading list, reader view, settings and the glass/motion effects — is the original `Glass_Browser.html`, shipped untouched inside the app. A thin `WKWebView` layer makes it a real iOS app: it launches full screen, remembers everything between launches, opens links, and behaves like a browser.
 
 Built and verified against the same page used by the Android build, so both platforms render an identical UI.
@@ -100,4 +102,6 @@ These are properties of the page, not of the wrapper:
 
 ## Licence
 
-No licence is included yet — add one before publishing if you intend others to reuse this.
+MIT — see [LICENSE](LICENSE). In short: use it, change it, ship it, sell it; just keep the copyright notice and don't expect a warranty.
+
+The bundled `Glass_Browser.html` and the Android build in `dist/` are covered by the same licence.
