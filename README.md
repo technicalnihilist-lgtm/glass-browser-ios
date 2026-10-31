@@ -100,6 +100,10 @@ These are properties of the page, not of the wrapper:
 
 - Android build: the same page wrapped in a `WebView` and served from a virtual origin, packaged as a signed APK.
 
+## Store submission
+
+Notes for the Orion Store listing — payload, icon and screenshot links — are in [store/orion-submission.md](store/orion-submission.md).
+
 ## Licence
 
 MIT — see [LICENSE](LICENSE). In short: use it, change it, ship it, sell it; just keep the copyright notice and don't expect a warranty.
