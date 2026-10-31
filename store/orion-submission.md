@@ -5,11 +5,17 @@ GitHub repository and its **Releases**. It does not host APKs — it links to th
 Submission goes through their Issue-Ops pipeline (a GitHub issue on their repo) or the
 submission form inside the Orion client.
 
+## Status
+
+Submitted — issue [RookieEnough/Orion-Store#190](https://github.com/RookieEnough/Orion-Store/issues/190), opened 31 Oct 2026. Waiting on their bot lint and a maintainer's provenance check (labels move `submission` → `verified` → `approved`).
+
+The repo was made public for this, which is required: Orion's bot reads the repository and its Releases from the public API. Public links verified returning HTTP 200 with the right content types — icon `image/png`, APK `application/vnd.android.package-archive`.
+
 ## Requirements checklist
 
 | Requirement | Status |
 | --- | --- |
-| Repository is public | **No — must be flipped to public**, otherwise the bot cannot read it |
+| Repository is public | Yes — public since 31 Oct 2026 |
 | Release exists with an `.apk` asset | Yes — `v1.0.0`, asset `GlassBrowser.apk` (62 KB, signed) |
 | Icon is a direct image link (`.png`) | Yes — `https://raw.githubusercontent.com/technicalnihilist-lgtm/glass-browser-ios/main/icon.png` |
 | `packageName` known | Yes — `com.glass.browser` |
