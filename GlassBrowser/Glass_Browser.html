@@ -17,7 +17,7 @@ button{background:none;border:0;cursor:pointer;transition:transform calc(.35s*va
 button:active{transform:scale(calc(1 - .12*var(--bn)))}
 :focus-visible{outline:2px solid var(--a);outline-offset:2px}
 [hidden]{display:none!important}
-#orb{position:fixed;inset:0;z-index:-1;pointer-events:none;will-change:transform;transform:translate(calc(var(--tx)*-26px),calc(var(--ty)*-26px)) scale(1.12);background:radial-gradient(circle at 18% 22%,rgba(255,255,255,.55),transparent 28%),radial-gradient(circle at 82% 68%,rgba(255,120,200,.35),transparent 32%),radial-gradient(circle at 60% 12%,rgba(90,200,255,.4),transparent 26%)}
+#orb{position:fixed;inset:0;z-index:-1;pointer-events:none;contain:paint;will-change:transform;transform:translate(calc(var(--tx)*-26px),calc(var(--ty)*-26px)) scale(1.12);background:radial-gradient(circle at 18% 22%,rgba(255,255,255,.55),transparent 28%),radial-gradient(circle at 82% 68%,rgba(255,120,200,.35),transparent 32%),radial-gradient(circle at 60% 12%,rgba(90,200,255,.4),transparent 26%)}
 .glass{position:relative;background:linear-gradient(145deg,rgba(255,255,255,.22),var(--g) 45%,rgba(255,255,255,.08));-webkit-backdrop-filter:blur(16px) saturate(230%) brightness(1.08);backdrop-filter:blur(16px) saturate(230%) brightness(1.08);border:1px solid var(--gb);box-shadow:calc(var(--tx)*-9px) calc(14px + var(--ty)*-7px) 34px rgba(10,20,50,.22),inset 2px 2px 1px -1px rgba(255,255,255,.75),inset -2px -2px 1px -1px rgba(255,255,255,.35),inset 0 0 22px rgba(255,255,255,.14);border-radius:var(--r)}
 
 .glass::before{content:"";position:absolute;inset:0;border-radius:inherit;background:radial-gradient(120% 90% at calc(12% + var(--tx)*30%) calc(var(--ty)*25%),rgba(255,255,255,.5),transparent 42%);pointer-events:none}
@@ -169,8 +169,8 @@ body.typing #tool{transform:translate(-50%,140%);opacity:0}
 <div id="toast" role="status"></div>
 <script>
 (()=>{
-const $=s=>document.querySelector(s),R=document.documentElement;
-const E=s=>String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const QC=new Map(),$=s=>{const c=QC.get(s);if(c&&c.isConnected)return c;const e=document.querySelector(s);if(e)QC.set(s,e);return e},R=document.documentElement;
+const EC=new Map(),E=s=>{const k=String(s??"");const c=EC.get(k);if(c!==undefined)return c;const r=k.replace(/[&<>"']/g,ch=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[ch]));if(EC.size<800)EC.set(k,r);return r};
 const uid=()=>Math.random().toString(36).slice(2,9);
 const ENG={wiki:["Wikipedia","https://en.wikipedia.org/w/index.php?search="],ddg:["DuckDuckGo","https://duckduckgo.com/?q="],google:["Google","https://www.google.com/search?q="],bing:["Bing","https://www.bing.com/search?q="]};
 const WALL={auto:["Automatic",""],sunset:["Sunset","linear-gradient(160deg,#ffb36b,#ff6f91 55%,#7a5cff)"],ocean:["Ocean","linear-gradient(160deg,#5ee7df,#3a7bd5 60%,#2b2f77)"],mint:["Mint","linear-gradient(160deg,#d4fc79,#96e6a1 55%,#4ca1af)"]};
@@ -181,10 +181,10 @@ let S;
 try{S=Object.assign({},DEF,JSON.parse(localStorage.getItem("glassbrowser")||"{}"))}catch(e){S=Object.assign({},DEF)}
 S.set=Object.assign({},DEF.set,S.set);
 if(window.matchMedia("(prefers-reduced-motion: reduce)").matches&&!localStorage.getItem("glassbrowser"))S.set.motion=false;
-const save=()=>{try{const t=S.tabs.filter(x=>!x.p);localStorage.setItem("glassbrowser",JSON.stringify(Object.assign({},S,{tabs:t,active:t.find(x=>x.id===S.active)?S.active:(t[0]||{}).id})))}catch(e){}};
+let sQ=0;const saveNow=()=>{try{const t=S.tabs.some(x=>x.p)?S.tabs.filter(x=>!x.p):S.tabs;localStorage.setItem("glassbrowser",JSON.stringify(Object.assign({},S,{tabs:t,active:t.find(x=>x.id===S.active)?S.active:(t[0]||{}).id})))}catch(e){}};const save=()=>{if(sQ)return;sQ=requestAnimationFrame(()=>{sQ=0;saveNow()})};const flush=()=>{if(sQ){cancelAnimationFrame(sQ);sQ=0;saveNow()}};addEventListener("pagehide",flush);document.addEventListener("visibilitychange",()=>{if(document.visibilityState==="hidden")flush()});
 S.tabs=S.tabs.filter(x=>!x.p);
 const cur=()=>S.tabs.find(t=>t.id===S.active);
-const host=u=>{try{return new URL(u).hostname.replace(/^www\./,"")}catch(e){return u}};
+const HC=new Map(),host=u=>{const k=String(u);const c=HC.get(k);if(c!==undefined)return c;let r;try{r=new URL(k).hostname.replace(/^www\./,"")}catch(e){r=k}if(HC.size<400)HC.set(k,r);return r};
 const url=t=>t.stack[t.i];
 function newTab(p,u){const t={id:uid(),p:!!p,stack:[u||""],i:0,title:""};S.tabs.push(t);S.active=t.id;render();save();if(!u&&!p&&S.set.home&&S.tabs.length>1)go(S.set.home)}
 function closeTab(id,animate){const k=S.tabs.findIndex(t=>t.id===id);if(k<0)return;splash();const t=S.tabs[k];
@@ -232,8 +232,8 @@ function render(){const t=cur(),u=url(t),b=document.body;
  else if(u&&!isS){if(shown!==u){shown=u;$("#frame").src=u;progress()}$("#chip").href=u;$("#chip").target="_blank";$("#chip").rel="noopener noreferrer"}
  else blank()
  document.title=t.title||"Glass Browser"}
-function theme(){const d=S.set.theme==="dark"||(S.set.theme==="system"&&matchMedia("(prefers-color-scheme: dark)").matches);R.dataset.theme=d?"dark":"light"}
-matchMedia("(prefers-color-scheme: dark)").addEventListener("change",theme);
+const mqD=matchMedia("(prefers-color-scheme: dark)");let tC="";function theme(){const v=(S.set.theme==="dark"||(S.set.theme==="system"&&mqD.matches))?"dark":"light";if(v===tC&&R.dataset.theme===v)return;tC=v;R.dataset.theme=v}
+mqD.addEventListener("change",theme);
 const tile=(n,u)=>`<button class="tile" data-go="${E(u)}"><i class="glass">${E(n[0].toUpperCase())}</i><span>${E(n)}</span></button>`;
 function startPage(){const f=S.bm.filter(b=>b.fav),fr=Object.values(S.hist.filter(h=>!h.q).reduce((a,h)=>{(a[h.u]=a[h.u]||{u:h.u,n:0}).n++;return a},{})).sort((a,b)=>b.n-a.n).slice(0,4);
  let h=`<h1>Start Page</h1>`;
@@ -248,7 +248,7 @@ async function copy(v){try{await navigator.clipboard.writeText(v);toast("Copied"
 let sh=null;
 function open(k,x){sh=Object.assign({k},x||{});$("#shade").hidden=false;$("#sheet").hidden=false;$("#menu").hidden=true;drawSheet()}
 function closeSheet(){sh=null;$("#shade").hidden=true;$("#sheet").hidden=true;$("#reader").hidden=true}
-const day=d=>{const n=new Date(),x=new Date(d),z=a=>new Date(a).setHours(0,0,0,0),df=(z(n)-z(x))/864e5;return df===0?"Today":df===1?"Yesterday":x.toLocaleDateString(undefined,{weekday:"long",month:"short",day:"numeric"})};
+const DC=new Map(),day=d=>{const n=new Date(),x=new Date(d),z=a=>new Date(a).setHours(0,0,0,0),zn=z(n),zx=z(x),k=zn+"|"+zx;const c=DC.get(k);if(c!==undefined)return c;const df=(zn-zx)/864e5;const r=df===0?"Today":df===1?"Yesterday":x.toLocaleDateString(undefined,{weekday:"long",month:"short",day:"numeric"});if(DC.size<200)DC.set(k,r);return r};
 function drawSheet(){const el=$("#sheet");let t="",b="";
  if(sh.k==="tabs"){const p=sh.p??cur().p,q=(sh.q||"").toLowerCase();t="Tabs";
   const ts=S.tabs.filter(x=>x.p===p&&(!q||(x.title+url(x)).toLowerCase().includes(q)));
@@ -320,10 +320,10 @@ A.addEventListener("focus",()=>{document.body.classList.add("typing");A.select()
 A.addEventListener("blur",()=>setTimeout(()=>{document.body.classList.remove("typing");$("#sug").hidden=true;A.value=disp(url(cur()))},150));
 A.addEventListener("keydown",e=>{if(e.key==="Enter"){const v=A.value;if(!v.trim())return;go(v);A.blur()}});
 
-A.addEventListener("input",()=>{const v=A.value.trim().toLowerCase(),s=$("#sug");if(!v){s.hidden=true;return}
+let gQ=0;A.addEventListener("input",()=>{if(gQ)return;gQ=requestAnimationFrame(()=>{gQ=0;const v=A.value.trim().toLowerCase(),s=$("#sug");if(!v){s.hidden=true;return}
  const m=[...S.bm.map(x=>[x.t,x.u]),...S.hist.filter(x=>!x.q).map(x=>[x.t,x.u])].filter(x=>(x[0]+x[1]).toLowerCase().includes(v));
  const seen=new Set(),L=m.filter(x=>!seen.has(x[1])&&seen.add(x[1])).slice(0,4);
- s.innerHTML=`<button data-go="${E(A.value)}">Go or search: ${E(A.value)}</button>`+L.map(x=>`<button data-go="${E(x[1])}">${E(x[0])} <small>${E(host(x[1]))}</small></button>`).join("");s.hidden=false});
+ s.innerHTML=`<button data-go="${E(A.value)}">Go or search: ${E(A.value)}</button>`+L.map(x=>`<button data-go="${E(x[1])}">${E(x[0])} <small>${E(host(x[1]))}</small></button>`).join("");s.hidden=false})});
 const T={x:0,y:0,vx:0,vy:0,tx:0,ty:0},P={dp:1},FXT=[...document.querySelectorAll("#top,#tool,#menu,#start,#results,#sheet,#orb,#chip")];let tr=0,lm=null,hasO=0;
 function lab(k,v){return k==="glass"||k==="vol"?Math.round(v)+"%":(+v).toFixed(1)+"×"}
 let AC;
@@ -342,7 +342,7 @@ function tick(){tr=0;if(!S.set.motion||!S.set.tilt){T.x=T.y=T.vx=T.vy=0}else{T.v
 function aim(x,y){if(!S.set.motion||!S.set.tilt)return;T.tx=cl(x);T.ty=cl(y);kick()}
 addEventListener("deviceorientation",e=>{if(e.gamma==null)return;hasO=1;aim(e.gamma/28,((e.beta||0)-40)/28)});
 addEventListener("devicemotion",e=>{if(!S.set.motion||!S.set.tilt)return;const a=e.accelerationIncludingGravity;if(!a||a.x==null)return;if(lm){const dx=a.x-lm.x,dy=a.y-lm.y;if(Math.abs(dx)+Math.abs(dy)>3){T.vx+=cl(-dx/25)*.5;T.vy+=cl(dy/25)*.5;kick()}}lm={x:a.x,y:a.y}});
-addEventListener("pointermove",e=>{if(e.pointerType==="mouse"||!hasO)aim(e.clientX/innerWidth*2-1,e.clientY/innerHeight*2-1)},{passive:true});
+let pQ=0,pE=null;addEventListener("pointermove",e=>{if(e.pointerType!=="mouse"&&hasO)return;pE=e;if(pQ)return;pQ=requestAnimationFrame(()=>{pQ=0;if(pE)aim(pE.clientX/innerWidth*2-1,pE.clientY/innerHeight*2-1)})},{passive:true});
 document.addEventListener("click",()=>{const D=window.DeviceOrientationEvent,M=window.DeviceMotionEvent;try{D&&D.requestPermission&&D.requestPermission();M&&M.requestPermission&&M.requestPermission()}catch(e){}},{once:true});
 const TL=$("#tool"),pill=$("#pill");let pd=null,pb=null,pt;
 function bAt(x,y){const e=document.elementFromPoint(x,y),b=e&&e.closest&&e.closest("#tool button");return b&&!b.disabled?b:null}
@@ -350,7 +350,7 @@ function slide(b){if(!b||b===pb)return;pb=b;const r=b.getBoundingClientRect(),p=
  if(!pill.dataset.on){pill.style.transition="none";pill.style.width=r.width+"px";pill.style.transform=x;void pill.offsetWidth;pill.style.transition="";pill.dataset.on=1}else{pill.style.width=r.width+"px";pill.style.transform=x}
  pill.style.opacity=1}
 TL.addEventListener("pointerdown",e=>{pb=null;pd=bAt(e.clientX,e.clientY);slide(pd)});
-TL.addEventListener("pointermove",e=>{if(pd&&e.buttons)slide(bAt(e.clientX,e.clientY))});
+let tQ=0,tE=null;TL.addEventListener("pointermove",e=>{if(!(pd&&e.buttons))return;tE=e;if(tQ)return;tQ=requestAnimationFrame(()=>{tQ=0;if(tE&&pd)slide(bAt(tE.clientX,tE.clientY))})});
 const rel=e=>{if(!pd)return;if(e.type==="pointerup"&&pb&&pb!==pd)pb.click();pd=null;pt=setTimeout(()=>{pill.style.opacity=0;pb=null},900)};
 TL.addEventListener("pointerup",rel);TL.addEventListener("pointercancel",rel);
 TL.addEventListener("focusin",e=>{const b=e.target.closest("button");if(b&&!pd){pb=null;slide(b)}});
