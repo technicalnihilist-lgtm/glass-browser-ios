@@ -22,3 +22,36 @@ runs. If the small regression is real rather than noise, find the cause and reve
 
 **Reverted on day 1:** coalescing `drawSheet()` into `requestAnimationFrame`. It delayed the
 sheet's first paint by a frame and saved no work, so it was undone before release.
+
+## Day 2 — 2 Nov 2026 (v1.0.2)
+
+The render pipeline. Every change is in the script: the markup and the stylesheet are
+byte-identical to day 1, and so are all nine rendered screens. Numbers are medians of
+three harness runs, each run itself a median over its own repeats.
+
+| Workload | Before | After | Verdict |
+| --- | --- | --- | --- |
+| rAF interval while tilting — median frame, ms | 62.5 / 74.9 / 91.0 | 27.1 / 34.3 / 35.0 | **~54% lower, no overlap between runs** |
+| 60 theme changes — render cost, ms | 334.8 | 224.9 | **~33% faster, repeatable** |
+| 300 history pushes, ms | 2093.9 | 1212.8 | **~42% faster, repeatable** |
+| 120 tab-sheet open/close cycles, ms | 17 457 | 14 698 | **~16% faster** |
+| 40 theme changes in one frame — localStorage writes | 1 | 1 | unchanged (day-1 coalescing holds) |
+| 40 theme changes in one frame — bytes written | 1069 | 1069 | unchanged |
+| one user action — localStorage writes | 1 | 1 | one, and zero when the state did not change |
+| DOM nodes on the start page | 95 | 95 | unchanged |
+
+Pixel proof: 9/9 screens byte-identical (start, search, settings, tabs, live page,
+private, dark, motion, depth). The harness was proved stable before it was trusted —
+two independent runs of the unchanged page produced identical bytes on all nine screens.
+Behaviour suite: 20/20 checks, zero JS errors, three consecutive runs on each side.
+
+APK rebuilt and re-signed: 59 208 bytes (was 62 338). JAR scheme v1 and APK Signature
+Scheme v2 both verify with an independent verifier; the asset inside the APK is
+byte-identical to `GlassBrowser/Glass_Browser.html`.
+
+**Day-1 open item closed.** The tab-sheet loop, re-measured at 120 cycles with a median of
+five runs: 17.46 s before today's work. The five runs of that measurement spread
+16.2–19.3 s (±9%), wider than the 2–8% day-1 delta, so the day-1 "regression" was noise
+rather than a cost. Nothing was reverted for it.
+
+**Reverted on day 2:** nothing.
