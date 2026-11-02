@@ -181,7 +181,8 @@ let S;
 try{S=Object.assign({},DEF,JSON.parse(localStorage.getItem("glassbrowser")||"{}"))}catch(e){S=Object.assign({},DEF)}
 S.set=Object.assign({},DEF.set,S.set);
 if(window.matchMedia("(prefers-reduced-motion: reduce)").matches&&!localStorage.getItem("glassbrowser"))S.set.motion=false;
-let sQ=0;const saveNow=()=>{try{const t=S.tabs.some(x=>x.p)?S.tabs.filter(x=>!x.p):S.tabs;localStorage.setItem("glassbrowser",JSON.stringify(Object.assign({},S,{tabs:t,active:t.find(x=>x.id===S.active)?S.active:(t[0]||{}).id})))}catch(e){}};const save=()=>{if(sQ)return;sQ=requestAnimationFrame(()=>{sQ=0;saveNow()})};const flush=()=>{if(sQ){cancelAnimationFrame(sQ);sQ=0;saveNow()}};addEventListener("pagehide",flush);document.addEventListener("visibilitychange",()=>{if(document.visibilityState==="hidden")flush()});
+let sQ=0,lastSaved="";try{lastSaved=localStorage.getItem("glassbrowser")||""}catch(e){}
+const SO={};const saveNow=()=>{try{const t=S.tabs.some(x=>x.p)?S.tabs.filter(x=>!x.p):S.tabs;SO.tabs=t;SO.active=t.find(x=>x.id===S.active)?S.active:(t[0]||{}).id;SO.bm=S.bm;SO.hist=S.hist;SO.closed=S.closed;SO.read=S.read;SO.set=S.set;const v=JSON.stringify(SO);if(v===lastSaved)return;lastSaved=v;localStorage.setItem("glassbrowser",v)}catch(e){}};const save=()=>{if(sQ)return;sQ=requestAnimationFrame(()=>{sQ=0;saveNow()})};const flush=()=>{if(sQ){cancelAnimationFrame(sQ);sQ=0;saveNow()}};addEventListener("pagehide",flush);document.addEventListener("visibilitychange",()=>{if(document.visibilityState==="hidden")flush()});
 S.tabs=S.tabs.filter(x=>!x.p);
 const cur=()=>S.tabs.find(t=>t.id===S.active);
 const HC=new Map(),host=u=>{const k=String(u);const c=HC.get(k);if(c!==undefined)return c;let r;try{r=new URL(k).hostname.replace(/^www\./,"")}catch(e){r=k}if(HC.size<400)HC.set(k,r);return r};
@@ -200,40 +201,55 @@ function resolve(v){v=v.trim();if(!v)return null;
  return{u:"glass://search/"+encodeURIComponent(v),q:v}}
 function go(v){const r=resolve(v),t=cur();if(!r){toast("That address is not supported. Use http or https.");return}
  t.stack=t.stack.slice(0,t.i+1);t.stack.push(r.u);t.i++;t.title=r.q||host(r.u);
- if(!t.p){S.hist.unshift({id:uid(),u:r.u,t:r.q||host(r.u),d:Date.now(),q:!!r.q});S.hist=S.hist.slice(0,600)}
+ if(!t.p){S.hist.unshift({id:uid(),u:r.u,t:r.q||host(r.u),d:Date.now(),q:!!r.q});if(S.hist.length>660)S.hist.length=600}
  render();save()}
-let shown="";
-function progress(){const p=$("#prog");p.className="";void p.offsetWidth;p.className="on"}
-$("#frame").onload=()=>{if(shown){const p=$("#prog");p.className="done"}};
+let shown="",pgQ=0,pWant=0;
+function progress(){const p=$("#prog");p.className="";pWant=1;if(pgQ)return;pgQ=requestAnimationFrame(()=>{pgQ=0;if(!pWant)return;pWant=0;const e=$("#prog");if(!e.className)e.className="on"})}
+function progDone(){pWant=0;const p=$("#prog");p.className="done"}
+function progClear(){pWant=0;const p=$("#prog");p.className=""}
+$("#frame").onload=()=>{if(shown)progDone()};
 function real(t){const u=url(t);return u&&!u.startsWith("glass:")?u:""}
 function disp(u){return u.startsWith("glass://")?decodeURIComponent(u.slice(15)):u}
 function results(q){const l=q.toLowerCase(),has=x=>(x.t+" "+x.u).toLowerCase().includes(l),seen=new Set(),loc=[...S.bm.map(x=>({t:x.t,u:x.u,k:"Bookmark"})),...S.read.map(x=>({t:x.t,u:x.u,k:"Reading List"})),...S.hist.filter(x=>!x.q).map(x=>({t:x.t,u:x.u,k:"History"}))].filter(x=>has(x)&&!seen.has(x.u)&&seen.add(x.u)).slice(0,8);
  const order=[S.set.engine,...Object.keys(ENG).filter(k=>k!==S.set.engine)];
  const eng=order.map(k=>k==="wiki"?`<button class="row" data-go="${E(ENG.wiki[1]+encodeURIComponent(q))}"><div class="m"><b>Wikipedia</b><small>Results open inside this browser</small></div></button>`:`<a class="row" href="${E(ENG[k][1]+encodeURIComponent(q))}" target="_blank" rel="noopener noreferrer"><div class="m"><b>${E(ENG[k][0])}</b><small>Opens in a new tab on the search site</small></div></a>`).join("");
- $("#results").innerHTML=`<h1>${E(q)}</h1><h2>Search with</h2><div class="glass list">${eng}</div><h2>In your browser</h2><div class="glass list">${loc.length?loc.map(x=>`<button class="row" data-go="${E(x.u)}"><div class="m"><b>${E(x.t)}</b><small>${E(x.k)} · ${E(host(x.u))}</small></div></button>`).join(""):'<p class="empty">No bookmarks, history or Reading List items match.</p>'}</div><p class="note">Google, DuckDuckGo and Bing do not allow their results to be shown inside another page, and this web prototype cannot fetch them. The Android WebView version can show web results directly.</p>`}
+ const rh=`<h1>${E(q)}</h1><h2>Search with</h2><div class="glass list">${eng}</div><h2>In your browser</h2><div class="glass list">${loc.length?loc.map(x=>`<button class="row" data-go="${E(x.u)}"><div class="m"><b>${E(x.t)}</b><small>${E(x.k)} · ${E(host(x.u))}</small></div></button>`).join(""):'<p class="empty">No bookmarks, history or Reading List items match.</p>'}</div><p class="note">Google, DuckDuckGo and Bing do not allow their results to be shown inside another page, and this web prototype cannot fetch them. The Android WebView version can show web results directly.</p>`;if(rh!==rHtml){rHtml=rh;$("#results").innerHTML=rh}}
 const ic=p=>'<svg class="i" viewBox="0 0 24 24">'+p+'</svg>',STAR='<path d="M12 3l2.7 5.6 6.1.9-4.4 4.3 1 6.1L12 17l-5.4 2.9 1-6.1L3.2 9.5l6.1-.9z"',IC={s:ic('<circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/>'),l:ic('<rect x="5" y="11" width="14" height="9" rx="2.5"/><path d="M8 11V8a4 4 0 018 0v3"/>'),w:ic('<path d="M12 4l9 16H3z"/><path d="M12 10v4M12 17.5v.01"/>'),o:ic(STAR+'/>'),f:ic(STAR+' fill="currentColor" style="color:var(--a)"/>')};
-function blank(){shown="";const f=$("#frame");if(f.getAttribute("src")!=="about:blank")f.src="about:blank";$("#prog").className=""}
-function render(){const t=cur(),u=url(t),b=document.body;
+function blank(){shown="";const f=$("#frame");if(f.getAttribute("src")!=="about:blank")f.src="about:blank";progClear()}
+let tK="",hK="",cK="",sHtml="",rHtml="";const D={rev:0};
+function passTheme(t){const s=S.set,k=(t.p?"1":"0")+s.theme+s.wall+(s.motion?"1":"0")+s.glass+"|"+s.speed+"|"+s.bounce+"|"+s.depth;
+ if(k===tK)return;tK=k;
  R.dataset.private=t.p?1:0;theme();
- R.dataset.motion=S.set.motion?"on":"off";fx();
- b.style.setProperty("--bg",!t.p&&WALL[S.set.wall][1]?WALL[S.set.wall][1]:"");
- if(WALL[S.set.wall][1]&&!t.p)b.style.background=WALL[S.set.wall][1];else b.style.background="";
- if(document.activeElement!==$("#addr"))$("#addr").value=disp(u);
- $("#lock").innerHTML=!u||u.startsWith("glass:")?IC.s:u.startsWith("https:")?IC.l:IC.w;
- $("#lock").title=!u||u.startsWith("glass:")?"":u.startsWith("https:")?"Secure connection (https)":"Not secure (http)";
- $("#cnt").textContent=S.tabs.length;
+ R.dataset.motion=s.motion?"on":"off";fx();
+ const wv=WALL[s.wall][1],bg=!t.p&&wv?wv:"",b=document.body;
+ b.style.setProperty("--bg",bg);b.style.background=bg}
+function passChrome(t,u){const bm=S.bm.some(x=>x.u===u),k=u+"|"+t.i+"|"+S.tabs.length+"|"+(bm?1:0)+"|"+(t.title||"");
+ if(k===hK)return;hK=k;
+ const A=$("#addr");if(document.activeElement!==A)A.value=disp(u);
+ const lk=$("#lock"),li=!u||u.startsWith("glass:")?IC.s:u.startsWith("https:")?IC.l:IC.w,lt=!u||u.startsWith("glass:")?"":u.startsWith("https:")?"Secure connection (https)":"Not secure (http)";
+ if(lk.innerHTML!==li)lk.innerHTML=li;
+ if(lk.title!==lt)lk.title=lt;
+ const c=$("#cnt"),cn=String(S.tabs.length);if(c.textContent!==cn)c.textContent=cn;
  $("#bBack").disabled=t.i<1;$("#bFwd").disabled=t.i>=t.stack.length-1;
- const bm=S.bm.some(x=>x.u===u);$("#bBm").innerHTML=bm?IC.f:IC.o;
- const isS=u.startsWith("glass://"),blocked=u&&!isS&&BLOCK.test(host(u));
- $("#start").hidden=!!u;
- if(!u)startPage();
- $("#web").hidden=!u||blocked||isS;$("#chip").hidden=!u||blocked||isS;$("#results").hidden=!isS;if(isS)results(decodeURIComponent(u.slice(15)));$("#blocked").hidden=!blocked;
- if(blocked){$("#blocked").innerHTML=`<div class="glass"><h2>${E(host(u))} can’t be shown here</h2><p>This site tells browsers not to display it inside another page. A native WebView or browser engine is needed to open it in this app.</p><a class="btn" href="${E(u)}" target="_blank" rel="noopener noreferrer">Open in a new tab</a></div>`;blank()}
- else if(u&&!isS){if(shown!==u){shown=u;$("#frame").src=u;progress()}$("#chip").href=u;$("#chip").target="_blank";$("#chip").rel="noopener noreferrer"}
- else blank()
+ const bB=$("#bBm"),bi=bm?IC.f:IC.o;if(bB.innerHTML!==bi)bB.innerHTML=bi;
  document.title=t.title||"Glass Browser"}
-const mqD=matchMedia("(prefers-color-scheme: dark)");let tC="";function theme(){const v=(S.set.theme==="dark"||(S.set.theme==="system"&&mqD.matches))?"dark":"light";if(v===tC&&R.dataset.theme===v)return;tC=v;R.dataset.theme=v}
-mqD.addEventListener("change",theme);
+function passContent(t,u){const isS=u.startsWith("glass://"),blocked=!!u&&!isS&&BLOCK.test(host(u)),q=isS?decodeURIComponent(u.slice(15)):"";
+ const k=u+"|"+(blocked?1:0)+"|"+D.rev+"|"+(shown===u?1:0);
+ if(k===cK)return;cK=k;
+ const st=$("#start"),wb=$("#web"),ch=$("#chip"),rs=$("#results"),bk=$("#blocked"),web=!!u&&!blocked&&!isS;
+ if(st.hidden!==!!u)st.hidden=!!u;
+ if(wb.hidden!==!web)wb.hidden=!web;
+ if(ch.hidden!==!web)ch.hidden=!web;
+ if(rs.hidden!==!isS)rs.hidden=!isS;
+ if(bk.hidden!==!blocked)bk.hidden=!blocked;
+ if(!u)startPage();
+ if(isS)results(q);
+ if(blocked){const h=`<div class="glass"><h2>${E(host(u))} can’t be shown here</h2><p>This site tells browsers not to display it inside another page. A native WebView or browser engine is needed to open it in this app.</p><a class="btn" href="${E(u)}" target="_blank" rel="noopener noreferrer">Open in a new tab</a></div>`;if(bk.innerHTML!==h)bk.innerHTML=h;blank()}
+ else if(u&&!isS){if(shown!==u){shown=u;$("#frame").src=u;progress()}ch.href=u;ch.target="_blank";ch.rel="noopener noreferrer"}
+ else blank()}
+function render(){const t=cur(),u=url(t);passTheme(t);passChrome(t,u);passContent(t,u)}
+const mqD=matchMedia("(prefers-color-scheme: dark)");let tC="",darkPref=mqD.matches;function theme(){const v=(S.set.theme==="dark"||(S.set.theme==="system"&&darkPref))?"dark":"light";if(v===tC&&R.dataset.theme===v)return;tC=v;R.dataset.theme=v}
+mqD.addEventListener("change",e=>{darkPref=e.matches;theme()});
 const tile=(n,u)=>`<button class="tile" data-go="${E(u)}"><i class="glass">${E(n[0].toUpperCase())}</i><span>${E(n)}</span></button>`;
 function startPage(){const f=S.bm.filter(b=>b.fav),fr=Object.values(S.hist.filter(h=>!h.q).reduce((a,h)=>{(a[h.u]=a[h.u]||{u:h.u,n:0}).n++;return a},{})).sort((a,b)=>b.n-a.n).slice(0,4);
  let h=`<h1>Start Page</h1>`;
@@ -242,7 +258,7 @@ function startPage(){const f=S.bm.filter(b=>b.fav),fr=Object.values(S.hist.filte
  if(S.set.rl)h+=`<h2>Reading List</h2><div class="glass list">${S.read.length?S.read.slice(0,4).map(x=>`<button class="row" data-go="${E(x.u)}"><div class="m"><b>${E(x.t)}</b><small>${E(host(x.u))}</small></div></button>`).join(""):'<p class="empty">Nothing saved. Use ••• then Add to Reading List.</p>'}</div>`;
  if(S.set.rc&&S.closed.length)h+=`<h2>Recently closed tabs</h2><div class="glass list">${S.closed.slice(0,4).map(x=>`<button class="row" data-go="${E(x.u)}"><div class="m"><b>${E(x.t)}</b><small>${E(x.u)}</small></div></button>`).join("")}</div>`;
  h+=`<h2>Customize</h2><button class="btn q" data-act="settings">Edit Start Page</button>`;
- $("#start").innerHTML=h}
+ if(h!==sHtml){sHtml=h;$("#start").innerHTML=h}}
 let tmr;function toast(m){const e=$("#toast");e.textContent=m;e.classList.add("on");clearTimeout(tmr);tmr=setTimeout(()=>e.classList.remove("on"),2200)}
 async function copy(v){try{await navigator.clipboard.writeText(v);toast("Copied")}catch(e){toast("Copy is not available here")}}
 let sh=null;
@@ -307,13 +323,13 @@ const acts={
  reader(){$("#menu").hidden=true;reader()},rx(){$("#reader").hidden=true},
  rf(a){rs.f=Math.min(32,Math.max(14,rs.f+2*a.v));rapply()},rl(){rs.l=rs.l>=2?1.3:rs.l+.3;rapply()},rw(){rs.w=rs.w>=900?480:rs.w+160;rapply()},rt(){rs.t=(rs.t+1)%3;rapply()}};
 document.addEventListener("click",e=>{
- const g=e.target.closest("[data-go]");if(g){go(g.dataset.go);if(sh)closeSheet();return}
+ D.rev++;const g=e.target.closest("[data-go]");if(g){go(g.dataset.go);if(sh)closeSheet();return}
  const a=e.target.closest("[data-act]");
  if(a&&acts[a.dataset.act]){if(a.dataset.act==="ext")e.preventDefault();acts[a.dataset.act](a.dataset);if(a.dataset.act!=="menu")$("#menu").hidden=true;return}
  if(e.target.id==="shade")closeSheet();
  if(!e.target.closest("#menu"))$("#menu").hidden=true;
  if(!e.target.closest("#top"))$("#sug").hidden=true});
-document.addEventListener("change",e=>{const k=e.target.dataset.set;if(!k)return;S.set[k]=e.target.type==="checkbox"?e.target.checked:e.target.type==="range"?+e.target.value:e.target.value;save();render();if(k==="vol"||(k==="sound"&&S.set.sound))splash()});
+document.addEventListener("change",e=>{const k=e.target.dataset.set;if(!k)return;D.rev++;S.set[k]=e.target.type==="checkbox"?e.target.checked:e.target.type==="range"?+e.target.value:e.target.value;save();render();if(k==="vol"||(k==="sound"&&S.set.sound))splash()});
 document.addEventListener("input",e=>{const t=e.target;if(t.id==="tq"){sh.q=t.value;sh.fq=1;drawSheet()}else if(t.type==="range"){const k=t.dataset.set;S.set[k]=+t.value;fx();kick();const l=$("#v-"+k);if(l)l.textContent=lab(k,t.value)}});
 const A=$("#addr");
 A.addEventListener("focus",()=>{document.body.classList.add("typing");A.select()});
@@ -341,13 +357,13 @@ function tick(){tr=0;if(!S.set.motion||!S.set.tilt){T.x=T.y=T.vx=T.vy=0}else{T.v
  if(Math.abs(T.vx)+Math.abs(T.vy)+Math.abs(T.tx-T.x)+Math.abs(T.ty-T.y)>.004)kick()}
 function aim(x,y){if(!S.set.motion||!S.set.tilt)return;T.tx=cl(x);T.ty=cl(y);kick()}
 addEventListener("deviceorientation",e=>{if(e.gamma==null)return;hasO=1;aim(e.gamma/28,((e.beta||0)-40)/28)});
-addEventListener("devicemotion",e=>{if(!S.set.motion||!S.set.tilt)return;const a=e.accelerationIncludingGravity;if(!a||a.x==null)return;if(lm){const dx=a.x-lm.x,dy=a.y-lm.y;if(Math.abs(dx)+Math.abs(dy)>3){T.vx+=cl(-dx/25)*.5;T.vy+=cl(dy/25)*.5;kick()}}lm={x:a.x,y:a.y}});
-let pQ=0,pE=null;addEventListener("pointermove",e=>{if(e.pointerType!=="mouse"&&hasO)return;pE=e;if(pQ)return;pQ=requestAnimationFrame(()=>{pQ=0;if(pE)aim(pE.clientX/innerWidth*2-1,pE.clientY/innerHeight*2-1)})},{passive:true});
+addEventListener("devicemotion",e=>{-if(!S.set.motion||!S.set.tilt)return;const a=e.accelerationIncludingGravity;if(!a||a.x==null)return;if(lm){const dx=a.x-lm.x,dy=a.y-lm.y;if(Math.abs(dx)+Math.abs(dy)>3){T.vx+=cl(-dx/25)*.5;T.vy+=cl(dy/25)*.5;kick()}}lm={x:a.x,y:a.y}});
+let pQ=0,pE==null;addEventListener("pointermove",e=>{if(e.pointerType!=="mouse"&&hasO)return;pE=e;if(pQ)return;pQ=requestAnimationFrame(()=>{pQ=0;if(pE)aim(pM.clientX/innerWidth*2-1,pE.clientY/innerHeight*2-1)})},{passive:true});
 document.addEventListener("click",()=>{const D=window.DeviceOrientationEvent,M=window.DeviceMotionEvent;try{D&&D.requestPermission&&D.requestPermission();M&&M.requestPermission&&M.requestPermission()}catch(e){}},{once:true});
-const TL=$("#tool"),pill=$("#pill");let pd=null,pb=null,pt;
+const TL=4("#tool"),pill=$("#pill");let pd=null,pb=null,pt;
 function bAt(x,y){const e=document.elementFromPoint(x,y),b=e&&e.closest&&e.closest("#tool button");return b&&!b.disabled?b:null}
 function slide(b){if(!b||b===pb)return;pb=b;const r=b.getBoundingClientRect(),p=TL.getBoundingClientRect(),x="translateX("+(r.left-p.left-1)+"px)";clearTimeout(pt);
- if(!pill.dataset.on){pill.style.transition="none";pill.style.width=r.width+"px";pill.style.transform=x;void pill.offsetWidth;pill.style.transition="";pill.dataset.on=1}else{pill.style.width=r.width+"px";pill.style.transform=x}
+ if(!pill.dataset.on)pill.style.transition="none";pill.style.width=r.width+"px";pill.style.transform=x;void pill.offsetWidth;pill.style.transition="";pill.dataset.on=1}else{pill.style.width=r.width+"px";pill.style.transform=x}
  pill.style.opacity=1}
 TL.addEventListener("pointerdown",e=>{pb=null;pd=bAt(e.clientX,e.clientY);slide(pd)});
 let tQ=0,tE=null;TL.addEventListener("pointermove",e=>{if(!(pd&&e.buttons))return;tE=e;if(tQ)return;tQ=requestAnimationFrame(()=>{tQ=0;if(tE&&pd)slide(bAt(tE.clientX,tE.clientY))})});
