@@ -357,13 +357,13 @@ function tick(){tr=0;if(!S.set.motion||!S.set.tilt){T.x=T.y=T.vx=T.vy=0}else{T.v
  if(Math.abs(T.vx)+Math.abs(T.vy)+Math.abs(T.tx-T.x)+Math.abs(T.ty-T.y)>.004)kick()}
 function aim(x,y){if(!S.set.motion||!S.set.tilt)return;T.tx=cl(x);T.ty=cl(y);kick()}
 addEventListener("deviceorientation",e=>{if(e.gamma==null)return;hasO=1;aim(e.gamma/28,((e.beta||0)-40)/28)});
-addEventListener("devicemotion",e=>{-if(!S.set.motion||!S.set.tilt)return;const a=e.accelerationIncludingGravity;if(!a||a.x==null)return;if(lm){const dx=a.x-lm.x,dy=a.y-lm.y;if(Math.abs(dx)+Math.abs(dy)>3){T.vx+=cl(-dx/25)*.5;T.vy+=cl(dy/25)*.5;kick()}}lm={x:a.x,y:a.y}});
-let pQ=0,pE==null;addEventListener("pointermove",e=>{if(e.pointerType!=="mouse"&&hasO)return;pE=e;if(pQ)return;pQ=requestAnimationFrame(()=>{pQ=0;if(pE)aim(pM.clientX/innerWidth*2-1,pE.clientY/innerHeight*2-1)})},{passive:true});
+addEventListener("devicemotion",e=>{if(!S.set.motion||!S.set.tilt)return;const a=e.accelerationIncludingGravity;if(!a||a.x==null)return;if(lm){const dx=a.x-lm.x,dy=a.y-lm.y;if(Math.abs(dx)+Math.abs(dy)>3){T.vx+=cl(-dx/25)*.5;T.vy+=cl(dy/25)*.5;kick()}}lm={x:a.x,y:a.y}});
+let pQ=0,pE=null;addEventListener("pointermove",e=>{if(e.pointerType!=="mouse"&&hasO)return;pE=e;if(pQ)return;pQ=requestAnimationFrame(()=>{pQ=0;if(pE)aim(pE.clientX/innerWidth*2-1,pE.clientY/innerHeight*2-1)})},{passive:true});
 document.addEventListener("click",()=>{const D=window.DeviceOrientationEvent,M=window.DeviceMotionEvent;try{D&&D.requestPermission&&D.requestPermission();M&&M.requestPermission&&M.requestPermission()}catch(e){}},{once:true});
-const TL=4("#tool"),pill=$("#pill");let pd=null,pb=null,pt;
+const TL=$("#tool"),pill=$("#pill");let pd=null,pb=null,pt;
 function bAt(x,y){const e=document.elementFromPoint(x,y),b=e&&e.closest&&e.closest("#tool button");return b&&!b.disabled?b:null}
 function slide(b){if(!b||b===pb)return;pb=b;const r=b.getBoundingClientRect(),p=TL.getBoundingClientRect(),x="translateX("+(r.left-p.left-1)+"px)";clearTimeout(pt);
- if(!pill.dataset.on)pill.style.transition="none";pill.style.width=r.width+"px";pill.style.transform=x;void pill.offsetWidth;pill.style.transition="";pill.dataset.on=1}else{pill.style.width=r.width+"px";pill.style.transform=x}
+ if(!pill.dataset.on){pill.style.transition="none";pill.style.width=r.width+"px";pill.style.transform=x;void pill.offsetWidth;pill.style.transition="";pill.dataset.on=1}else{pill.style.width=r.width+"px";pill.style.transform=x}
  pill.style.opacity=1}
 TL.addEventListener("pointerdown",e=>{pb=null;pd=bAt(e.clientX,e.clientY);slide(pd)});
 let tQ=0,tE=null;TL.addEventListener("pointermove",e=>{if(!(pd&&e.buttons))return;tE=e;if(tQ)return;tQ=requestAnimationFrame(()=>{tQ=0;if(tE&&pd)slide(bAt(tE.clientX,tE.clientY))})});
