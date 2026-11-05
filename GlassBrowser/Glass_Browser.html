@@ -17,7 +17,7 @@ button{background:none;border:0;cursor:pointer;transition:transform calc(.35s*va
 button:active{transform:scale(calc(1 - .12*var(--bn)))}
 :focus-visible{outline:2px solid var(--a);outline-offset:2px}
 [hidden]{display:none!important}
-#orb{position:fixed;inset:0;z-index:-1;pointer-events:none;contain:paint;will-change:transform;transform:translate(calc(var(--tx)*-26px),calc(var(--ty)*-26px)) scale(1.12);background:radial-gradient(circle at 18% 22%,rgba(255,255,255,.55),transparent 28%),radial-gradient(circle at 82% 68%,rgba(255,120,200,.35),transparent 32%),radial-gradient(circle at 60% 12%,rgba(90,200,255,.4),transparent 26%)}
+#orb{position:fixed;inset:0;z-index:-1;pointer-events:none;contain:strict;will-change:transform;transform:translate(calc(var(--tx)*-26px),calc(var(--ty)*-26px)) scale(1.12);background:radial-gradient(circle at 18% 22%,rgba(255,255,255,.55),transparent 28%),radial-gradient(circle at 82% 68%,rgba(255,120,200,.35),transparent 32%),radial-gradient(circle at 60% 12%,rgba(90,200,255,.4),transparent 26%)}
 .glass{position:relative;background:linear-gradient(145deg,rgba(255,255,255,.22),var(--g) 45%,rgba(255,255,255,.08));-webkit-backdrop-filter:blur(16px) saturate(230%) brightness(1.08);backdrop-filter:blur(16px) saturate(230%) brightness(1.08);border:1px solid var(--gb);box-shadow:calc(var(--tx)*-9px) calc(14px + var(--ty)*-7px) 34px rgba(10,20,50,.22),inset 2px 2px 1px -1px rgba(255,255,255,.75),inset -2px -2px 1px -1px rgba(255,255,255,.35),inset 0 0 22px rgba(255,255,255,.14);border-radius:var(--r)}
 
 .glass::before{content:"";position:absolute;inset:0;border-radius:inherit;background:radial-gradient(120% 90% at calc(12% + var(--tx)*30%) calc(var(--ty)*25%),rgba(255,255,255,.5),transparent 42%);pointer-events:none}
@@ -35,7 +35,7 @@ button:active{transform:scale(calc(1 - .12*var(--bn)))}
 .tile i::before,.card::before{background:radial-gradient(120% 90% at 12% 0%,rgba(255,255,255,.5),transparent 42%)}
 .card.out{transition:transform .18s,opacity .18s}
 .cards.still .card{animation:none}
-#results{height:100%;overflow:auto;padding:calc(var(--sa) + 84px) 18px calc(var(--sb) + 110px);max-width:760px;margin:auto;animation:swap calc(.55s*var(--ts)) var(--sp)}
+#results{height:100%;overflow:auto;contain:paint;padding:calc(var(--sa) + 84px) 18px calc(var(--sb) + 110px);max-width:760px;margin:auto;animation:swap calc(.55s*var(--ts)) var(--sp)}
 #results h1{font-size:28px;letter-spacing:-.02em;margin:6px 4px 14px;overflow-wrap:anywhere}
 #results h2{font-size:15px;margin:22px 4px 8px;color:var(--s);font-weight:600}
 a.row{color:inherit;text-decoration:none}
@@ -68,8 +68,8 @@ input[type=range]::-moz-range-thumb{width:26px;height:26px;border-radius:50%;bac
 .acc .w>div{overflow:hidden;min-height:0;opacity:0;transform:translateY(-12px) scale(.96);transition:opacity calc(.35s*var(--ts)),transform calc(.6s*var(--ts)) var(--sp)}
 .acc.open .w>div{opacity:1;transform:none}
 #tool button:active{transform:scale(1.12)}
-#view{position:fixed;inset:0}
-#start{height:100%;overflow:auto;padding:calc(var(--sa) + 84px) 18px calc(var(--sb) + 110px);max-width:760px;margin:auto}
+#view{position:fixed;inset:0;contain:paint}
+#start{height:100%;overflow:auto;contain:paint;padding:calc(var(--sa) + 84px) 18px calc(var(--sb) + 110px);max-width:760px;margin:auto}
 #start h1{font-size:34px;letter-spacing:-.02em;margin:6px 4px 14px}
 #start h2{font-size:15px;margin:22px 4px 8px;color:var(--s);font-weight:600}
 .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(76px,1fr));gap:12px}
@@ -83,7 +83,7 @@ input[type=range]::-moz-range-thumb{width:26px;height:26px;border-radius:50%;bac
 #web{position:absolute;inset:0;padding:calc(var(--sa) + 66px) 0 calc(var(--sb) + 82px)}
 #frame{width:100%;height:100%;border:0;background:#fff}
 #chip{position:fixed;left:50%;bottom:calc(var(--sb) + 92px);transform:translateX(-50%);padding:6px 12px;font-size:13px;z-index:4;white-space:nowrap;border-radius:99px}
-#blocked{position:absolute;inset:0;display:grid;place-items:center;padding:24px;text-align:center}
+#blocked{position:absolute;inset:0;contain:paint;display:grid;place-items:center;padding:24px;text-align:center}
 #blocked .glass{padding:26px;max-width:380px}#blocked p{color:var(--s);margin:8px 0 16px;font-size:14px}
 .btn{padding:10px 18px;border-radius:99px;background:var(--a);color:#fff;font-weight:600;display:inline-block}
 .btn.q{background:var(--g);color:var(--t);border:1px solid var(--gb)}
@@ -105,7 +105,7 @@ body.typing #tool{transform:translate(-50%,140%);opacity:0}
 #menu{position:fixed;right:14px;bottom:calc(var(--sb) + 76px);z-index:8;padding:6px;min-width:210px;transform-origin:bottom right;animation:pop calc(.35s*var(--ts)) var(--sp)}
 #menu button{display:block;width:100%;text-align:left;padding:11px 14px;border-radius:14px}
 #menu button:hover{background:var(--gb)}
-#shade{position:fixed;inset:0;z-index:7;background:rgba(0,0,0,.25)}
+#shade{position:fixed;inset:0;z-index:7;contain:paint;background:rgba(0,0,0,.25)}
 #sheet{position:fixed;left:0;right:0;bottom:0;top:calc(var(--sa) + 40px);z-index:9;border-radius:28px 28px 0 0;max-width:760px;margin:auto;display:flex;flex-direction:column;animation:up calc(.45s*var(--ts)) var(--sp)}
 #sheet header{display:flex;align-items:center;gap:8px;padding:14px 16px 8px}
 #sheet header h3{flex:1;font-size:20px}
@@ -133,6 +133,7 @@ body.typing #tool{transform:translate(-50%,140%);opacity:0}
 @keyframes up{from{transform:translateY(60%);opacity:0}}
 [data-motion=off] *{animation:none!important;transition:none!important}
 [data-motion=off]{--tx:0!important;--ty:0!important}
+[data-motion=off] #orb{will-change:auto}
 </style>
 </head>
 <body>
@@ -340,7 +341,7 @@ let gQ=0;A.addEventListener("input",()=>{if(gQ)return;gQ=requestAnimationFrame((
  const m=[...S.bm.map(x=>[x.t,x.u]),...S.hist.filter(x=>!x.q).map(x=>[x.t,x.u])].filter(x=>(x[0]+x[1]).toLowerCase().includes(v));
  const seen=new Set(),L=m.filter(x=>!seen.has(x[1])&&seen.add(x[1])).slice(0,4);
  s.innerHTML=`<button data-go="${E(A.value)}">Go or search: ${E(A.value)}</button>`+L.map(x=>`<button data-go="${E(x[1])}">${E(x[0])} <small>${E(host(x[1]))}</small></button>`).join("");s.hidden=false})});
-const T={x:0,y:0,vx:0,vy:0,tx:0,ty:0},P={dp:1},FXT=[...document.querySelectorAll("#top,#tool,#menu,#start,#results,#sheet,#orb,#chip")];let tr=0,lm=null,hasO=0;
+const T={x:0,y:0,vx:0,vy:0,tx:0,ty:0},P={dp:1},FXT=[...document.querySelectorAll("#top,#tool,#menu,#start,#results,#sheet,#orb,#chip")];let tr=0,lm=null,hasO=0,tX="",tY="";
 function lab(k,v){return k==="glass"||k==="vol"?Math.round(v)+"%":(+v).toFixed(1)+"×"}
 let AC;
 function splash(){const s=S.set;if(!s.sound||+s.vol<=0)return;try{AC=AC||new(window.AudioContext||window.webkitAudioContext)();if(AC.state==="suspended")AC.resume();
@@ -353,7 +354,7 @@ function fx(){const s=S.set,b=+s.bounce;R.style.setProperty("--k",(2.2-0.02*s.gl
 const cl=v=>Math.max(-1,Math.min(1,v));
 function kick(){if(!tr)tr=requestAnimationFrame(tick)}
 function tick(){tr=0;if(!S.set.motion||!S.set.tilt){T.x=T.y=T.vx=T.vy=0}else{T.vx+=(T.tx-T.x)*.14;T.vy+=(T.ty-T.y)*.14;const D=Math.min(.93,.74+.08*(+S.set.bounce));T.vx*=D;T.vy*=D;T.x+=T.vx;T.y+=T.vy}
- const X=(T.x*P.dp).toFixed(3),Y=(T.y*P.dp).toFixed(3);for(const e of FXT){e.style.setProperty("--tx",X);e.style.setProperty("--ty",Y)}
+ const X=(T.x*P.dp).toFixed(3),Y=(T.y*P.dp).toFixed(3);if(X!==tX||Y!==tY){tX=X;tY=Y;for(const e of FXT){e.style.setProperty("--tx",X);e.style.setProperty("--ty",Y)}}
  if(Math.abs(T.vx)+Math.abs(T.vy)+Math.abs(T.tx-T.x)+Math.abs(T.ty-T.y)>.004)kick()}
 function aim(x,y){if(!S.set.motion||!S.set.tilt)return;T.tx=cl(x);T.ty=cl(y);kick()}
 addEventListener("deviceorientation",e=>{if(e.gamma==null)return;hasO=1;aim(e.gamma/28,((e.beta||0)-40)/28)});

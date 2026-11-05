@@ -55,3 +55,53 @@ five runs: 17.46 s before today's work. The five runs of that measurement spread
 rather than a cost. Nothing was reverted for it.
 
 **Reverted on day 2:** nothing.
+
+## Day 5 — 5 Nov 2026 (v1.0.3)
+
+Paint and compositing. *(This file has no day-3 or day-4 section — the run resumed at
+day 5, so the release number continues from v1.0.2.)* Numbers are medians of three
+harness runs, before and after interleaved so pod drift hits both sides equally.
+
+| Workload | Before | After | Verdict |
+| --- | --- | --- | --- |
+| rAF interval while tilting — median frame, ms | 66.6 / 66.6 / 66.6 | 66.7 / 66.6 / 66.6 | unchanged (headless frame cap) |
+| style recalcs per 130 tilt frames | 130 / 131 / 130 | 131 / 131 / 131 | unchanged |
+| paint events per 130 tilt frames | 655 / 655 / 652 | 650 / 650 / 650 | 5 fewer, at the edge of noise |
+| raster tasks per 130 tilt frames | 655 / 646 / 650 | 646 / 648 / 650 | unchanged |
+| layout passes during the tilt loop | 0 | 0 | no layout in the loop, before or after |
+| 300 synthetic pointer moves, ms | 3.0 / 3.8 / 6.5 | 4.5 / 2.9 / 3.1 | noise |
+| 60 theme changes, ms | 9.7 / 8.3 / 8.2 | 8.5 / 8.6 / 8.1 | noise |
+| DOM nodes on the start page | 98 | 98 | unchanged |
+| localStorage writes / bytes per navigation | 1 / 1637 | 1 / 1637 | unchanged |
+
+Pixel proof: **10/10 screens byte-identical** (start, search, settings, tabs, live page,
+private, dark, motion, tilted, motion off). The harness was proved stable before it was
+trusted: two independent runs of the unchanged page were byte-identical on all ten screens.
+Behaviour suite: **28/28 checks, zero JS errors**, on both sides.
+
+**Applied (8).** `#orb` to `contain:strict`; `contain:paint` on `#view`, `#start`,
+`#results`, `#blocked`, `#shade`; `will-change:auto` on `#orb` while motion is off; the
+tilt loop skips the style write when the rounded value has not changed.
+
+**Audited, no change made (2).** Every `backdrop-filter` surface and every off-screen
+surface was audited: the only filters are on the six glass surfaces that are on screen,
+`.tile i`/`.card` already carry no filter, and every hidden view is `display:none`. Behind
+the toolbar there is exactly one blurred layer (`#orb`) and no nested blur, so there was
+nothing to trim that would not move a pixel.
+
+**Reverted the same day (5).** `#pill{will-change:transform}` (a promoted layer changes the
+antialiasing of the toolbar and of everything the sheet blurs behind it: 147 px differ on
+the dark screen, 12 584 on the tilted one). `.card{contain:content}` (123 px on the tab
+sheet). `#sheet`, `#chip` and `#web` `contain:paint` (each clips the element's own shadow
+or changes the backdrop sample: 1–3 px per screen, 24 px on the live page). The tilt loop
+was first consolidated to a single write on `:root`; it measured no better than the eight
+per-element writes and slightly worse on two counters, so it was narrowed back to the
+element list with a write guard — only the guard survives.
+
+APK rebuilt and re-signed: **59 255 bytes** (was 59 208), asset inside byte-identical to
+`GlassBrowser/Glass_Browser.html`. JAR scheme v1 (9 entries digested, PKCS#7 over
+`GLASS.SF`) and APK Signature Scheme v2 (three-section, 96-byte digest, RSA-SHA256) both
+verify with a checker written from the platform spec — the same checker also validates the
+v1 signature of the previous artefact, so it is not simply agreeing with today's signer.
+The previous artefact carried a single 32-byte v2 digest record; the platform expects the
+three section digests concatenated (96 bytes for SHA-256), which is what this build has.
