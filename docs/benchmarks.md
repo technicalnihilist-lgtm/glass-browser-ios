@@ -105,3 +105,72 @@ verify with a checker written from the platform spec — the same checker also v
 v1 signature of the previous artefact, so it is not simply agreeing with today's signer.
 The previous artefact carried a single 32-byte v2 digest record; the platform expects the
 three section digests concatenated (96 bytes for SHA-256), which is what this build has.
+
+## Day 7 — 7 Nov 2026 (v1.0.4)
+
+The motion loop. *(This file has no day-6 section — the run resumed at day 7, so the
+release number continues from v1.0.3.)* Numbers are medians of five harness runs. The
+harness was proved stable and sensitive before it was trusted: two runs of the unchanged
+page were byte-identical on all ten screens, and a one-pixel change to `--r` was caught on
+nine of the ten.
+
+| Workload | Before | After | Verdict |
+| --- | --- | --- | --- |
+| rAF interval, idle — median frame, ms | 16.7 | 16.7 | unchanged (headless frame cap) |
+| 120-move tilt sweep — frames requested | 123 | 116 | noise (±8% between runs of one file) |
+| 120-move tilt sweep — style writes | 1136 | 1088 | noise; per frame 9.24 vs 9.38 |
+| 120-move tilt sweep — wall clock, ms | 3940.5 | 3905.1 | noise |
+| 60 theme changes, ms | 3821.5 | 3823.7 | unchanged |
+| 60-step toolbar drag — layout reads (`getBoundingClientRect`) | 32 | **9** | **72% fewer, deterministic** |
+| 30 pointer moves while the page is hidden — frames requested | 5 | **0** | **deterministic win** |
+| 600 `deviceorientation` events in one task, ms | 4.3 | **2.8** | **~35% faster, repeatable** |
+| DOM nodes on the start page | 67 | 67 | unchanged |
+| localStorage writes / bytes per navigation | 1 / 480 | 1 / 480 | unchanged |
+
+Pixel proof: **10/10 screens byte-identical** (start, search, settings, tabs, live page,
+private, dark, motion, tilted, motion off). Behaviour suite: **21/21 checks, zero JS
+errors**, on both sides.
+
+**The motion proof.** The tilt loop was driven from a manual clock so the trajectory can be
+compared frame by frame, with every stray pointer event swallowed. At 60 Hz, 120 Hz and
+30 Hz the written `--tx`/`--ty` series are **identical, to the third decimal, before and
+after**. The delta-time step only fires on a genuine stall: in a series of five 60 Hz frames
+followed by a 100 ms gap (six dropped frames) the old loop lost five frames of motion and
+the new one advances three sub-steps in that frame and rejoins the same curve — the only
+series that differs, by design.
+
+**Applied (10).** A fixed-step delta-time accumulator in the tilt loop, engaging only when a
+frame took more than 2.5 frame times, capped at three sub-steps; the accumulator's clock is
+cleared on every external kick, so an idle gap can never fling the transform; spring
+position and velocity clamped to bounds above the measured peak (see below); `kick()`
+returns without scheduling when animations or tilt are off, so no frame is requested at
+all; the loop is cancelled on `visibilitychange` → hidden and its clock reset, so nothing
+runs in the background and nothing bursts on resume; the write guard now compares rounded
+integers and builds the two strings only on an actual write; `aim()` returns early when the
+clamped target equals the value already held; `deviceorientation` bursts are coalesced to
+one tilt update per frame, matching the pointer path; the toolbar's rects are cached for the
+duration of a pill drag instead of two `getBoundingClientRect()` calls per pointermove; the
+pointer and sensor handlers early-return while the page is hidden.
+
+**Reworked the same day (2), before release.** The delta-time first advanced a sub-step on
+any frame slower than 60 Hz. That changed where the spring comes to rest — up to 0.08 in
+`--ty`, which moved the toolbar by about a pixel and put 1 414 pixels of difference on the
+live screen — so it was narrowed to genuine stalls (frames over 2.5 frame times), after
+which the pixel diff returned to zero. The clamp was first set to ±1.2, which clipped the
+transform on the search screen (7 425 px): the spring's real peak, measured over a 200-event
+sweep, is 1.21, so the bound is ±2.0 and ±1.5 for velocity, and the guard never engages in
+normal motion.
+
+**Harness note.** Headless Chromium picks one of two glyph-antialiasing modes per page load,
+so two runs of the *same* file are not always byte-identical (up to 240/255 on text edges).
+The pixel harness therefore renders the old and the new file in two iframes of the same
+top-level document, one after the other, so both see the same renderer state; the comparison
+is exact and repeatable.
+
+APK rebuilt and re-signed: **59 666 bytes** (was 59 255), the asset inside byte-identical to
+`GlassBrowser/Glass_Browser.html` (SHA-256 `9ca0f245ff6f15cd…`). JAR scheme v1 (9 entries
+digested, PKCS#7 over `GLASS.SF`) and APK Signature Scheme v2 (one chunk, 32-byte digest,
+RSA-SHA256) both verify with the checker written from the platform spec; that same checker
+rejects the previous artefact's v2 block, which carried a single bare digest record, so it
+is not simply agreeing with today's signer. The repo carries no key material, so this build
+was signed with a freshly generated self-signed key, as on the earlier days.

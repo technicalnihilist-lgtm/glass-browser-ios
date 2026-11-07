@@ -183,7 +183,7 @@ try{S=Object.assign({},DEF,JSON.parse(localStorage.getItem("glassbrowser")||"{}"
 S.set=Object.assign({},DEF.set,S.set);
 if(window.matchMedia("(prefers-reduced-motion: reduce)").matches&&!localStorage.getItem("glassbrowser"))S.set.motion=false;
 let sQ=0,lastSaved="";try{lastSaved=localStorage.getItem("glassbrowser")||""}catch(e){}
-const SO={};const saveNow=()=>{try{const t=S.tabs.some(x=>x.p)?S.tabs.filter(x=>!x.p):S.tabs;SO.tabs=t;SO.active=t.find(x=>x.id===S.active)?S.active:(t[0]||{}).id;SO.bm=S.bm;SO.hist=S.hist;SO.closed=S.closed;SO.read=S.read;SO.set=S.set;const v=JSON.stringify(SO);if(v===lastSaved)return;lastSaved=v;localStorage.setItem("glassbrowser",v)}catch(e){}};const save=()=>{if(sQ)return;sQ=requestAnimationFrame(()=>{sQ=0;saveNow()})};const flush=()=>{if(sQ){cancelAnimationFrame(sQ);sQ=0;saveNow()}};addEventListener("pagehide",flush);document.addEventListener("visibilitychange",()=>{if(document.visibilityState==="hidden")flush()});
+const SO={};const saveNow=()=>{try{const t=S.tabs.some(x=>x.p)?S.tabs.filter(x=>!x.p):S.tabs;SO.tabs=t;SO.active=t.find(x=>x.id===S.active)?S.active:(t[0]||{}).id;SO.bm=S.bm;SO.hist=S.hist;SO.closed=S.closed;SO.read=S.read;SO.set=S.set;const v=JSON.stringify(SO);if(v===lastSaved)return;lastSaved=v;localStorage.setItem("glassbrowser",v)}catch(e){}};const save=()=>{if(sQ)return;sQ=requestAnimationFrame(()=>{sQ=0;saveNow()})};const flush=()=>{if(sQ){cancelAnimationFrame(sQ);sQ=0;saveNow()}};addEventListener("pagehide",flush);document.addEventListener("visibilitychange",()=>{if(document.visibilityState==="hidden"){flush();stopTilt()}});
 S.tabs=S.tabs.filter(x=>!x.p);
 const cur=()=>S.tabs.find(t=>t.id===S.active);
 const HC=new Map(),host=u=>{const k=String(u);const c=HC.get(k);if(c!==undefined)return c;let r;try{r=new URL(k).hostname.replace(/^www\./,"")}catch(e){r=k}if(HC.size<400)HC.set(k,r);return r};
@@ -341,7 +341,9 @@ let gQ=0;A.addEventListener("input",()=>{if(gQ)return;gQ=requestAnimationFrame((
  const m=[...S.bm.map(x=>[x.t,x.u]),...S.hist.filter(x=>!x.q).map(x=>[x.t,x.u])].filter(x=>(x[0]+x[1]).toLowerCase().includes(v));
  const seen=new Set(),L=m.filter(x=>!seen.has(x[1])&&seen.add(x[1])).slice(0,4);
  s.innerHTML=`<button data-go="${E(A.value)}">Go or search: ${E(A.value)}</button>`+L.map(x=>`<button data-go="${E(x[1])}">${E(x[0])} <small>${E(host(x[1]))}</small></button>`).join("");s.hidden=false})});
-const T={x:0,y:0,vx:0,vy:0,tx:0,ty:0},P={dp:1},FXT=[...document.querySelectorAll("#top,#tool,#menu,#start,#results,#sheet,#orb,#chip")];let tr=0,lm=null,hasO=0,tX="",tY="";
+const T={x:0,y:0,vx:0,vy:0,tx:0,ty:0},P={dp:1},FXT=[...document.querySelectorAll("#top,#tool,#menu,#start,#results,#sheet,#orb,#chip")];let tr=0,lm=null,hasO=0,tX=0,tY=0,tL=0;
+const DT=1e3/60,TLX=2,TLV=1.5,tiltOn=()=>!!(S.set.motion&&S.set.tilt);
+function stopTilt(){if(tr){cancelAnimationFrame(tr);tr=0}tL=0}
 function lab(k,v){return k==="glass"||k==="vol"?Math.round(v)+"%":(+v).toFixed(1)+"×"}
 let AC;
 function splash(){const s=S.set;if(!s.sound||+s.vol<=0)return;try{AC=AC||new(window.AudioContext||window.webkitAudioContext)();if(AC.state==="suspended")AC.resume();
@@ -352,21 +354,29 @@ function splash(){const s=S.set;if(!s.sound||+s.vol<=0)return;try{AC=AC||new(win
  const ns=AC.createBufferSource(),bp=AC.createBiquadFilter(),ng=AC.createGain();ns.buffer=n;bp.type="bandpass";bp.frequency.setValueAtTime(2500,t);bp.frequency.exponentialRampToValueAtTime(900,t+.3);bp.Q.value=.8;ng.gain.setValueAtTime(.35,t);ng.gain.exponentialRampToValueAtTime(.001,t+.3);ns.connect(bp);bp.connect(ng);ng.connect(out);ns.start(t)}catch(e){}}
 function fx(){const s=S.set,b=+s.bounce;R.style.setProperty("--k",(2.2-0.02*s.glass).toFixed(3));R.style.setProperty("--ts",(1/s.speed).toFixed(3));R.style.setProperty("--bn",b);R.style.setProperty("--sp","cubic-bezier(.34,"+(1+.56*b).toFixed(2)+",.64,1)");P.dp=+s.depth}
 const cl=v=>Math.max(-1,Math.min(1,v));
-function kick(){if(!tr)tr=requestAnimationFrame(tick)}
-function tick(){tr=0;if(!S.set.motion||!S.set.tilt){T.x=T.y=T.vx=T.vy=0}else{T.vx+=(T.tx-T.x)*.14;T.vy+=(T.ty-T.y)*.14;const D=Math.min(.93,.74+.08*(+S.set.bounce));T.vx*=D;T.vy*=D;T.x+=T.vx;T.y+=T.vy}
- const X=(T.x*P.dp).toFixed(3),Y=(T.y*P.dp).toFixed(3);if(X!==tX||Y!==tY){tX=X;tY=Y;for(const e of FXT){e.style.setProperty("--tx",X);e.style.setProperty("--ty",Y)}}
- if(Math.abs(T.vx)+Math.abs(T.vy)+Math.abs(T.tx-T.x)+Math.abs(T.ty-T.y)>.004)kick()}
-function aim(x,y){if(!S.set.motion||!S.set.tilt)return;T.tx=cl(x);T.ty=cl(y);kick()}
-addEventListener("deviceorientation",e=>{if(e.gamma==null)return;hasO=1;aim(e.gamma/28,((e.beta||0)-40)/28)});
-addEventListener("devicemotion",e=>{if(!S.set.motion||!S.set.tilt)return;const a=e.accelerationIncludingGravity;if(!a||a.x==null)return;if(lm){const dx=a.x-lm.x,dy=a.y-lm.y;if(Math.abs(dx)+Math.abs(dy)>3){T.vx+=cl(-dx/25)*.5;T.vy+=cl(dy/25)*.5;kick()}}lm={x:a.x,y:a.y}});
-let pQ=0,pE=null;addEventListener("pointermove",e=>{if(e.pointerType!=="mouse"&&hasO)return;pE=e;if(pQ)return;pQ=requestAnimationFrame(()=>{pQ=0;if(pE)aim(pE.clientX/innerWidth*2-1,pE.clientY/innerHeight*2-1)})},{passive:true});
+function kick(){if(tr||document.hidden||!tiltOn())return;tL=0;tr=requestAnimationFrame(tick)}
+function step(){T.vx+=(T.tx-T.x)*.14;T.vy+=(T.ty-T.y)*.14;const D=Math.min(.93,.74+.08*(+S.set.bounce));T.vx*=D;T.vy*=D;T.x+=T.vx;T.y+=T.vy;
+ T.x=T.x>TLX?TLX:T.x<-TLX?-TLX:T.x;T.y=T.y>TLX?TLX:T.y<-TLX?-TLX:T.y;
+ T.vx=T.vx>TLV?TLV:T.vx<-TLV?-TLV:T.vx;T.vy=T.vy>TLV?TLV:T.vy<-TLV?-TLV:T.vy}
+function tick(ts){tr=0;
+ if(!tiltOn()){T.x=T.y=T.vx=T.vy=T.tx=T.ty=0;tL=0}
+ else{const d=(ts||0)-tL,n=tL&&d>DT*2.5?Math.min(3,Math.round(d/DT)):1;tL=ts||0;for(let i=0;i<n;i++)step()}
+ const rx=Math.round(T.x*P.dp*1e3),ry=Math.round(T.y*P.dp*1e3);
+ if(rx!==tX||ry!==tY){tX=rx;tY=ry;const X=(rx?rx/1e3:0).toFixed(3),Y=(ry?ry/1e3:0).toFixed(3);for(const e of FXT){e.style.setProperty("--tx",X);e.style.setProperty("--ty",Y)}}
+ if(Math.abs(T.vx)+Math.abs(T.vy)+Math.abs(T.tx-T.x)+Math.abs(T.ty-T.y)>.004)tr=requestAnimationFrame(tick)}
+function aim(x,y){if(!tiltOn())return;const nx=cl(x),ny=cl(y);if(nx===T.tx&&ny===T.ty)return;T.tx=nx;T.ty=ny;kick()}
+let oQ=0,oE=null;addEventListener("deviceorientation",e=>{if(e.gamma==null||document.hidden)return;hasO=1;oE=e;if(oQ)return;oQ=requestAnimationFrame(()=>{oQ=0;if(oE&&!document.hidden)aim(oE.gamma/28,((oE.beta||0)-40)/28)})},{passive:true});
+addEventListener("devicemotion",e=>{if(document.hidden||!tiltOn())return;const a=e.accelerationIncludingGravity;if(!a||a.x==null)return;if(lm){const dx=a.x-lm.x,dy=a.y-lm.y;if(Math.abs(dx)+Math.abs(dy)>3){T.vx+=cl(-dx/25)*.5;T.vy+=cl(dy/25)*.5;kick()}}lm={x:a.x,y:a.y}},{passive:true});
+let pQ=0,pE=null;addEventListener("pointermove",e=>{if(document.hidden)return;if(e.pointerType!=="mouse"&&hasO)return;pE=e;if(pQ)return;pQ=requestAnimationFrame(()=>{pQ=0;if(pE&&!document.hidden)aim(pE.clientX/innerWidth*2-1,pE.clientY/innerHeight*2-1)})},{passive:true});
 document.addEventListener("click",()=>{const D=window.DeviceOrientationEvent,M=window.DeviceMotionEvent;try{D&&D.requestPermission&&D.requestPermission();M&&M.requestPermission&&M.requestPermission()}catch(e){}},{once:true});
-const TL=$("#tool"),pill=$("#pill");let pd=null,pb=null,pt;
+const TL=$("#tool"),pill=$("#pill");let pd=null,pb=null,pt,pR=null,BR=null;
 function bAt(x,y){const e=document.elementFromPoint(x,y),b=e&&e.closest&&e.closest("#tool button");return b&&!b.disabled?b:null}
-function slide(b){if(!b||b===pb)return;pb=b;const r=b.getBoundingClientRect(),p=TL.getBoundingClientRect(),x="translateX("+(r.left-p.left-1)+"px)";clearTimeout(pt);
+function cacheTool(){pR=TL.getBoundingClientRect();BR=new Map();for(const b of TL.querySelectorAll("button"))BR.set(b,b.getBoundingClientRect())}
+addEventListener("resize",()=>{pR=null;BR=null},{passive:true});
+function slide(b){if(!b||b===pb)return;pb=b;if(!pR||!BR)cacheTool();const r=BR.get(b)||b.getBoundingClientRect(),p=pR||TL.getBoundingClientRect(),x="translateX("+(r.left-p.left-1)+"px)";clearTimeout(pt);
  if(!pill.dataset.on){pill.style.transition="none";pill.style.width=r.width+"px";pill.style.transform=x;void pill.offsetWidth;pill.style.transition="";pill.dataset.on=1}else{pill.style.width=r.width+"px";pill.style.transform=x}
  pill.style.opacity=1}
-TL.addEventListener("pointerdown",e=>{pb=null;pd=bAt(e.clientX,e.clientY);slide(pd)});
+TL.addEventListener("pointerdown",e=>{pb=null;cacheTool();pd=bAt(e.clientX,e.clientY);slide(pd)});
 let tQ=0,tE=null;TL.addEventListener("pointermove",e=>{if(!(pd&&e.buttons))return;tE=e;if(tQ)return;tQ=requestAnimationFrame(()=>{tQ=0;if(tE&&pd)slide(bAt(tE.clientX,tE.clientY))})});
 const rel=e=>{if(!pd)return;if(e.type==="pointerup"&&pb&&pb!==pd)pb.click();pd=null;pt=setTimeout(()=>{pill.style.opacity=0;pb=null},900)};
 TL.addEventListener("pointerup",rel);TL.addEventListener("pointercancel",rel);
