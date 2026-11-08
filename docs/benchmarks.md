@@ -174,3 +174,84 @@ RSA-SHA256) both verify with the checker written from the platform spec; that sa
 rejects the previous artefact's v2 block, which carried a single bare digest record, so it
 is not simply agreeing with today's signer. The repo carries no key material, so this build
 was signed with a freshly generated self-signed key, as on the earlier days.
+
+## Day 8 — 8 Nov 2026 (v1.0.5)
+
+The tab lifecycle. Numbers are medians of three harness runs, before and after interleaved so
+pod drift hits both sides equally. The harness was proved stable and sensitive before it was
+trusted: two runs of the unchanged page were byte-identical on all ten screens, and a
+one-pixel change (the toolbar moved 1 px) was caught on all ten, on all four attempts.
+
+| Workload | Before | After | Verdict |
+| --- | --- | --- | --- |
+| 20 card closes from an open tab sheet, 200 tabs — main-thread task time, ms | 3248 | **1267** | **~61% less work, repeatable** |
+| same — wall clock, ms | 4804 | **3200** | **~33% faster** |
+| 10 keystrokes in the tab search, 120 tabs — task time, ms | 1110 | **347** | **~69% less work, repeatable** |
+| same — wall clock, ms | 1365 | 978 | ~28% faster |
+| layout passes, 20 closes | 11 | 20 | more passes, each far cheaper |
+| style recalcs, 20 closes | 19 | 62 | more passes, each far cheaper |
+| layout passes, 10 keystrokes | 10 | 11 | unchanged |
+| style recalcs, 10 keystrokes | 45 | **18** | **60% fewer** |
+| 50 open/close cycles — heap after GC, KB | 991.9 → 1378.3 | 1011.3 → 1382.4 | same drift, no new leak |
+| 50 open/close cycles — DOM nodes | 135 → 141 | 136 → 142 | unchanged |
+| switch between two tabs on the same URL — page requests | 0 | 0 | the frame was never reloaded, before or after |
+| localStorage writes / bytes per tab close | 1 / 1828 | 1 / 1828 | unchanged |
+| DOM nodes on the start page | 67 | 67 | unchanged |
+| localStorage writes / bytes per navigation | 1 / 494 | 1 / 494 | unchanged |
+
+The layout and style-recalc *pass counts* rise on the close workload while the total
+main-thread time falls by 61%: the old code replaced the whole sheet body (one big pass),
+the new code invalidates a single card (a few small passes). Task time is the metric that
+says which one costs the phone less.
+
+Pixel proof: **10/10 screens byte-identical** (start, search, settings, tabs, live page,
+private, dark, menu, tilted, motion off). Behaviour suite: **36/36 checks, zero JS errors**,
+on both sides.
+
+**Applied (10).** Card nodes on the tab sheet are reused: the sheet parses its cards once on a
+full build and afterwards updates only the cards that changed, walking the list once and
+moving or dropping individual nodes; closing a tab removes just that card and moves the
+active highlight instead of re-rendering the rest; `duplicate` takes the same path instead of
+rebuilding the sheet; the card map is emptied and re-registered on every full build, so a
+closed tab's card is dropped from it and nothing retains it; the sheet still returns to the
+top on a redraw, and that reset now happens before the first DOM write instead of forcing a
+layout after it; `closeTab` resolves the closed tab's URL once instead of three times; the
+`closed` list is capped in place instead of reallocated on every close; replacing the last tab
+no longer renders and saves twice; `closed` is sanitised on load, before anything reads it;
+consecutive duplicate history entries are no longer pushed; `sw` and `dup` ignore a stale tab
+id and the tab-search input handler returns when no sheet is open, instead of throwing.
+
+**Audited, no change made (3).** The iframe is shared by all tabs, so there is no per-tab
+frame to free on close: the closed tab's document is already torn down by the next render,
+and the 50-cycle heap measurement above shows no growth from closing. Switching to a tab
+that is already on screen already skips the frame write, and the network counter confirms
+zero requests during a switch. Per-tab scroll restoration was not added — it would be new
+behaviour, not an optimisation.
+
+**Reworked the same day (2), before release.** The first reconciler built each new card with
+its own `createElement` + `innerHTML`, which made *opening* a large tab sheet slower than the
+old single parse (20 closes: 2107 ms of task time against 1487 ms before); the sheet now
+parses all its cards in one `innerHTML` on a full build and reconciles only on later redraws.
+The first version also read `scrollTop` after mutating the sheet, forcing a layout on every
+redraw; the reset now happens before the first DOM write, so the sheet still returns to the
+top exactly as it did, without the forced flush.
+
+**Harness note.** The keystroke workload first captured `#tq` once, which silently measured
+nothing on the old build: the old code replaces that input element on every redraw, so the
+captured handle went stale after the first keystroke. The workload re-queries the input each
+time; the numbers above are from the corrected workload.
+
+A screen that differs is re-rendered up to four times and only counted as differing if the
+difference reproduces — headless compositing jitters a backdrop sample occasionally, and on
+one of the stability runs two renders of the *same* file differed by 24 px on the rounded
+corners of the address bar (max channel delta 3). It did not reproduce, and a deliberate
+one-pixel change reproduced on every attempt, so the retry distinguishes jitter from a real
+change rather than hiding one.
+
+APK rebuilt and re-signed: **61 026 bytes** (was 59 666), the asset inside byte-identical to
+`GlassBrowser/Glass_Browser.html` (SHA-256 `cc944f638413bdc5…`). JAR scheme v1 (9 entries
+digested, PKCS#7 over `GLASS.SF`) and APK Signature Scheme v2 (single 1 MB chunk, 32-byte
+digest, RSA-SHA256, signing block magic intact) both verify with the checker written from the
+platform spec — that same checker validates the previous artefact completely (v1 and v2), so
+it is not simply agreeing with today's signer. The repo carries no key material, so this
+build was signed with a freshly generated self-signed key, as on the earlier days.

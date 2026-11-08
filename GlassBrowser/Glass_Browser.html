@@ -185,15 +185,17 @@ if(window.matchMedia("(prefers-reduced-motion: reduce)").matches&&!localStorage.
 let sQ=0,lastSaved="";try{lastSaved=localStorage.getItem("glassbrowser")||""}catch(e){}
 const SO={};const saveNow=()=>{try{const t=S.tabs.some(x=>x.p)?S.tabs.filter(x=>!x.p):S.tabs;SO.tabs=t;SO.active=t.find(x=>x.id===S.active)?S.active:(t[0]||{}).id;SO.bm=S.bm;SO.hist=S.hist;SO.closed=S.closed;SO.read=S.read;SO.set=S.set;const v=JSON.stringify(SO);if(v===lastSaved)return;lastSaved=v;localStorage.setItem("glassbrowser",v)}catch(e){}};const save=()=>{if(sQ)return;sQ=requestAnimationFrame(()=>{sQ=0;saveNow()})};const flush=()=>{if(sQ){cancelAnimationFrame(sQ);sQ=0;saveNow()}};addEventListener("pagehide",flush);document.addEventListener("visibilitychange",()=>{if(document.visibilityState==="hidden"){flush();stopTilt()}});
 S.tabs=S.tabs.filter(x=>!x.p);
+S.closed=(Array.isArray(S.closed)?S.closed:[]).filter(x=>x&&typeof x.u==="string"&&x.u).slice(0,10);
 const cur=()=>S.tabs.find(t=>t.id===S.active);
 const HC=new Map(),host=u=>{const k=String(u);const c=HC.get(k);if(c!==undefined)return c;let r;try{r=new URL(k).hostname.replace(/^www\./,"")}catch(e){r=k}if(HC.size<400)HC.set(k,r);return r};
 const url=t=>t.stack[t.i];
 function newTab(p,u){const t={id:uid(),p:!!p,stack:[u||""],i:0,title:""};S.tabs.push(t);S.active=t.id;render();save();if(!u&&!p&&S.set.home&&S.tabs.length>1)go(S.set.home)}
-function closeTab(id,animate){const k=S.tabs.findIndex(t=>t.id===id);if(k<0)return;splash();const t=S.tabs[k];
- if(!t.p&&url(t)){S.closed.unshift({u:url(t),t:t.title||host(url(t))});S.closed=S.closed.slice(0,10)}
+function closeTab(id,animate){const k=S.tabs.findIndex(t=>t.id===id);if(k<0)return;splash();const t=S.tabs[k],cu=url(t);
+ if(!t.p&&cu){S.closed.unshift({u:cu,t:t.title||host(cu)});if(S.closed.length>10)S.closed.length=10}
  S.tabs.splice(k,1);
- if(!S.tabs.length)newTab(false);else if(S.active===id)S.active=(S.tabs[k]||S.tabs[k-1]).id;
- render();save();if(sh&&sh.k==="tabs")drawSheet()}
+ if(!S.tabs.length){newTab(false);if(sh&&sh.k==="tabs")drawSheet();return}
+ if(S.active===id)S.active=(S.tabs[k]||S.tabs[k-1]).id;
+ render();save();if(sh&&sh.k==="tabs")sheetSync()}
 function resolve(v){v=v.trim();if(!v)return null;
  if(v.startsWith("glass://search/"))return{u:v,q:decodeURIComponent(v.slice(15))};
  if(/^https?:\/\//i.test(v))return{u:v};
@@ -202,7 +204,7 @@ function resolve(v){v=v.trim();if(!v)return null;
  return{u:"glass://search/"+encodeURIComponent(v),q:v}}
 function go(v){const r=resolve(v),t=cur();if(!r){toast("That address is not supported. Use http or https.");return}
  t.stack=t.stack.slice(0,t.i+1);t.stack.push(r.u);t.i++;t.title=r.q||host(r.u);
- if(!t.p){S.hist.unshift({id:uid(),u:r.u,t:r.q||host(r.u),d:Date.now(),q:!!r.q});if(S.hist.length>660)S.hist.length=600}
+ if(!t.p){const h0=S.hist[0];if(!(h0&&h0.u===r.u&&!!h0.q===!!r.q)){S.hist.unshift({id:uid(),u:r.u,t:r.q||host(r.u),d:Date.now(),q:!!r.q});if(S.hist.length>660)S.hist.length=600}}
  render();save()}
 let shown="",pgQ=0,pWant=0;
 function progress(){const p=$("#prog");p.className="";pWant=1;if(pgQ)return;pgQ=requestAnimationFrame(()=>{pgQ=0;if(!pWant)return;pWant=0;const e=$("#prog");if(!e.className)e.className="on"})}
@@ -264,14 +266,32 @@ let tmr;function toast(m){const e=$("#toast");e.textContent=m;e.classList.add("o
 async function copy(v){try{await navigator.clipboard.writeText(v);toast("Copied")}catch(e){toast("Copy is not available here")}}
 let sh=null;
 function open(k,x){sh=Object.assign({k},x||{});$("#shade").hidden=false;$("#sheet").hidden=false;$("#menu").hidden=true;drawSheet()}
-function closeSheet(){sh=null;$("#shade").hidden=true;$("#sheet").hidden=true;$("#reader").hidden=true}
+function closeSheet(){sh=null;const el=$("#sheet");el.dataset.k="";el.dataset.p="";$("#shade").hidden=true;el.hidden=true;$("#reader").hidden=true}
 const DC=new Map(),day=d=>{const n=new Date(),x=new Date(d),z=a=>new Date(a).setHours(0,0,0,0),zn=z(n),zx=z(x),k=zn+"|"+zx;const c=DC.get(k);if(c!==undefined)return c;const df=(zn-zx)/864e5;const r=df===0?"Today":df===1?"Yesterday":x.toLocaleDateString(undefined,{weekday:"long",month:"short",day:"numeric"});if(DC.size<200)DC.set(k,r);return r};
+const CARDMAP=new Map();
+function tabList(){const p=!!(sh.p??cur().p),q=(sh.q||"").toLowerCase();
+ return{p,q,ts:S.tabs.filter(x=>x.p===p&&(!q||(x.title+url(x)).toLowerCase().includes(q)))}}
+function cardHTML(x){return `<div class="card glass${x.id===S.active?" me":""}" data-id="${x.id}"><button class="pv" data-act="sw" data-id="${x.id}" aria-label="Switch to tab">${url(x)?E(host(url(x))[0].toUpperCase()):"⌂"}</button><b>${E(x.title||"Start Page")}</b><div class="ac"><button data-act="dup" data-id="${x.id}">Duplicate</button><button data-act="xt" data-id="${x.id}">Close</button></div></div>`}
+function sheetSync(){if(!sh||sh.k!=="tabs")return;const el=$("#sheet"),box=el.querySelector("#cardsHost");if(!box)return;
+ const bd=el.querySelector(".body");if(bd&&bd.scrollTop)bd.scrollTop=0;
+ const ts=tabList().ts,want=new Set();let at=box.firstElementChild;
+ for(let i=0;i<ts.length;i++){const x=ts[i];want.add(x.id);let c=CARDMAP.get(x.id);
+  if(!c){const t=document.createElement("div");t.innerHTML=cardHTML(x);c=t.firstElementChild;CARDMAP.set(x.id,c)}
+  else{const pv=c.firstElementChild,bb=c.children[1],lab=url(x)?host(url(x))[0].toUpperCase():"⌂",ti=x.title||"Start Page";
+   if(pv.textContent!==lab)pv.textContent=lab;
+   if(bb.textContent!==ti)bb.textContent=ti;
+   const me=x.id===S.active;if(c.classList.contains("me")!==me)c.classList.toggle("me",me)}
+  if(at===c)at=c.nextElementSibling;else box.insertBefore(c,at||null)}
+ for(let c=box.firstElementChild;c;){const nx=c.nextElementSibling;if(!want.has(c.dataset.id)){box.removeChild(c);CARDMAP.delete(c.dataset.id)}c=nx}
+ const em=el.querySelector("#emptyTabs");if(em&&em.hidden!==(ts.length>0))em.hidden=ts.length>0;
+ const qi=el.querySelector("#tq");if(qi&&qi.value!==(sh.q||""))qi.value=sh.q||""}
+function finishSheet(){sh.dr=1;const q=$("#tq");if(q&&sh.fq){q.focus();q.setSelectionRange(q.value.length,q.value.length)}}
 function drawSheet(){const el=$("#sheet");let t="",b="";
- if(sh.k==="tabs"){const p=sh.p??cur().p,q=(sh.q||"").toLowerCase();t="Tabs";
-  const ts=S.tabs.filter(x=>x.p===p&&(!q||(x.title+url(x)).toLowerCase().includes(q)));
+ if(sh.k==="tabs"&&el.dataset.k==="tabs"&&el.dataset.p===((sh.p??cur().p)?"1":"0")){sheetSync();finishSheet();return}
+ if(sh.k==="tabs"){const p=sh.p??cur().p,ts=tabList().ts;t="Tabs";
   b=`<div class="seg"><button data-act="tmode" data-v="0" class="${p?"":"on"}">Tabs</button><button data-act="tmode" data-v="1" class="${p?"on":""}">Private</button></div><input class="in" id="tq" placeholder="Search tabs" value="${E(sh.q||"")}">
   ${p?'<p class="note">Private tabs stay in memory only and leave no history. They do not hide you from websites or your network.</p>':""}
-  <div class="cards ${sh.dr?"still":""}">${ts.map(x=>`<div class="card glass ${x.id===S.active?"me":""}" data-id="${x.id}"><button class="pv" data-act="sw" data-id="${x.id}" aria-label="Switch to tab">${url(x)?E(host(url(x))[0].toUpperCase()):"⌂"}</button><b>${E(x.title||"Start Page")}</b><div class="ac"><button data-act="dup" data-id="${x.id}">Duplicate</button><button data-act="xt" data-id="${x.id}">Close</button></div></div>`).join("")}</div>${ts.length?"":'<p class="empty">No tabs here.</p>'}
+  <div class="cards${sh.dr?" still":""}" id="cardsHost">${ts.map(cardHTML).join("")}</div><p class="empty" id="emptyTabs"${ts.length?" hidden":""}>No tabs here.</p>
   <p style="margin-top:14px"><button class="btn" data-act="${p?"newp":"new"}">${p?"New private tab":"New tab"}</button></p>`}
  if(sh.k==="lib"){t="Library";const v=sh.v||"bm";
   b=`<div class="seg">${[["bm","Bookmarks"],["hist","History"],["read","Reading"]].map(x=>`<button data-act="lib" data-v="${x[0]}" class="${v===x[0]?"on":""}">${x[1]}</button>`).join("")}</div>`;
@@ -288,7 +308,9 @@ function drawSheet(){const el=$("#sheet");let t="",b="";
   <p class="note">Search engines other than Wikipedia refuse to load inside a page, so they open in a new tab. Pop-up, JavaScript, permission, translate, download and desktop-site controls need a native WebView and are not available in this web prototype.</p>
   <p style="padding:8px 0"><button class="btn q" data-act="cdata">Clear browsing data</button></p>`)}
  el.innerHTML=`<header><h3>${t}</h3><button data-act="close" aria-label="Close" class="btn q">Done</button></header><div class="body">${b}</div>`;
- sh.dr=1;const q=$("#tq");if(q&&sh.fq){q.focus();q.setSelectionRange(q.value.length,q.value.length)}}
+ el.dataset.k=sh.k;el.dataset.p=sh.k==="tabs"?((sh.p??cur().p)?"1":"0"):"";
+ CARDMAP.clear();if(sh.k==="tabs")for(const c of el.querySelectorAll("#cardsHost > .card"))CARDMAP.set(c.dataset.id,c);
+ finishSheet()}
 function menu(){const m=$("#menu");if(!m.hidden){m.hidden=true;return}
  m.innerHTML=[["new","New Tab"],["newp","New Private Tab"],["tabs","Tab Overview"],["libbm","Bookmarks"],["libhist","History"],["rlist","Add to Reading List"],["reader","Reader View"],["copy","Copy Page URL"],["ext","Open in New Tab"],["settings","Settings"]].map(x=>`<button data-act="${x[0]}">${x[1]}</button>`).join("");m.hidden=false}
 async function reader(){const u=real(cur());if(!u){toast("Open a page first");return}
@@ -304,9 +326,9 @@ const acts={
  acc(d){const e=document.querySelector(`.acc[data-k="${d.k}"]`);if(!e)return;const o=e.classList.toggle("open");sh.acc[d.k]=o;e.querySelector("button").setAttribute("aria-expanded",o)},
  rsfx(){Object.assign(S.set,{glass:60,speed:1,bounce:1,depth:1,vol:60});save();fx();kick();drawSheet()},
  new(){newTab(false);closeSheet();$("#addr").focus()},newp(){newTab(true);closeSheet();$("#addr").focus()},
- tabs(){open("tabs")},tmode(a){sh.p=a.v==="1";drawSheet()},sw(a){S.active=a.id;closeSheet();render();save()},
+ tabs(){open("tabs")},tmode(a){sh.p=a.v==="1";drawSheet()},sw(a){if(!S.tabs.some(x=>x.id===a.id))return;S.active=a.id;closeSheet();render();save()},
  xt(a){const c=document.querySelector(`.card[data-id="${a.id}"]`);if(c&&S.set.motion){c.classList.add("out");setTimeout(()=>closeTab(a.id),180)}else closeTab(a.id)},
- dup(a){const t=S.tabs.find(x=>x.id===a.id),n=Object.assign({},t,{id:uid(),stack:t.stack.slice(),title:t.title});S.tabs.splice(S.tabs.indexOf(t)+1,0,n);S.active=n.id;render();save();drawSheet()},
+ dup(a){const t=S.tabs.find(x=>x.id===a.id);if(!t)return;const n=Object.assign({},t,{id:uid(),stack:t.stack.slice(),title:t.title});S.tabs.splice(S.tabs.indexOf(t)+1,0,n);S.active=n.id;render();save();sheetSync()},
  back(){const t=cur();if(t.i>0){t.i--;render();save()}},fwd(){const t=cur();if(t.i<t.stack.length-1){t.i++;render();save()}},
  reload(){const t=cur();if(!url(t))return;shown="";render()},clear(){$("#addr").value="";$("#addr").focus()},
  share(){const t=cur(),u=real(t);if(!u){toast("Open a page first");return}if(navigator.share)navigator.share({title:t.title,url:u}).catch(()=>{});else copy(u)},
@@ -331,7 +353,7 @@ document.addEventListener("click",e=>{
  if(!e.target.closest("#menu"))$("#menu").hidden=true;
  if(!e.target.closest("#top"))$("#sug").hidden=true});
 document.addEventListener("change",e=>{const k=e.target.dataset.set;if(!k)return;D.rev++;S.set[k]=e.target.type==="checkbox"?e.target.checked:e.target.type==="range"?+e.target.value:e.target.value;save();render();if(k==="vol"||(k==="sound"&&S.set.sound))splash()});
-document.addEventListener("input",e=>{const t=e.target;if(t.id==="tq"){sh.q=t.value;sh.fq=1;drawSheet()}else if(t.type==="range"){const k=t.dataset.set;S.set[k]=+t.value;fx();kick();const l=$("#v-"+k);if(l)l.textContent=lab(k,t.value)}});
+document.addEventListener("input",e=>{const t=e.target;if(t.id==="tq"){if(!sh)return;sh.q=t.value;sh.fq=1;drawSheet()}else if(t.type==="range"){const k=t.dataset.set;S.set[k]=+t.value;fx();kick();const l=$("#v-"+k);if(l)l.textContent=lab(k,t.value)}});
 const A=$("#addr");
 A.addEventListener("focus",()=>{document.body.classList.add("typing");A.select()});
 A.addEventListener("blur",()=>setTimeout(()=>{document.body.classList.remove("typing");$("#sug").hidden=true;A.value=disp(url(cur()))},150));
