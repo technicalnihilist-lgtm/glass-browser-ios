@@ -255,3 +255,100 @@ digest, RSA-SHA256, signing block magic intact) both verify with the checker wri
 platform spec — that same checker validates the previous artefact completely (v1 and v2), so
 it is not simply agreeing with today's signer. The repo carries no key material, so this
 build was signed with a freshly generated self-signed key, as on the earlier days.
+
+## Day 14 — 14 Nov 2026 (v1.0.6)
+
+Caching and network. *(This file has no day-9 to day-13 sections — the run resumed at
+day 14, so the release number continues from v1.0.5.)* Every change is in the script: the
+markup and the stylesheet are byte-identical to day 8. Numbers are medians where a median
+means anything; request counts are exact and repeat on every run.
+
+| Workload | Before | After | Verdict |
+| --- | --- | --- | --- |
+| requests made by the shell at boot | 1 document, 0 subresources | 1 document, 0 subresources | unchanged (nothing to remove) |
+| frame navigations to `about:blank` at boot | 2 | **1** | **one fewer document load** |
+| Reader View opened twice on the same page — requests to that page | 1 (served from the disk cache) | **0** | **no request at all on the second open** |
+| Reader View re-opened while the first fetch is in flight — requests | 2 | **1** | **half, deterministic** |
+| Reader View across a redirect, opened twice — requests | 4 (`/redir`, `/site.html`, `/redir`, `/site.html`) | **2** (`/redir`, `/site.html`) | **half, deterministic** |
+| `Referer` sent on the reader fetch | `http://…/old.html` | **none** | the shell's own URL is no longer disclosed |
+| `Cookie` sent on the reader fetch | none | none | unchanged (`credentials:"omit"` already held) |
+| cookies present after a session | 1 | 1 | unchanged — the visited page's own cookie |
+| `#prog` class writes over four navigations | 10 | **8** | two redundant style writes removed |
+| DOM nodes on the start page | 87 | 87 | unchanged |
+| localStorage bytes for the same state | 2084 | 2084 | unchanged |
+
+Pixel proof: **11/11 screens byte-identical** (start, search, settings, tabs, live page,
+private, dark, menu, tilted, motion off, reader). The harness was proved stable and
+sensitive before it was trusted: two independent runs of the unchanged page were
+byte-identical on all screens, and two deliberate sub-pixel-class changes were each caught
+— a 1 px toolbar shift on 9 of 11 screens (invisible on `private`, where the focused
+address bar hides the toolbar, and on `reader`, where the overlay covers it) and a
+16 px → 15.9 px body font on 9 of 11 (the live page's chrome text is unchanged by it).
+Every screen is caught by at least one of the two. Behaviour suite: **50/50 checks, zero
+JS errors**, on both sides.
+
+**Applied (6).** `blank()` no longer navigates the frame to `about:blank` when the frame has
+never held a document — the initial `src` attribute is absent and an iframe with no `src`
+already shows an empty document, so the write was a round trip that painted nothing (boot
+now shows one `about:blank` navigation instead of two, and every search page saves one
+too); Reader View keeps a bounded eight-entry map of extracted article bodies, keyed by the
+requested URL *and* by the final URL after redirects, so a second open of the same page —
+including one reached through a redirect — costs no request and no parse; a second open
+while the first fetch is still in flight reuses that promise instead of issuing a second
+request; a response token plus an open check means a response for a page you have left, or
+for a reader you have already closed, cannot paint over what you are looking at; the reader
+fetch now carries `referrerPolicy:"no-referrer"`, matching the frame's own
+`referrerpolicy="no-referrer"`, so the shell's URL is not sent to the page being read; the
+reader cache is dropped by "Clear browsing data", and `progress`/`progDone`/`progClear`
+write the class only when it actually changes.
+
+**Audited, no change made (4).** The shell makes no network call of its own: loading it
+issues exactly one document request and zero subresources, and a grep of the file finds no
+font, image or script URL — the four `https://` strings in it are search-engine templates
+that only build a link when tapped. Cache headers on the served asset were checked and do
+not apply: the shell is read from the app bundle (`assets/` inside the APK on Android,
+`loadFileURL` on iOS) and never over HTTP, so there is no response to attach a validator
+to; when it is served over HTTP it is one self-contained document with no subresources to
+cache. The offline and DNS-failure paths were measured rather than assumed: a navigation to
+an unresolvable host fires `load` on the frame with the browser's own error page, so the
+progress bar completes instead of hanging, and the error path costs no extra work — no
+change was needed. Blocked hosts still render their card without any navigation, so the
+frame never requests them.
+
+**Reverted the same day (1).** The reader extraction was rewritten to stop after the sixtieth
+heading or paragraph instead of materialising every `h1`/`p` on the page and slicing the
+result. It was measured three ways and it is not a win: the two algorithms run over a
+20 000-paragraph document take **0 ms each** in isolation, and opening Reader View on that
+page interleaved between the two builds gave 2421 ms before against 1883 ms after with
+wholly overlapping ranges (942–3169 against 1380–3351). The original expression is back in
+place and the day ships without it.
+
+**Harness notes.** Three sources of false difference were found and eliminated before the
+proof was trusted. A blinking text caret is a 1 Hz animation, so a screenshot caught it in a
+random phase and, through the address bar's backdrop sample, moved tens of thousands of
+pixels; the harness now renders both builds with `caret-color:transparent` injected
+identically into both. A glass sheet's backdrop sample takes up to ~2.5 s to converge in
+headless Chromium, so the harness shoots until two consecutive frames are byte-identical
+rather than trusting a fixed wait. A real mouse click also emits a `pointermove`, which
+starts the tilt spring and leaves the decorative orb's scale depending on a race — the app
+handles every control through a delegated click listener, so the harness drives it with
+synthetic clicks and no pointer motion at all. The pod has 2 GB and ten glass screens in one
+browser eventually OOM the renderer, so each screen gets its own browser; both builds still
+share one top-level document inside a screen, which is what keeps their renderer state
+identical.
+
+APK rebuilt and re-signed: **60 381 bytes** (was 61 026), the asset inside byte-identical to
+`GlassBrowser/Glass_Browser.html` (SHA-256 `fde859922e3261d9…`). Every other entry —
+manifest, resources, the five launcher icons, `classes.dex` — is byte-identical to the
+previous artefact and in the same order. JAR scheme v1 (9 entries digested, SHA-256 manifest
+digest in `GLASS.SF`, detached PKCS#7 over `GLASS.SF`) and APK Signature Scheme v2 (one
+1 MB chunk, 32-byte digest record, RSA-SHA256 PKCS#1 v1.5, 2048-bit) both verify with a
+checker written from the platform specification: it recomputes the content digest from the
+signed file, verifies the RSA signature over the signed-data block including its length
+prefix, checks the embedded certificate's public key against the one in the signer record,
+recomputes all nine entry digests against `MANIFEST.MF` and verifies the PKCS#7 signature
+over `GLASS.SF`. The same checker rejects a copy of today's APK with one byte of the asset
+flipped (content digest mismatch) and cannot parse the previous artefact's v2 block at all,
+which carried a single bare digest record rather than the signed-data structure — so it is
+not simply agreeing with today's signer. The repo carries no key material, so this build was
+signed with a freshly generated self-signed key, as on the earlier days.
