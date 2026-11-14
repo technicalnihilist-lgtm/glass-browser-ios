@@ -207,9 +207,9 @@ function go(v){const r=resolve(v),t=cur();if(!r){toast("That address is not supp
  if(!t.p){const h0=S.hist[0];if(!(h0&&h0.u===r.u&&!!h0.q===!!r.q)){S.hist.unshift({id:uid(),u:r.u,t:r.q||host(r.u),d:Date.now(),q:!!r.q});if(S.hist.length>660)S.hist.length=600}}
  render();save()}
 let shown="",pgQ=0,pWant=0;
-function progress(){const p=$("#prog");p.className="";pWant=1;if(pgQ)return;pgQ=requestAnimationFrame(()=>{pgQ=0;if(!pWant)return;pWant=0;const e=$("#prog");if(!e.className)e.className="on"})}
-function progDone(){pWant=0;const p=$("#prog");p.className="done"}
-function progClear(){pWant=0;const p=$("#prog");p.className=""}
+function progress(){const p=$("#prog");if(p.className!=="")p.className="";pWant=1;if(pgQ)return;pgQ=requestAnimationFrame(()=>{pgQ=0;if(!pWant)return;pWant=0;const e=$("#prog");if(!e.className)e.className="on"})}
+function progDone(){pWant=0;const p=$("#prog");if(p.className!=="done")p.className="done"}
+function progClear(){pWant=0;const p=$("#prog");if(p.className!=="")p.className=""}
 $("#frame").onload=()=>{if(shown)progDone()};
 function real(t){const u=url(t);return u&&!u.startsWith("glass:")?u:""}
 function disp(u){return u.startsWith("glass://")?decodeURIComponent(u.slice(15)):u}
@@ -218,7 +218,7 @@ function results(q){const l=q.toLowerCase(),has=x=>(x.t+" "+x.u).toLowerCase().i
  const eng=order.map(k=>k==="wiki"?`<button class="row" data-go="${E(ENG.wiki[1]+encodeURIComponent(q))}"><div class="m"><b>Wikipedia</b><small>Results open inside this browser</small></div></button>`:`<a class="row" href="${E(ENG[k][1]+encodeURIComponent(q))}" target="_blank" rel="noopener noreferrer"><div class="m"><b>${E(ENG[k][0])}</b><small>Opens in a new tab on the search site</small></div></a>`).join("");
  const rh=`<h1>${E(q)}</h1><h2>Search with</h2><div class="glass list">${eng}</div><h2>In your browser</h2><div class="glass list">${loc.length?loc.map(x=>`<button class="row" data-go="${E(x.u)}"><div class="m"><b>${E(x.t)}</b><small>${E(x.k)} · ${E(host(x.u))}</small></div></button>`).join(""):'<p class="empty">No bookmarks, history or Reading List items match.</p>'}</div><p class="note">Google, DuckDuckGo and Bing do not allow their results to be shown inside another page, and this web prototype cannot fetch them. The Android WebView version can show web results directly.</p>`;if(rh!==rHtml){rHtml=rh;$("#results").innerHTML=rh}}
 const ic=p=>'<svg class="i" viewBox="0 0 24 24">'+p+'</svg>',STAR='<path d="M12 3l2.7 5.6 6.1.9-4.4 4.3 1 6.1L12 17l-5.4 2.9 1-6.1L3.2 9.5l6.1-.9z"',IC={s:ic('<circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/>'),l:ic('<rect x="5" y="11" width="14" height="9" rx="2.5"/><path d="M8 11V8a4 4 0 018 0v3"/>'),w:ic('<path d="M12 4l9 16H3z"/><path d="M12 10v4M12 17.5v.01"/>'),o:ic(STAR+'/>'),f:ic(STAR+' fill="currentColor" style="color:var(--a)"/>')};
-function blank(){shown="";const f=$("#frame");if(f.getAttribute("src")!=="about:blank")f.src="about:blank";progClear()}
+function blank(){shown="";const f=$("#frame"),s=f.getAttribute("src");if(s&&s!=="about:blank")f.src="about:blank";progClear()}
 let tK="",hK="",cK="",sHtml="",rHtml="";const D={rev:0};
 function passTheme(t){const s=S.set,k=(t.p?"1":"0")+s.theme+s.wall+(s.motion?"1":"0")+s.glass+"|"+s.speed+"|"+s.bounce+"|"+s.depth;
  if(k===tK)return;tK=k;
@@ -313,11 +313,17 @@ function drawSheet(){const el=$("#sheet");let t="",b="";
  finishSheet()}
 function menu(){const m=$("#menu");if(!m.hidden){m.hidden=true;return}
  m.innerHTML=[["new","New Tab"],["newp","New Private Tab"],["tabs","Tab Overview"],["libbm","Bookmarks"],["libhist","History"],["rlist","Add to Reading List"],["reader","Reader View"],["copy","Copy Page URL"],["ext","Open in New Tab"],["settings","Settings"]].map(x=>`<button data-act="${x[0]}">${x[1]}</button>`).join("");m.hidden=false}
+const RC=new Map(),RF=new Map(),RD=8;let rTok=0;
+function rPut(k,v){RC.delete(k);RC.set(k,v);while(RC.size>RD){const f=RC.keys().next().value;if(f===undefined)break;RC.delete(f)}}
+function rExtract(h){const d=new DOMParser().parseFromString(h,"text/html");const m=d.querySelector("article,main")||d.body; return [...m.querySelectorAll("h1,p")].map(x=>[x.tagName,x.textContent.trim()]).filter(x=>x[1].length>40||x[0]==="H1").slice(0,60).map(x=>x[0]==="H1"?`<h1>${E(x[1])}</h1>`:`<p>${E(x[1])}</p>`).join("")}
+function rGet(u){const c=RC.get(u);if(c!==undefined)return Promise.resolve(c);const p=RF.get(u);if(p)return p;
+ const q=fetch(u,{credentials:"omit",referrerPolicy:"no-referrer"}).then(async res=>{const fin=res.url||u;const b=rExtract(await res.text());rPut(u,b);if(fin!==u)rPut(fin,b);RF.delete(u);return b},e=>{RF.delete(u);throw e});
+ RF.set(u,q);return q}
 async function reader(){const u=real(cur());if(!u){toast("Open a page first");return}
- const r=$("#reader");r.hidden=false;r.innerHTML=`<div class="ctl glass"><button data-act="rx">Close</button></div><article><p>Loading…</p></article>`;
+ const r=$("#reader"),tok=++rTok;r.hidden=false;r.innerHTML=`<div class="ctl glass"><button data-act="rx">Close</button></div><article><p>Loading…</p></article>`;
  let body="";
- try{const res=await fetch(u,{credentials:"omit"});const d=new DOMParser().parseFromString(await res.text(),"text/html");const m=d.querySelector("article,main")||d.body;
-  body=[...m.querySelectorAll("h1,p")].map(x=>[x.tagName,x.textContent.trim()]).filter(x=>x[1].length>40||x[0]==="H1").slice(0,60).map(x=>x[0]==="H1"?`<h1>${E(x[1])}</h1>`:`<p>${E(x[1])}</p>`).join("")}catch(e){}
+ try{body=await rGet(u)}catch(e){}
+ if(tok!==rTok||r.hidden)return;
  const ctl=`<div class="ctl glass"><button data-act="rx">Close</button><button data-act="rf" data-v="-1">A−</button><button data-act="rf" data-v="1">A+</button><button data-act="rl">Spacing</button><button data-act="rw">Width</button><button data-act="rt">Theme</button></div>`;
  r.innerHTML=ctl+`<article>${body||`<p>This page can’t be read here. Most websites block other pages from reading their content. A native browser engine would extract it directly.</p>`}</article>`}
 const RT=[["#fff","#222"],["#15161a","#d9dbe1"],["#f4ecd8","#3b3326"]];let rs={f:19,l:1.6,w:640,t:0};
@@ -342,8 +348,8 @@ const acts={
  hdel(a){splash();S.hist=S.hist.filter(h=>h.id!==a.id);save();drawSheet()},hclr(){splash();S.hist=[];save();drawSheet();toast("History cleared")},
  rlist(){const t=cur(),u=real(t);if(!u){toast("Open a page first");return}if(!S.read.some(x=>x.u===u))S.read.unshift({id:uid(),u,t:t.title||host(u)});save();toast("Added to Reading List");$("#menu").hidden=true},
  rdel(a){splash();S.read=S.read.filter(x=>x.id!==a.id);save();drawSheet()},
- cdata(){splash();S.hist=[];S.closed=[];S.read=[];save();render();toast("Browsing data cleared")},
- reader(){$("#menu").hidden=true;reader()},rx(){$("#reader").hidden=true},
+ cdata(){splash();S.hist=[];S.closed=[];S.read=[];RC.clear();RF.clear();rTok++;save();render();toast("Browsing data cleared")},
+ reader(){$("#menu").hidden=true;reader()},rx(){$("#reader").hidden=true;rTok++},
  rf(a){rs.f=Math.min(32,Math.max(14,rs.f+2*a.v));rapply()},rl(){rs.l=rs.l>=2?1.3:rs.l+.3;rapply()},rw(){rs.w=rs.w>=900?480:rs.w+160;rapply()},rt(){rs.t=(rs.t+1)%3;rapply()}};
 document.addEventListener("click",e=>{
  D.rev++;const g=e.target.closest("[data-go]");if(g){go(g.dataset.go);if(sh)closeSheet();return}
