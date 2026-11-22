@@ -6,7 +6,7 @@
 
 <a href="https://github.com/technicalnihilist-lgtm/glass-browser-ios/stargazers"><img src="https://img.shields.io/badge/stars-4-5A31F4?style=for-the-badge&logo=github&logoColor=white" alt="stars: 4"></a>&nbsp;<a href="https://github.com/technicalnihilist-lgtm/glass-browser-ios/network/members"><img src="https://img.shields.io/badge/forks-0-3FB950?style=for-the-badge" alt="forks: 0"></a>
 
-<a href="https://github.com/technicalnihilist-lgtm/glass-browser-ios/releases/latest/download/GlassBrowser.apk"><img src="https://img.shields.io/badge/DOWNLOAD-APK-6D5AE6?style=for-the-badge&logo=android&logoColor=white" alt="Download APK"></a> <a href="https://technicalnihilist-lgtm.github.io/apps-site/apps/glass-browser-ios.html"><img src="https://img.shields.io/badge/WEBSITE-OPEN-3B82F6?style=for-the-badge&logo=googlechrome&logoColor=white" alt="Website"></a>
+<a href="https://raw.githubusercontent.com/technicalnihilist-lgtm/glass-browser-ios/main/dist/GlassBrowser.apk"><img src="https://img.shields.io/badge/DOWNLOAD-APK-6D5AE6?style=for-the-badge&logo=android&logoColor=white" alt="Download APK"></a> <a href="https://technicalnihilist-lgtm.github.io/apps-site/apps/glass-browser-ios.html"><img src="https://img.shields.io/badge/WEBSITE-OPEN-3B82F6?style=for-the-badge&logo=googlechrome&logoColor=white" alt="Website"></a>
 
 <b>Support the work</b>
 
@@ -44,7 +44,7 @@ Captured from the page itself at 390 × 844 (iPhone 14/15 point size), rendered 
 
 ## Android build
 
-`dist/GlassBrowser.apk` is the signed Android build of the same interface — one HTML file, two shells. It is Android 5.0+ and 62 KB; sideload it, or download it from the [latest release](https://github.com/technicalnihilist-lgtm/glass-browser-ios/releases/latest).
+`dist/GlassBrowser.apk` is the signed Android build of the same interface — one HTML file, two shells. It is Android 5.0+ and 109 KB; sideload it, or download it from the [dist/GlassBrowser.apk](https://raw.githubusercontent.com/technicalnihilist-lgtm/glass-browser-ios/main/dist/GlassBrowser.apk).
 
 ## Requirements
 
