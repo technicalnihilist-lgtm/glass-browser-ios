@@ -11,7 +11,7 @@
 :root[data-theme=dark]{--gr:40,44,60;--g2r:28,30,44;--g:rgba(var(--gr),calc(.28*var(--k)));--g2:rgba(var(--g2r),min(.94,calc(.3 + .22*var(--k))));--gb:rgba(255,255,255,.2);--t:#f2f4f8;--s:#a0a7b5;--bg:linear-gradient(160deg,#101a36,#2a1b4d 60%,#3b1d3f);--sh:0 10px 34px rgba(0,0,0,.45)}
 :root[data-private="1"]{--gr:60,40,100;--g2r:30,22,50;--g:rgba(var(--gr),calc(.3*var(--k)));--g2:rgba(var(--g2r),min(.94,calc(.32 + .22*var(--k))));--gb:rgba(190,150,255,.32);--t:#efe9ff;--s:#b5a6d8;--a:#b388ff;--bg:linear-gradient(160deg,#1b1030,#0b0814)}
 html,body{height:100%;overflow:hidden}
-body{font:16px/1.4 "Avenir Next","SF Pro Rounded","Segoe UI",system-ui,sans-serif;color:var(--t);background:var(--bg)}
+body{font:17px/1.42 -apple-system,"SF Pro Text","SF Pro Display","Helvetica Neue","Segoe UI",system-ui,sans-serif;color:var(--t);background:var(--bg)}
 button,input,select{font:inherit;color:inherit}
 button{background:none;border:0;cursor:pointer;transition:transform calc(.35s*var(--ts)) var(--sp)}
 button:active{transform:scale(calc(1 - .12*var(--bn)))}
@@ -40,7 +40,7 @@ button:active{transform:scale(calc(1 - .12*var(--bn)))}
 #results h2{font-size:15px;margin:22px 4px 8px;color:var(--s);font-weight:600}
 a.row{color:inherit;text-decoration:none}
 svg.i{width:22px;height:22px;fill:none;stroke:currentColor;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round;display:block;margin:auto;pointer-events:none}
-#lock{display:grid;place-items:center;color:var(--s)}#lock svg.i{width:20px;height:20px}
+#lock{display:none;place-items:center;color:var(--s)}#lock svg.i{width:20px;height:20px}
 #tool svg.i{width:25px;height:25px}
 input[type=checkbox]{-webkit-appearance:none;appearance:none;flex:none;width:54px;height:32px;border-radius:99px;position:relative;cursor:pointer;background:linear-gradient(180deg,rgba(0,0,0,.12),rgba(255,255,255,.12)),var(--gb);border:1px solid var(--gb);box-shadow:inset 0 2px 5px rgba(0,0,0,.18);transition:background calc(.35s*var(--ts)),box-shadow calc(.35s*var(--ts))}
 input[type=checkbox]::before{content:"";position:absolute;top:2px;left:2px;width:26px;height:26px;border-radius:99px;background:linear-gradient(180deg,#fff,#e9edf5);box-shadow:0 3px 8px rgba(0,0,0,.3),inset 0 1px 1px #fff;transition:transform calc(.5s*var(--ts)) var(--sp),width calc(.3s*var(--ts)) var(--sp)}
@@ -87,29 +87,48 @@ input[type=range]::-moz-range-thumb{width:26px;height:26px;border-radius:50%;bac
 #blocked .glass{padding:26px;max-width:380px}#blocked p{color:var(--s);margin:8px 0 16px;font-size:14px}
 .btn{padding:10px 18px;border-radius:99px;background:var(--a);color:#fff;font-weight:600;display:inline-block}
 .btn.q{background:var(--g);color:var(--t);border:1px solid var(--gb)}
-#top{position:fixed;top:0;left:0;right:0;padding:calc(var(--sa) + 8px) 12px 0;z-index:6}
-.bar{display:flex;align-items:center;gap:4px;padding:4px 6px 4px 14px;border-radius:99px;max-width:720px;margin:auto;overflow:hidden;transition:transform calc(.45s*var(--ts)) var(--sp)}
+#top{position:fixed;top:0;left:0;right:0;padding:calc(var(--sa) + 8px) 12px 0;z-index:6;display:flex;align-items:center;gap:8px}
+.rbtn{flex:none;width:44px;height:44px;border-radius:50%;display:grid;place-items:center;color:var(--t);padding:0}
+.rbtn svg.i{width:21px;height:21px}
+.rbtn:active{transform:scale(.92)}
+.bar{display:flex;align-items:center;gap:2px;padding:4px 6px 4px 14px;border-radius:99px;flex:1;min-width:0;overflow:hidden;transition:transform calc(.45s*var(--ts)) var(--sp)}
 .bar:focus-within{transform:scale(1.02)}
-#addr{flex:1;min-width:0;background:none;border:0;outline:0;font-size:16px;padding:9px 4px}
+#addr{flex:1;min-width:0;background:none;border:0;outline:0;font-size:16px;padding:10px 4px;text-align:center}
+#addr::placeholder{color:var(--s)}
 .bar button{width:34px;height:34px;border-radius:50%;color:var(--s)}
 #prog{position:absolute;left:0;bottom:0;height:3px;width:0;background:var(--a);border-radius:3px;opacity:0}
 #prog.on{opacity:1;width:80%;transition:width 6s cubic-bezier(.1,.7,.2,1)}
 #prog.done{opacity:0;width:100%;transition:width .2s,opacity .5s .2s}
-#sug{max-width:700px;margin:8px auto 0;padding:6px;border-radius:20px}
-#sug button{display:block;width:100%;text-align:left;padding:9px 12px;border-radius:12px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-#tool{position:fixed;left:50%;bottom:calc(var(--sb) + 12px);transform:translateX(-50%);display:flex;gap:2px;padding:6px;border-radius:99px;z-index:6;width:min(420px,calc(100% - 24px));justify-content:space-around;transition:transform calc(.5s*var(--ts)) var(--sp),opacity calc(.3s*var(--ts))}
+#sug{position:absolute;left:12px;right:12px;top:calc(100% + 6px);margin:0;padding:6px 6px 10px;border-radius:22px;max-height:60vh;overflow:auto}
+.sughead{font-size:13px;font-weight:600;color:var(--s);padding:8px 12px 2px}
+#sug>button{display:flex;align-items:center;gap:11px;width:100%;text-align:left;padding:11px 12px;border-radius:14px;font-size:17px;overflow:hidden}
+#sug>button span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+#sug>button svg.i{width:20px;height:20px;flex:none;color:var(--s)}
+#tool{position:fixed;left:50%;bottom:calc(var(--sb) + 10px);transform:translateX(-50%);display:flex;gap:0;padding:5px;border-radius:99px;z-index:6;width:min(430px,calc(100% - 20px));justify-content:space-between;transition:transform calc(.5s*var(--ts)) var(--sp),opacity calc(.3s*var(--ts))}
 body.typing #tool{transform:translate(-50%,140%);opacity:0}
-#tool button{width:52px;height:46px;border-radius:99px;font-size:20px}
+#tool button{width:48px;height:48px;border-radius:50%;font-size:20px;display:grid;place-items:center}
+#tool svg.i{width:23px;height:23px}
 #tool button:disabled{opacity:.3}
 #cnt{display:inline-block;min-width:24px;padding:1px 5px;border:2px solid currentColor;border-radius:7px;font:700 13px/1.3 inherit}
-#menu{position:fixed;right:14px;bottom:calc(var(--sb) + 76px);z-index:8;padding:6px;min-width:210px;transform-origin:bottom right;animation:pop calc(.35s*var(--ts)) var(--sp)}
-#menu button{display:block;width:100%;text-align:left;padding:11px 14px;border-radius:14px}
+#menu{position:fixed;right:14px;top:calc(var(--sa) + 60px);z-index:8;padding:6px;min-width:220px;max-height:70vh;overflow:auto;transform-origin:bottom right;animation:pop calc(.35s*var(--ts)) var(--sp)}
+#menu button{display:block;width:100%;text-align:left;padding:9px 14px;border-radius:12px;font-size:16px}
 #menu button:hover{background:var(--gb)}
 #shade{position:fixed;inset:0;z-index:7;contain:paint;background:rgba(0,0,0,.25)}
 #sheet{position:fixed;left:0;right:0;bottom:0;top:calc(var(--sa) + 40px);z-index:9;border-radius:28px 28px 0 0;max-width:760px;margin:auto;display:flex;flex-direction:column;animation:up calc(.45s*var(--ts)) var(--sp)}
-#sheet header{display:flex;align-items:center;gap:8px;padding:14px 16px 8px}
-#sheet header h3{flex:1;font-size:20px}
+#sheet header{display:flex;align-items:center;gap:10px;padding:12px 14px 6px}
+.xbtn{width:30px;height:30px;border-radius:50%;background:var(--gb);display:grid;place-items:center;font-size:13px;color:var(--s);flex:none;border:0}
+.btn.done{background:var(--a);color:#fff;padding:7px 15px;border-radius:99px;font-size:15px;font-weight:600;flex:none}
+#sheet header h3{flex:1;font-size:17px;font-weight:600;text-align:center}
 #sheet .body{overflow:auto;padding:4px 14px calc(var(--sb) + 20px);flex:1}
+#sheet[data-k="tabs"] .body{padding:calc(var(--sa) + 10px) 14px calc(var(--sb) + 8px)}
+.tabfoot{flex:none;padding:8px 14px calc(var(--sb) + 10px)}
+.tabctl{display:flex;align-items:center;gap:10px}
+.circ{width:48px;height:48px;border-radius:50%;display:grid;place-items:center;font-size:26px;line-height:1;background:var(--gb);border:1px solid var(--gb);color:var(--t);flex:none}
+.circ.ok{background:var(--a);color:#fff;border-color:transparent;font-size:19px}
+.circ:active{transform:scale(.92)}
+.seg2{display:flex;gap:2px;padding:3px;border-radius:99px;background:var(--gb);flex:1;max-width:250px;margin:auto}
+.seg2 button{flex:1;padding:9px 8px;border-radius:99px;font-size:15px;font-weight:600;color:var(--s);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.seg2 button.on{background:var(--g2,#fff);color:var(--t);box-shadow:0 1px 3px rgba(0,0,0,.14)}
 .seg{display:flex;gap:4px;padding:4px;border-radius:99px;margin:4px 0 10px;background:var(--gb)}
 .seg button{flex:1;padding:7px;border-radius:99px;font-size:14px}.seg .on{background:var(--g);font-weight:700}
 .cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:12px}
@@ -127,6 +146,21 @@ body.typing #tool{transform:translate(-50%,140%);opacity:0}
 #reader .ctl button{padding:6px 12px;border-radius:99px;font-size:14px}
 #reader article{margin:auto;max-width:var(--rw,640px);font:var(--rf,19px)/var(--rl,1.6) Georgia,serif}
 #reader article p{margin:0 0 1em}
+.shrhead{display:flex;align-items:center;gap:12px;padding:4px 6px 14px;border-bottom:1px solid var(--gb)}
+.shric{width:46px;height:46px;border-radius:12px;display:grid;place-items:center;background:var(--gb);font-weight:700;font-size:19px;flex:none}
+.shrtx{flex:1;min-width:0}.shrtx b{display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.shrtx small{color:var(--s);font-size:12px;display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.shrapps{display:flex;gap:10px;padding:16px 4px 10px;overflow-x:auto;scrollbar-width:none}
+.shrapps::-webkit-scrollbar{display:none}
+.shrapps button{display:flex;flex-direction:column;align-items:center;gap:7px;font-size:11px;color:var(--s);flex:none;width:60px}
+.shrappic{width:56px;height:56px;border-radius:15px;display:grid;place-items:center;background:var(--gb);font-style:normal}
+.shrappic svg.i{width:27px;height:27px;stroke:var(--t);fill:none;stroke-width:1.7}
+.shrlist{margin-top:8px;border-top:1px solid var(--gb)}
+.shrlist button{display:flex;align-items:center;width:100%;text-align:left;padding:14px 8px;border-bottom:1px solid var(--gb);font-size:16px}
+.privempty{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;text-align:center;min-height:62vh;padding:0 26px}
+.privempty svg.i{width:58px;height:58px;stroke:var(--s);fill:none;stroke-width:1.5;margin:0 auto 6px}
+.privempty h2{font-size:26px;font-weight:600}
+.privempty .note{font-size:15px;line-height:1.45}
 #toast{position:fixed;left:50%;top:calc(var(--sa) + 70px);transform:translate(-50%,-20px);opacity:0;padding:9px 16px;border-radius:99px;z-index:20;pointer-events:none;transition:calc(.4s*var(--ts)) var(--sp);background:var(--g);-webkit-backdrop-filter:blur(20px);backdrop-filter:blur(20px);border:1px solid var(--gb);font-size:14px}
 #toast.on{opacity:1;transform:translate(-50%,0)}
 @keyframes pop{from{transform:scale(.8);opacity:0}}
@@ -134,6 +168,249 @@ body.typing #tool{transform:translate(-50%,140%);opacity:0}
 [data-motion=off] *{animation:none!important;transition:none!important}
 [data-motion=off]{--tx:0!important;--ty:0!important}
 [data-motion=off] #orb{will-change:auto}
+</style>
+<style id="lg-css">
+/* ===== Liquid Glass material (numbers from the LiquidGlass library, Apache-2.0 v1.0.0) ===== */
+:root{--lg-tint:rgba(241,241,241,.56);--lg-fine:10px;--lg-wide:10px;--lg-wide-a:.4;--lg-sat:1.8;--lg-rim:rgba(255,255,255,.52);--lg-bevel:rgba(255,255,255,.72);--lg-lx:36%;--lg-ly:12%;--lg-press:1.03;--lg-hl:radial-gradient(120% 90% at var(--lg-lx) var(--lg-ly),rgba(255,255,255,.34),transparent 46%)}
+.glass{background:var(--lg-hl),var(--lg-tint);
+  -webkit-backdrop-filter:blur(var(--lg-fine)) saturate(var(--lg-sat));
+  backdrop-filter:blur(var(--lg-fine)) saturate(var(--lg-sat));
+  border:1px solid var(--lg-rim);
+  box-shadow:calc(var(--tx)*-9px) calc(14px + var(--ty)*-7px) 34px rgba(10,20,50,.22),inset 0 1px 1px var(--lg-bevel),inset 0 -1px 1px rgba(255,255,255,.22),inset 0 0 22px rgba(255,255,255,.1)}
+.glass::before{content:"";position:absolute;inset:0;border-radius:inherit;pointer-events:none;background:none;
+  -webkit-backdrop-filter:blur(var(--lg-wide));backdrop-filter:blur(var(--lg-wide));opacity:var(--lg-wide-a)}
+.glass::after{content:"";position:absolute;inset:0;border-radius:inherit;pointer-events:none;
+  box-shadow:inset 0 -12px 20px -12px rgba(255,255,255,.35)}
+#sheet,#sug{background:var(--lg-hl),var(--lg-tint-sheet);-webkit-backdrop-filter:blur(calc(var(--lg-wide)*1.6)) saturate(var(--lg-sat));backdrop-filter:blur(calc(var(--lg-wide)*1.6)) saturate(var(--lg-sat))}
+#menu,#sug{background:var(--lg-hl),var(--lg-tint-mid)}
+.glass>*{position:relative;z-index:1}
+html[data-lg-mode="1"] [data-lg-lens]::before{-webkit-backdrop-filter:none;backdrop-filter:none;opacity:0}
+html[data-lg-press="1"] #tool button:active{transform:scale(var(--lg-press))}
+html[data-lg-press="1"] .bar button:active{transform:scale(var(--lg-press))}
+#pill{display:block;background:none!important;box-shadow:none!important;border:0!important;outline:0}
+#lgPrev{display:block;margin:2px 0 12px;color:var(--t)}
+#lgPrev b{font-size:16px}#lgPrev .note{padding:4px 0 0;color:var(--s);font-size:13px}
+.engrow{display:flex;gap:6px;padding:4px 4px 6px;overflow-x:auto;scrollbar-width:none}
+.engrow::-webkit-scrollbar{display:none}
+.eng{flex:none;padding:6px 13px;border-radius:99px;font-size:13px;font-weight:600;color:var(--s);background:var(--gb);border:1px solid transparent;transition:background .2s,color .2s,transform .2s}
+.eng.on{background:var(--a);color:#fff}
+#tool{border-radius:99px;background:var(--lg-hl),var(--lg-tint-tool)}
+#tool button{border-radius:50%}
+@supports not ((backdrop-filter:blur(1px)) or (-webkit-backdrop-filter:blur(1px))){.glass{background:var(--lg-tint)}}
+</style>
+<style id="ios26">
+/* iOS 26 Safari look: compact bottom bar, frosted menu, card start page */
+#tool{display:none!important}
+#top{top:auto;bottom:calc(var(--sb) + 8px);padding:0 12px;gap:10px;align-items:center}
+.rbtn{width:52px;height:52px}
+.rbtn svg.i{width:23px;height:23px}
+.rbtn:disabled{opacity:.35}
+#top .bar{height:52px;padding:4px 6px 4px 16px;gap:6px}
+#top .bar input{font-size:15.5px}
+#lock{display:grid!important}
+#top .bar [data-act=reload]{display:none}
+#top #cnt{min-width:26px;padding:2px 5px;border-width:2px;border-radius:8px;font-size:14px;text-align:center}
+#sug{top:auto;bottom:calc(100% + 10px);left:12px;right:12px}
+#menu{top:auto;bottom:calc(var(--sb) + 74px);right:12px;width:min(272px,calc(100% - 24px));min-width:0;padding:8px;border-radius:28px;transform-origin:bottom right;max-height:calc(100% - var(--sa) - var(--sb) - 100px)}
+#menu .mg{padding:2px 0}
+#menu .mg+.mg{border-top:1px solid var(--gb);margin-top:2px;padding-top:4px}
+#menu button{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:12px 14px;border-radius:16px;font-size:17px}
+#menu button svg.i{width:21px;height:21px;flex:none;order:-1;color:var(--t)}
+#menu button span{flex:1;margin-left:2px}
+#start{padding:calc(var(--sa) + 22px) 18px calc(var(--sb) + 96px)}
+#start h2{font-size:21px;font-weight:700;color:var(--t);margin:24px 4px 12px;letter-spacing:-.01em}
+#start h2.fh{display:flex;align-items:center;gap:8px}
+#start h2.fh svg.i{width:20px;height:20px;margin:0;fill:currentColor}
+.grid{grid-template-columns:repeat(4,1fr);gap:14px 10px}
+.tile{font-size:11.5px;line-height:1.2;text-align:center}
+.tile i{width:100%;max-width:72px;height:auto;aspect-ratio:1;border-radius:20px;font-size:28px}
+.tile span{white-space:normal;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;color:var(--t)}
+.pr{display:flex;align-items:center;gap:12px;padding:16px 18px;border-radius:22px;font-size:15px;line-height:1.35}
+.pr svg.i{width:26px;height:26px;flex:none}.pr b{font-size:26px}.pr span{color:var(--s);flex:1}
+.rc{display:flex;align-items:center;gap:14px;width:100%;margin:0 0 10px;padding:12px;border-radius:22px;text-align:left}
+.rc i{flex:none;width:64px;height:64px;border-radius:14px;display:grid;place-items:center;background:rgba(255,255,255,.55);color:var(--s);font:500 30px/1 inherit;font-style:normal}
+.rc .m{flex:1;min-width:0}.rc b{display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;font-size:15px;line-height:1.25}
+.rc small{display:block;color:var(--s);font-size:12px;margin-top:4px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.editsp{display:block;margin:22px auto 0}
+#start h2.fh{justify-content:flex-start;text-align:left}
+#top .bar [data-act=clear]{display:none}
+#top .bar input:not(:placeholder-shown)~[data-act=clear]{display:block}
+
+/* fully transparent clear liquid glass */
+:root{--lkt:0;--cl:rgba(255,255,255,calc(.06 + .5*var(--lkt)));--cl2:rgba(255,255,255,calc(.01 + .3*var(--lkt)));--clr:rgba(255,255,255,.7);--cs1:rgba(255,255,255,calc(.1 + .5*var(--lkt)));--cs2:rgba(255,255,255,calc(.03 + .3*var(--lkt)));--cc:rgba(255,255,255,calc(.08 + .3*var(--lkt)))}
+:root[data-theme=dark]{--cl:rgba(255,255,255,calc(.03 + .25*var(--lkt)));--cl2:rgba(255,255,255,calc(.005 + .12*var(--lkt)));--clr:rgba(255,255,255,.35);--cs1:rgba(255,255,255,calc(.05 + .25*var(--lkt)));--cs2:rgba(255,255,255,calc(.02 + .12*var(--lkt)));--cc:rgba(255,255,255,calc(.04 + .2*var(--lkt)))}
+#top .glass,.pr,.rc,.list.glass,#menu.glass,#sug.glass,#chip,#toast,.tile i{background:linear-gradient(140deg,var(--cl),var(--cl2) 52%,var(--cl))!important;border:1px solid rgba(255,255,255,.5);box-shadow:inset 1.5px 1.5px 1px -.5px var(--clr),inset -1.5px -1.5px 1px -.5px rgba(255,255,255,.35),inset 0 0 22px rgba(255,255,255,.1),0 10px 30px rgba(10,20,50,.16)!important}
+#menu.glass{-webkit-backdrop-filter:blur(14px) saturate(2) brightness(1.08);backdrop-filter:blur(14px) saturate(2) brightness(1.08);background:linear-gradient(140deg,var(--cs1),var(--cs2) 55%,var(--cs1))!important}
+#menu button{text-shadow:0 0 10px rgba(255,255,255,.55)}
+:root[data-theme=dark] #menu button{text-shadow:0 1px 6px rgba(0,0,0,.5)}
+/* clear glass everywhere */
+#sheet.glass,.card.glass{background:linear-gradient(140deg,var(--cl),var(--cl2) 52%,var(--cl))!important;border:1px solid rgba(255,255,255,.5);box-shadow:inset 1.5px 1.5px 1px -.5px var(--clr),inset -1.5px -1.5px 1px -.5px rgba(255,255,255,.35),inset 0 0 26px rgba(255,255,255,.1),0 10px 30px rgba(10,20,50,.16)!important}
+#sheet.glass{background:linear-gradient(160deg,var(--cs1),var(--cs2) 50%,var(--cs1))!important}
+html[data-lg-blur=on] #sheet.glass{-webkit-backdrop-filter:blur(18px) saturate(1.9);backdrop-filter:blur(18px) saturate(1.9)}
+#sheet,#sheet *{text-shadow:0 0 9px rgba(255,255,255,.5)}
+:root[data-theme=dark] #sheet,:root[data-theme=dark] #sheet *{text-shadow:0 1px 6px rgba(0,0,0,.45)}
+#sheet .btn.done,#sheet .circ.ok,#sheet input[type=checkbox]:checked,.eng.on{text-shadow:none}
+#shade{background:rgba(0,0,0,.06)}
+.field select,.field input[type=text],.in,.xbtn,.circ:not(.ok),.seg2,.seg,.card .pv,.card .ac button,.shric,.shrappic,.eng:not(.on),.btn.q,#sheet input:not([type=checkbox]):not([type=range]){background:var(--cc)!important;border:1px solid rgba(255,255,255,.45);box-shadow:inset 1px 1px 1px rgba(255,255,255,.55),inset -1px -1px 1px rgba(255,255,255,.2)}
+.seg2 button.on,.seg .on{background:rgba(255,255,255,.3)!important}
+input[type=checkbox]:not(:checked){background:rgba(255,255,255,.16)}
+#web{padding:0}
+#frame{background:transparent}
+#results{padding-top:calc(var(--sa) + 22px)}
+/* neutral (no colour) backdrop + strong glassy highlights */
+:root{--bg:linear-gradient(160deg,#f4f5f7,#dfe2e8 55%,#eceef2)}
+:root[data-theme=dark]{--bg:linear-gradient(160deg,#1b1d22,#101115 60%,#17181d)}
+:root[data-private="1"]{--bg:linear-gradient(160deg,#17181c,#0b0b0e)}
+#orb{background:radial-gradient(circle at 18% 22%,rgba(255,255,255,.9),transparent 30%),radial-gradient(circle at 82% 70%,rgba(0,0,0,.07),transparent 34%),radial-gradient(circle at 62% 14%,rgba(255,255,255,.7),transparent 26%),repeating-linear-gradient(0deg,rgba(0,0,0,.045) 0 1px,transparent 1px 30px),repeating-linear-gradient(90deg,rgba(0,0,0,.045) 0 1px,transparent 1px 30px)}
+:root[data-theme=dark] #orb{background:radial-gradient(circle at 18% 22%,rgba(255,255,255,.1),transparent 30%),radial-gradient(circle at 82% 70%,rgba(255,255,255,.05),transparent 34%),repeating-linear-gradient(0deg,rgba(255,255,255,.05) 0 1px,transparent 1px 30px),repeating-linear-gradient(90deg,rgba(255,255,255,.05) 0 1px,transparent 1px 30px)}
+:root{--spec:rgba(255,255,255,.95)}
+#top .glass,.pr,.rc,.list.glass,#menu.glass,#sug.glass,#chip,#toast,.tile i,#sheet.glass,.card.glass{border:1px solid rgba(255,255,255,.75)!important;box-shadow:inset 2px 2px 1px -1px var(--spec),inset -2px -2px 1px -1px rgba(255,255,255,.55),inset 0 1px 0 rgba(255,255,255,.9),inset 0 -10px 18px -10px rgba(255,255,255,.35),inset 0 0 28px rgba(255,255,255,.16),0 0 0 .5px rgba(0,0,0,.07),0 14px 34px rgba(20,25,40,.18)!important}
+:root[data-theme=dark] #top .glass,:root[data-theme=dark] .pr,:root[data-theme=dark] .rc,:root[data-theme=dark] .list.glass,:root[data-theme=dark] #menu.glass,:root[data-theme=dark] #sheet.glass,:root[data-theme=dark] .card.glass{border-color:rgba(255,255,255,.28)!important}
+/* glossy sweep on every glass surface */
+#top .glass::after,.pr::after,.rc::after,.list.glass::after,#menu.glass::after,.card.glass::after,#sheet.glass::after{content:"";position:absolute;inset:0;border-radius:inherit;pointer-events:none;background:linear-gradient(115deg,rgba(255,255,255,.55) 0%,rgba(255,255,255,.12) 18%,transparent 34%,transparent 66%,rgba(255,255,255,.22) 88%,rgba(255,255,255,.5) 100%);mix-blend-mode:soft-light;opacity:.9;box-shadow:none}
+.glass::before{background:radial-gradient(120% 90% at calc(14% + var(--tx)*30%) calc(var(--ty)*25%),rgba(255,255,255,.6),transparent 40%)!important}
+.pr,.rc,.tile,.card,.btn,.circ,.xbtn,#menu,.rbtn,.eng,.seg,.seg2,.shric,.list.glass{-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}
+.stretching{will-change:transform;z-index:30}
+.stretching::before{opacity:1;filter:brightness(1.25)}
+.rc i{background:rgba(255,255,255,.28)}
+html[data-lg-blur=off][data-lg-mode="0"] *{-webkit-backdrop-filter:none!important;backdrop-filter:none!important}
+html[data-lg-blur=off] .glass:not([data-lg-lens]){-webkit-backdrop-filter:none!important;backdrop-filter:none!important}
+
+</style>
+<style id="styles2">
+/* animation styles */
+@keyframes i-ios{from{transform:translateY(44px) scale(.93);opacity:0}to{transform:none;opacity:1;filter:none}}
+@keyframes c-ios{from{transform:none;opacity:1;filter:none}to{transform:translateY(44px) scale(.93);opacity:0}}
+@keyframes i-macos{from{transform:perspective(900px) translateY(55%) scale(.08,.02) skewX(-10deg);opacity:0;filter:blur(4px)}to{transform:none;opacity:1;filter:none}}
+@keyframes c-macos{from{transform:none;opacity:1;filter:none}to{transform:perspective(900px) translateY(55%) scale(.08,.02) skewX(-10deg);opacity:0;filter:blur(4px)}}
+@keyframes i-flip3d{from{transform:perspective(1100px) rotateY(-100deg) scale(.9);opacity:0}to{transform:none;opacity:1;filter:none}}
+@keyframes c-flip3d{from{transform:none;opacity:1;filter:none}to{transform:perspective(1100px) rotateY(-100deg) scale(.9);opacity:0}}
+@keyframes i-tilt3d{from{transform:perspective(1000px) rotateX(75deg) translateY(30px);opacity:0}to{transform:none;opacity:1;filter:none}}
+@keyframes c-tilt3d{from{transform:none;opacity:1;filter:none}to{transform:perspective(1000px) rotateX(75deg) translateY(30px);opacity:0}}
+@keyframes i-cube3d{from{transform:perspective(900px) translateZ(-400px) rotateX(-25deg) rotateY(25deg);opacity:0}to{transform:none;opacity:1;filter:none}}
+@keyframes c-cube3d{from{transform:none;opacity:1;filter:none}to{transform:perspective(900px) translateZ(-400px) rotateX(-25deg) rotateY(25deg);opacity:0}}
+@keyframes i-door3d{from{transform:perspective(1200px) rotateY(80deg);opacity:0}to{transform:none;opacity:1;filter:none}}
+@keyframes c-door3d{from{transform:none;opacity:1;filter:none}to{transform:perspective(1200px) rotateY(80deg);opacity:0}}
+@keyframes i-fold3d{from{transform:perspective(1000px) rotateX(-90deg);opacity:0}to{transform:none;opacity:1;filter:none}}
+@keyframes c-fold3d{from{transform:none;opacity:1;filter:none}to{transform:perspective(1000px) rotateX(-90deg);opacity:0}}
+@keyframes i-zoom{from{transform:scale(1.18);opacity:0}to{transform:none;opacity:1;filter:none}}
+@keyframes c-zoom{from{transform:none;opacity:1;filter:none}to{transform:scale(1.18);opacity:0}}
+@keyframes i-slideup{from{transform:translateY(100%)}to{transform:none;opacity:1;filter:none}}
+@keyframes c-slideup{from{transform:none;opacity:1;filter:none}to{transform:translateY(100%)}}
+@keyframes i-slideright{from{transform:translateX(100%)}to{transform:none;opacity:1;filter:none}}
+@keyframes c-slideright{from{transform:none;opacity:1;filter:none}to{transform:translateX(100%)}}
+@keyframes i-fade{from{opacity:0}to{transform:none;opacity:1;filter:none}}
+@keyframes c-fade{from{transform:none;opacity:1;filter:none}to{opacity:0}}
+@keyframes i-bounce{from{transform:scale(.4);opacity:0}to{transform:none;opacity:1;filter:none}}
+@keyframes c-bounce{from{transform:none;opacity:1;filter:none}to{transform:scale(.4);opacity:0}}
+@keyframes i-jelly{from{transform:scale(.6,1.3);opacity:0}to{transform:none;opacity:1;filter:none}}
+@keyframes c-jelly{from{transform:none;opacity:1;filter:none}to{transform:scale(.6,1.3);opacity:0}}
+@keyframes i-swirl{from{transform:rotate(-14deg) scale(.6);opacity:0}to{transform:none;opacity:1;filter:none}}
+@keyframes c-swirl{from{transform:none;opacity:1;filter:none}to{transform:rotate(-14deg) scale(.6);opacity:0}}
+@keyframes i-vision{from{transform:scale(.96);opacity:0;filter:blur(28px)}to{transform:none;opacity:1;filter:none}}
+@keyframes c-vision{from{transform:none;opacity:1;filter:none}to{transform:scale(.96);opacity:0;filter:blur(28px)}}
+@keyframes i-fluent{from{transform:translateY(14px) scale(.96);opacity:0}to{transform:none;opacity:1;filter:none}}
+@keyframes c-fluent{from{transform:none;opacity:1;filter:none}to{transform:translateY(14px) scale(.96);opacity:0}}
+@keyframes i-liquid{from{transform:scale(.3);opacity:0;border-radius:50%}to{transform:none;opacity:1;filter:none}}
+@keyframes c-liquid{from{transform:none;opacity:1;filter:none}to{transform:scale(.3);opacity:0;border-radius:50%}}
+@keyframes i-drop{from{transform:translateY(-60px) scale(1.1);opacity:0}to{transform:none;opacity:1;filter:none}}
+@keyframes c-drop{from{transform:none;opacity:1;filter:none}to{transform:translateY(-60px) scale(1.1);opacity:0}}
+html[data-anim=ios] :is(#menu,#sheet,#reader,#start,#results,#web):not([hidden]):not(.closing){animation:i-ios calc(.55s*var(--ts,1)) cubic-bezier(.32,1.35,.5,1) both;transform-origin:50% 100%}
+html[data-anim=ios] #menu:not([hidden]):not(.closing){transform-origin:100% 100%}
+html[data-anim=ios] .closing{animation:c-ios calc(.55s*var(--ts,1)*.8) cubic-bezier(.32,1.35,.5,1) both!important;transform-origin:50% 100%;pointer-events:none}
+html[data-anim=macos] :is(#menu,#sheet,#reader,#start,#results,#web):not([hidden]):not(.closing){animation:i-macos calc(.6s*var(--ts,1)) cubic-bezier(.4,0,.2,1) both;transform-origin:50% 100%}
+html[data-anim=macos] #menu:not([hidden]):not(.closing){transform-origin:100% 100%}
+html[data-anim=macos] .closing{animation:c-macos calc(.6s*var(--ts,1)*.8) cubic-bezier(.4,0,.2,1) both!important;transform-origin:50% 100%;pointer-events:none}
+html[data-anim=flip3d] :is(#menu,#sheet,#reader,#start,#results,#web):not([hidden]):not(.closing){animation:i-flip3d calc(.7s*var(--ts,1)) cubic-bezier(.2,.9,.3,1.1) both;transform-origin:50% 50%}
+html[data-anim=flip3d] #menu:not([hidden]):not(.closing){transform-origin:100% 100%}
+html[data-anim=flip3d] .closing{animation:c-flip3d calc(.7s*var(--ts,1)*.8) cubic-bezier(.2,.9,.3,1.1) both!important;transform-origin:50% 50%;pointer-events:none}
+html[data-anim=tilt3d] :is(#menu,#sheet,#reader,#start,#results,#web):not([hidden]):not(.closing){animation:i-tilt3d calc(.65s*var(--ts,1)) cubic-bezier(.2,.9,.3,1) both;transform-origin:50% 100%}
+html[data-anim=tilt3d] #menu:not([hidden]):not(.closing){transform-origin:100% 100%}
+html[data-anim=tilt3d] .closing{animation:c-tilt3d calc(.65s*var(--ts,1)*.8) cubic-bezier(.2,.9,.3,1) both!important;transform-origin:50% 100%;pointer-events:none}
+html[data-anim=cube3d] :is(#menu,#sheet,#reader,#start,#results,#web):not([hidden]):not(.closing){animation:i-cube3d calc(.75s*var(--ts,1)) cubic-bezier(.2,.9,.3,1) both;transform-origin:50% 50%}
+html[data-anim=cube3d] #menu:not([hidden]):not(.closing){transform-origin:100% 100%}
+html[data-anim=cube3d] .closing{animation:c-cube3d calc(.75s*var(--ts,1)*.8) cubic-bezier(.2,.9,.3,1) both!important;transform-origin:50% 50%;pointer-events:none}
+html[data-anim=door3d] :is(#menu,#sheet,#reader,#start,#results,#web):not([hidden]):not(.closing){animation:i-door3d calc(.65s*var(--ts,1)) cubic-bezier(.25,.9,.3,1) both;transform-origin:0% 50%}
+html[data-anim=door3d] #menu:not([hidden]):not(.closing){transform-origin:100% 100%}
+html[data-anim=door3d] .closing{animation:c-door3d calc(.65s*var(--ts,1)*.8) cubic-bezier(.25,.9,.3,1) both!important;transform-origin:0% 50%;pointer-events:none}
+html[data-anim=fold3d] :is(#menu,#sheet,#reader,#start,#results,#web):not([hidden]):not(.closing){animation:i-fold3d calc(.65s*var(--ts,1)) cubic-bezier(.25,.9,.3,1) both;transform-origin:50% 0%}
+html[data-anim=fold3d] #menu:not([hidden]):not(.closing){transform-origin:100% 100%}
+html[data-anim=fold3d] .closing{animation:c-fold3d calc(.65s*var(--ts,1)*.8) cubic-bezier(.25,.9,.3,1) both!important;transform-origin:50% 0%;pointer-events:none}
+html[data-anim=zoom] :is(#menu,#sheet,#reader,#start,#results,#web):not([hidden]):not(.closing){animation:i-zoom calc(.4s*var(--ts,1)) cubic-bezier(.2,.8,.2,1) both;transform-origin:50% 50%}
+html[data-anim=zoom] #menu:not([hidden]):not(.closing){transform-origin:100% 100%}
+html[data-anim=zoom] .closing{animation:c-zoom calc(.4s*var(--ts,1)*.8) cubic-bezier(.2,.8,.2,1) both!important;transform-origin:50% 50%;pointer-events:none}
+html[data-anim=slideup] :is(#menu,#sheet,#reader,#start,#results,#web):not([hidden]):not(.closing){animation:i-slideup calc(.45s*var(--ts,1)) cubic-bezier(.2,.8,.2,1) both;transform-origin:50% 100%}
+html[data-anim=slideup] #menu:not([hidden]):not(.closing){transform-origin:100% 100%}
+html[data-anim=slideup] .closing{animation:c-slideup calc(.45s*var(--ts,1)*.8) cubic-bezier(.2,.8,.2,1) both!important;transform-origin:50% 100%;pointer-events:none}
+html[data-anim=slideright] :is(#menu,#sheet,#reader,#start,#results,#web):not([hidden]):not(.closing){animation:i-slideright calc(.45s*var(--ts,1)) cubic-bezier(.2,.8,.2,1) both;transform-origin:100% 50%}
+html[data-anim=slideright] #menu:not([hidden]):not(.closing){transform-origin:100% 100%}
+html[data-anim=slideright] .closing{animation:c-slideright calc(.45s*var(--ts,1)*.8) cubic-bezier(.2,.8,.2,1) both!important;transform-origin:100% 50%;pointer-events:none}
+html[data-anim=fade] :is(#menu,#sheet,#reader,#start,#results,#web):not([hidden]):not(.closing){animation:i-fade calc(.3s*var(--ts,1)) ease both;transform-origin:50% 50%}
+html[data-anim=fade] #menu:not([hidden]):not(.closing){transform-origin:100% 100%}
+html[data-anim=fade] .closing{animation:c-fade calc(.3s*var(--ts,1)*.8) ease both!important;transform-origin:50% 50%;pointer-events:none}
+html[data-anim=bounce] :is(#menu,#sheet,#reader,#start,#results,#web):not([hidden]):not(.closing){animation:i-bounce calc(.7s*var(--ts,1)) cubic-bezier(.34,1.9,.5,1) both;transform-origin:50% 100%}
+html[data-anim=bounce] #menu:not([hidden]):not(.closing){transform-origin:100% 100%}
+html[data-anim=bounce] .closing{animation:c-bounce calc(.7s*var(--ts,1)*.8) cubic-bezier(.34,1.9,.5,1) both!important;transform-origin:50% 100%;pointer-events:none}
+html[data-anim=jelly] :is(#menu,#sheet,#reader,#start,#results,#web):not([hidden]):not(.closing){animation:i-jelly calc(.7s*var(--ts,1)) cubic-bezier(.3,2.5,.4,.9) both;transform-origin:50% 100%}
+html[data-anim=jelly] #menu:not([hidden]):not(.closing){transform-origin:100% 100%}
+html[data-anim=jelly] .closing{animation:c-jelly calc(.7s*var(--ts,1)*.8) cubic-bezier(.3,2.5,.4,.9) both!important;transform-origin:50% 100%;pointer-events:none}
+html[data-anim=swirl] :is(#menu,#sheet,#reader,#start,#results,#web):not([hidden]):not(.closing){animation:i-swirl calc(.6s*var(--ts,1)) cubic-bezier(.2,.9,.3,1.2) both;transform-origin:50% 50%}
+html[data-anim=swirl] #menu:not([hidden]):not(.closing){transform-origin:100% 100%}
+html[data-anim=swirl] .closing{animation:c-swirl calc(.6s*var(--ts,1)*.8) cubic-bezier(.2,.9,.3,1.2) both!important;transform-origin:50% 50%;pointer-events:none}
+html[data-anim=vision] :is(#menu,#sheet,#reader,#start,#results,#web):not([hidden]):not(.closing){animation:i-vision calc(.6s*var(--ts,1)) cubic-bezier(.2,.8,.2,1) both;transform-origin:50% 50%}
+html[data-anim=vision] #menu:not([hidden]):not(.closing){transform-origin:100% 100%}
+html[data-anim=vision] .closing{animation:c-vision calc(.6s*var(--ts,1)*.8) cubic-bezier(.2,.8,.2,1) both!important;transform-origin:50% 50%;pointer-events:none}
+html[data-anim=fluent] :is(#menu,#sheet,#reader,#start,#results,#web):not([hidden]):not(.closing){animation:i-fluent calc(.3s*var(--ts,1)) cubic-bezier(.1,.9,.2,1) both;transform-origin:50% 100%}
+html[data-anim=fluent] #menu:not([hidden]):not(.closing){transform-origin:100% 100%}
+html[data-anim=fluent] .closing{animation:c-fluent calc(.3s*var(--ts,1)*.8) cubic-bezier(.1,.9,.2,1) both!important;transform-origin:50% 100%;pointer-events:none}
+html[data-anim=liquid] :is(#menu,#sheet,#reader,#start,#results,#web):not([hidden]):not(.closing){animation:i-liquid calc(.7s*var(--ts,1)) cubic-bezier(.3,1.6,.5,1) both;transform-origin:50% 100%}
+html[data-anim=liquid] #menu:not([hidden]):not(.closing){transform-origin:100% 100%}
+html[data-anim=liquid] .closing{animation:c-liquid calc(.7s*var(--ts,1)*.8) cubic-bezier(.3,1.6,.5,1) both!important;transform-origin:50% 100%;pointer-events:none}
+html[data-anim=drop] :is(#menu,#sheet,#reader,#start,#results,#web):not([hidden]):not(.closing){animation:i-drop calc(.55s*var(--ts,1)) cubic-bezier(.3,1.4,.5,1) both;transform-origin:50% 0%}
+html[data-anim=drop] #menu:not([hidden]):not(.closing){transform-origin:100% 100%}
+html[data-anim=drop] .closing{animation:c-drop calc(.55s*var(--ts,1)*.8) cubic-bezier(.3,1.4,.5,1) both!important;transform-origin:50% 0%;pointer-events:none}
+html[data-anim=none] .closing{display:none}
+/* glass styles */
+html[data-gs=frosted] :is(#top .glass,.pr,.rc,.list.glass,#menu.glass,#sug.glass,#chip,#toast,.tile i,#sheet.glass,.card.glass,.rbtn,.btn.q,.circ:not(.ok),.xbtn,.seg2,.seg,.eng:not(.on),.field select,.in,.card .ac button){background:linear-gradient(145deg,rgba(255,255,255,.55),rgba(255,255,255,.3))!important;border:1px solid rgba(255,255,255,.8)!important;box-shadow:inset 0 1px 0 #fff,0 10px 30px rgba(20,25,40,.14)!important;-webkit-backdrop-filter:blur(22px) saturate(1.2);backdrop-filter:blur(22px) saturate(1.2);}
+html[data-gs=crystal] :is(#top .glass,.pr,.rc,.list.glass,#menu.glass,#sug.glass,#chip,#toast,.tile i,#sheet.glass,.card.glass,.rbtn,.btn.q,.circ:not(.ok),.xbtn,.seg2,.seg,.eng:not(.on),.field select,.in,.card .ac button){background:linear-gradient(135deg,rgba(255,255,255,.28),rgba(255,255,255,.02) 40%,rgba(255,255,255,.22))!important;border:1px solid rgba(255,255,255,.95)!important;box-shadow:inset 0 0 0 1px rgba(255,255,255,.5),inset 3px 3px 6px -2px #fff,inset -3px -3px 6px -2px rgba(255,255,255,.7),0 8px 24px rgba(20,25,40,.2)!important;}
+html[data-gs=crystal] :is(#top .glass,.pr,.rc,.list.glass,#menu.glass,.card.glass,#sheet.glass)::after{background:linear-gradient(120deg,rgba(255,255,255,.8),transparent 22%,transparent 70%,rgba(255,255,255,.7))!important;mix-blend-mode:soft-light;opacity:1!important}
+html[data-gs=aqua] :is(#top .glass,.pr,.rc,.list.glass,#menu.glass,#sug.glass,#chip,#toast,.tile i,#sheet.glass,.card.glass,.rbtn,.btn.q,.circ:not(.ok),.xbtn,.seg2,.seg,.eng:not(.on),.field select,.in,.card .ac button){background:linear-gradient(180deg,rgba(255,255,255,.65) 0%,rgba(255,255,255,.2) 50%,rgba(120,170,255,.25) 51%,rgba(255,255,255,.35) 100%)!important;border:1px solid rgba(255,255,255,.9)!important;box-shadow:inset 0 1px 1px #fff,inset 0 -6px 12px rgba(100,150,255,.25),0 6px 16px rgba(30,60,120,.25)!important;}
+html[data-gs=aqua] :is(#top .glass,.pr,.rc,.list.glass,#menu.glass,.card.glass,#sheet.glass)::after{background:linear-gradient(180deg,rgba(255,255,255,.7),rgba(255,255,255,0) 50%)!important;mix-blend-mode:soft-light;opacity:1!important}
+html[data-gs=dewdrop] :is(#top .glass,.pr,.rc,.list.glass,#menu.glass,#sug.glass,#chip,#toast,.tile i,#sheet.glass,.card.glass,.rbtn,.btn.q,.circ:not(.ok),.xbtn,.seg2,.seg,.eng:not(.on),.field select,.in,.card .ac button){background:radial-gradient(120% 140% at 30% 15%,rgba(255,255,255,.7),rgba(255,255,255,.08) 45%,rgba(0,0,0,.06) 100%)!important;border:1px solid rgba(255,255,255,.85)!important;box-shadow:inset 6px 8px 14px -6px #fff,inset -8px -10px 16px -8px rgba(0,0,0,.16),0 18px 28px -8px rgba(0,0,0,.3)!important;}
+html[data-gs=dewdrop] :is(#top .glass,.pr,.rc,.list.glass,#menu.glass,.card.glass,#sheet.glass)::after{background:radial-gradient(40% 30% at 28% 18%,rgba(255,255,255,.95),transparent 70%)!important;mix-blend-mode:soft-light;opacity:1!important}
+html[data-gs=holo] :is(#top .glass,.pr,.rc,.list.glass,#menu.glass,#sug.glass,#chip,#toast,.tile i,#sheet.glass,.card.glass,.rbtn,.btn.q,.circ:not(.ok),.xbtn,.seg2,.seg,.eng:not(.on),.field select,.in,.card .ac button){background:linear-gradient(115deg,rgba(255,120,200,.28),rgba(120,200,255,.28) 35%,rgba(190,255,170,.26) 65%,rgba(255,220,140,.28))!important;border:1px solid rgba(255,255,255,.85)!important;box-shadow:inset 0 1px 1px #fff,0 8px 26px rgba(120,100,200,.25)!important;}
+html[data-gs=holo] :is(#top .glass,.pr,.rc,.list.glass,#menu.glass,.card.glass,#sheet.glass)::after{background:linear-gradient(115deg,transparent 30%,rgba(255,255,255,.6) 50%,transparent 70%)!important;mix-blend-mode:soft-light;opacity:1!important}
+html[data-gs=vision] :is(#top .glass,.pr,.rc,.list.glass,#menu.glass,#sug.glass,#chip,#toast,.tile i,#sheet.glass,.card.glass,.rbtn,.btn.q,.circ:not(.ok),.xbtn,.seg2,.seg,.eng:not(.on),.field select,.in,.card .ac button){background:linear-gradient(160deg,rgba(255,255,255,.5),rgba(255,255,255,.25))!important;border:1px solid rgba(255,255,255,.9)!important;box-shadow:inset 0 1px 2px #fff,0 20px 50px rgba(0,0,0,.22)!important;-webkit-backdrop-filter:blur(30px) saturate(1.3);backdrop-filter:blur(30px) saturate(1.3);}
+html[data-gs=neon] :is(#top .glass,.pr,.rc,.list.glass,#menu.glass,#sug.glass,#chip,#toast,.tile i,#sheet.glass,.card.glass,.rbtn,.btn.q,.circ:not(.ok),.xbtn,.seg2,.seg,.eng:not(.on),.field select,.in,.card .ac button){background:linear-gradient(150deg,rgba(0,0,0,.35),rgba(0,0,0,.15))!important;border:1.5px solid rgba(0,255,230,.85)!important;box-shadow:0 0 12px rgba(0,255,230,.7),inset 0 0 14px rgba(0,255,230,.35),0 0 40px rgba(0,255,230,.25)!important;color:#eaffff;}
+html[data-gs=ice] :is(#top .glass,.pr,.rc,.list.glass,#menu.glass,#sug.glass,#chip,#toast,.tile i,#sheet.glass,.card.glass,.rbtn,.btn.q,.circ:not(.ok),.xbtn,.seg2,.seg,.eng:not(.on),.field select,.in,.card .ac button){background:linear-gradient(145deg,rgba(220,240,255,.55),rgba(190,225,255,.2) 60%,rgba(255,255,255,.4))!important;border:1px solid rgba(255,255,255,.95)!important;box-shadow:inset 2px 2px 4px #fff,inset -3px -3px 8px rgba(150,200,255,.5),0 10px 24px rgba(80,130,200,.25)!important;}
+html[data-gs=ice] :is(#top .glass,.pr,.rc,.list.glass,#menu.glass,.card.glass,#sheet.glass)::after{background:linear-gradient(130deg,rgba(255,255,255,.9),transparent 25%)!important;mix-blend-mode:soft-light;opacity:1!important}
+html[data-gs=smoke] :is(#top .glass,.pr,.rc,.list.glass,#menu.glass,#sug.glass,#chip,#toast,.tile i,#sheet.glass,.card.glass,.rbtn,.btn.q,.circ:not(.ok),.xbtn,.seg2,.seg,.eng:not(.on),.field select,.in,.card .ac button){background:linear-gradient(150deg,rgba(20,22,30,.55),rgba(10,12,18,.35))!important;border:1px solid rgba(255,255,255,.22)!important;box-shadow:inset 0 1px 1px rgba(255,255,255,.35),0 12px 30px rgba(0,0,0,.4)!important;color:#f2f4f8;-webkit-backdrop-filter:blur(16px);backdrop-filter:blur(16px);}
+html[data-gs=gel] :is(#top .glass,.pr,.rc,.list.glass,#menu.glass,#sug.glass,#chip,#toast,.tile i,#sheet.glass,.card.glass,.rbtn,.btn.q,.circ:not(.ok),.xbtn,.seg2,.seg,.eng:not(.on),.field select,.in,.card .ac button){background:radial-gradient(130% 100% at 50% 0%,rgba(255,255,255,.65),rgba(255,255,255,.12) 55%,rgba(255,255,255,.3))!important;border:2px solid rgba(255,255,255,.9)!important;box-shadow:inset 0 4px 8px #fff,inset 0 -8px 14px rgba(0,0,0,.14),0 10px 18px rgba(0,0,0,.2)!important;}
+html[data-gs=chrome] :is(#top .glass,.pr,.rc,.list.glass,#menu.glass,#sug.glass,#chip,#toast,.tile i,#sheet.glass,.card.glass,.rbtn,.btn.q,.circ:not(.ok),.xbtn,.seg2,.seg,.eng:not(.on),.field select,.in,.card .ac button){background:linear-gradient(180deg,rgba(255,255,255,.85),rgba(190,195,205,.5) 48%,rgba(120,125,135,.5) 52%,rgba(235,238,245,.8))!important;border:1px solid rgba(255,255,255,.95)!important;box-shadow:inset 0 1px 1px #fff,0 8px 18px rgba(0,0,0,.3)!important;}
+html[data-gs=mirror] :is(#top .glass,.pr,.rc,.list.glass,#menu.glass,#sug.glass,#chip,#toast,.tile i,#sheet.glass,.card.glass,.rbtn,.btn.q,.circ:not(.ok),.xbtn,.seg2,.seg,.eng:not(.on),.field select,.in,.card .ac button){background:linear-gradient(115deg,rgba(255,255,255,.7) 0%,rgba(255,255,255,.1) 30%,rgba(255,255,255,.1) 55%,rgba(255,255,255,.6) 100%)!important;border:1px solid rgba(255,255,255,1)!important;box-shadow:inset 0 0 0 1px rgba(255,255,255,.6),0 10px 28px rgba(0,0,0,.25)!important;}
+html[data-gs=rainbow] :is(#top .glass,.pr,.rc,.list.glass,#menu.glass,#sug.glass,#chip,#toast,.tile i,#sheet.glass,.card.glass,.rbtn,.btn.q,.circ:not(.ok),.xbtn,.seg2,.seg,.eng:not(.on),.field select,.in,.card .ac button){background:linear-gradient(145deg,rgba(255,255,255,.22),rgba(255,255,255,.04))!important;border:1.5px solid transparent!important;box-shadow:0 0 0 1.5px rgba(255,100,150,.7),0 0 0 3px rgba(100,160,255,.35),inset 0 1px 1px #fff,0 10px 26px rgba(0,0,0,.18)!important;}
+html[data-gs=neon] #menu button,html[data-gs=neon] .pr *,html[data-gs=neon] .rc *,html[data-gs=smoke] #menu button,html[data-gs=smoke] .pr *,html[data-gs=smoke] .rc *{color:inherit}
+html[data-gs=neon] :is(.empty,small,.pr span),html[data-gs=smoke] :is(.empty,small,.pr span){color:inherit!important;opacity:.8}
+body:has(#sheet:not([hidden]):not(.closing)) :is(#top,#start,#results,#web,#blocked,#chip){visibility:hidden}
+.closing{pointer-events:none}
+</style>
+<style id="gsr">
+.gtag{padding:0 4px 8px;margin-top:-8px;font-weight:600;letter-spacing:.02em}
+.gr{display:block;width:100%;margin:0 0 12px;padding:15px 17px;text-align:left;overflow:hidden;color:var(--t)}
+.gr .u{display:flex;align-items:center;gap:8px;font-size:12px;color:var(--s);margin-bottom:3px}
+.gr .u img{border-radius:5px;background:var(--gb)}
+.gr b.t{display:block;color:var(--a);font-size:18px;line-height:1.3;font-weight:650;margin:2px 0 4px;overflow-wrap:anywhere}
+.gr p{font-size:14px;line-height:1.45;color:var(--t);opacity:.86;margin:2px 0}
+.gr p.big{font-size:22px;font-weight:600;opacity:1;color:var(--t)}
+.gr small{display:block;color:var(--s);font-size:13px;margin-top:2px}
+.gr.sk i{display:block;height:11px;width:100%;border-radius:99px;background:var(--gb);margin:9px 0;animation:gsh 1s ease-in-out infinite alternate}
+.gr.sk i:nth-child(2){animation-delay:.15s}.gr.sk i:nth-child(3){animation-delay:.3s}
+@keyframes gsh{to{opacity:.3}}
+.gr .in{display:block;width:100%;margin:10px 0}
+.grel{display:flex;flex-wrap:wrap;gap:8px}
+.eng2{padding:9px 15px;border-radius:99px;font-size:14px;font-weight:600;color:var(--t);--r:99px}
+.gpg{display:flex;gap:12px;align-items:center;justify-content:center;margin:18px 0 6px}
+.eng2.on{background:var(--a)!important;color:#fff;text-shadow:none}.eng2.dim{opacity:.45}.gch{margin:0 0 14px;flex-wrap:nowrap;overflow-x:auto;scrollbar-width:none;padding:2px}.gch::-webkit-scrollbar{display:none}.gch .eng2{flex:none;white-space:nowrap}
 </style>
 </head>
 <body>
@@ -144,43 +421,1513 @@ body.typing #tool{transform:translate(-50%,140%);opacity:0}
   <div id="web" hidden><iframe id="frame" title="Web page" referrerpolicy="no-referrer" sandbox="allow-scripts allow-forms allow-same-origin allow-popups allow-popups-to-escape-sandbox"></iframe></div>
   <div id="blocked" hidden></div>
 </main>
-<a id="chip" class="glass" data-act="ext" role="button" tabindex="0" hidden>Blank page? Open in a new tab</a>
+<a id="chip" class="glass" data-lg-lens data-act="site" role="button" tabindex="0" hidden>Blank page? Open full screen</a>
 <header id="top">
-  <div class="bar glass lens">
+  <button data-act="back" id="bBack" class="rbtn glass" aria-label="Back"><svg class="i" viewBox="0 0 24 24"><path d="M15 5l-7 7 7 7"/></svg></button>
+  <div class="bar glass lens" data-lg-lens>
     <span id="lock" aria-hidden="true"><svg class="i" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg></span>
-    <input id="addr" type="text" inputmode="url" autocapitalize="off" autocomplete="off" spellcheck="false" placeholder="Search or enter website" aria-label="Address and search">
+    <input id="addr" type="text" inputmode="url" autocapitalize="off" autocomplete="off" spellcheck="false" placeholder="Search or enter site" aria-label="Address and search">
     <button data-act="clear" aria-label="Clear address"><svg class="i" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" fill="currentColor" stroke="none" opacity=".4"/><path d="M8.7 8.7l6.6 6.6M15.3 8.7l-6.6 6.6" stroke="#fff"/></svg></button>
     <button data-act="reload" aria-label="Reload"><svg class="i" viewBox="0 0 24 24"><path d="M20 12a8 8 0 11-2.6-5.9"/><path d="M20 4v5h-5"/></svg></button>
-    <i id="prog"></i>
+    <button data-act="menu" aria-label="More"><svg class="i" viewBox="0 0 24 24"><circle cx="5" cy="12" r="1.9" fill="currentColor" stroke="none"/><circle cx="12" cy="12" r="1.9" fill="currentColor" stroke="none"/><circle cx="19" cy="12" r="1.9" fill="currentColor" stroke="none"/></svg></button><i id="prog"></i>
   </div>
-  <div id="sug" class="glass" hidden></div>
+  <button data-act="tabs" class="rbtn glass" aria-label="Tabs"><span id="cnt">1</span></button>
+  <div id="sug" class="glass" data-lg-lens hidden></div>
 </header>
-<nav id="tool" class="glass lens" aria-label="Toolbar"><i id="pill"></i>
-  <button data-act="back" id="bBack" aria-label="Back"><svg class="i" viewBox="0 0 24 24"><path d="M15 5l-7 7 7 7"/></svg></button>
+<nav id="tool" class="glass lens" data-lg-lens aria-label="Toolbar"><liquid-glass id="pill" variant="clear" shape="capsule" tint="rgb(255 255 255 / 0.18)" aria-hidden="true"></liquid-glass>
   <button data-act="fwd" id="bFwd" aria-label="Forward"><svg class="i" viewBox="0 0 24 24"><path d="M9 5l7 7-7 7"/></svg></button>
   <button data-act="share" aria-label="Share"><svg class="i" viewBox="0 0 24 24"><path d="M12 15V3M8 7l4-4 4 4"/><path d="M7 10H6a2 2 0 00-2 2v7a2 2 0 002 2h12a2 2 0 002-2v-7a2 2 0 00-2-2h-1"/></svg></button>
   <button data-act="bm" id="bBm" aria-label="Bookmark"><svg class="i" viewBox="0 0 24 24"><path d="M12 3l2.7 5.6 6.1.9-4.4 4.3 1 6.1L12 17l-5.4 2.9 1-6.1L3.2 9.5l6.1-.9z"/></svg></button>
-  <button data-act="tabs" aria-label="Tabs"><span id="cnt">1</span></button>
   <button data-act="menu" aria-label="More"><svg class="i" viewBox="0 0 24 24"><circle cx="5" cy="12" r="1.9" fill="currentColor" stroke="none"/><circle cx="12" cy="12" r="1.9" fill="currentColor" stroke="none"/><circle cx="19" cy="12" r="1.9" fill="currentColor" stroke="none"/></svg></button>
 </nav>
-<div id="menu" class="glass" hidden></div>
+<div id="menu" class="glass" data-lg-lens hidden></div>
 <div id="shade" hidden></div>
-<div id="sheet" class="glass" hidden role="dialog" aria-modal="true"></div>
+<div id="sheet" class="glass" data-lg-lens hidden role="dialog" aria-modal="true"></div>
 <div id="reader" hidden></div>
-<div id="toast" role="status"></div>
+<div id="toast" data-lg-lens role="status"></div>
+<script>/*
+  LiquidGlass runtime (bundled): <liquid-glass> element + material + optics + Calm interaction.
+  Source: liquidglass 1.0.0, ports/npm (element.mjs, engine.mjs, material.mjs, optics.mjs,
+  vendor/skia/interaction.mjs), bundled into one IIFE with imports and exports stripped.
+  Copyright 2026 Shayan. Licensed under the Apache License, Version 2.0 (see the upstream
+  LICENSE and NOTICE). Not affiliated with, endorsed by, or derived from Apple Inc.
+  "Liquid Glass" is used descriptively only. No Apple code, shader or asset is included.
+*/
+(function(){
+'use strict';
+/* ---- material.mjs ---- */
+/** Apache-2.0. The material numbers of <liquid-glass>, with where each one comes from.
+ *
+ * Every number below is either INHERITED from the Kotlin library (and then the Kotlin source says
+ * whether it was measured on iOS captures or authored there) or AUTHORED here for CSS. Nothing is
+ * re-fitted. test/provenance.test.mjs parses the Kotlin sources and fails if an inherited value
+ * drifts from them.
+ *
+ * Units: the library's constants are dp, which is the iPhone's pt the measurements were made in.
+ * This package takes 1 CSS px = 1 dp (authored convention; iOS Safari also maps 1 CSS px to 1 pt).
+ */
+
+const KT = 'liquidglass/src/commonMain/kotlin/com/wexpa/liquidglass/';
+const KOTLIN_SOURCES = Object.freeze({
+  material: KT + 'GlassMaterial.kt',
+  style: KT + 'GlassStyle.kt',
+  glass: KT + 'Glass.kt',
+  shader: KT + 'GlassShaderSource.kt',
+  sourceMap: KT + 'GlassSourceMapSource.kt',
+  restMap: KT + 'GlassRestMap.kt',
+  normal: KT + 'GlassNormalSource.kt',
+  oklab: KT + 'GlassOklabSource.kt',
+  host: KT + 'LiquidGlass.kt',
+});
+
+/** The default Tint Amount (GlassMaterial.DEFAULT_TINT_AMOUNT). Glass.Regular uses it. */
+const DEFAULT_TINT_AMOUNT = 50;
+
+/** Measured (tint, opacity) pairs: GlassMaterial.LIGHT_OPACITY / DARK_OPACITY. */
+const LIGHT_OPACITY = Object.freeze([0, 0.435, 31, 0.514, 50, 0.565, 62, 0.600, 100, 0.733]);
+const DARK_OPACITY = Object.freeze([0, 0.416, 29, 0.439, 50, 0.451, 62, 0.510, 86, 0.655, 100, 0.737]);
+
+/** GlassMaterial.interpolate: linear in a flat (tint, value, ...) table, clamped at its ends. */
+function interpolate(table, tintAmount) {
+  const t = Math.min(100, Math.max(0, tintAmount));
+  let i = 0;
+  while (i < table.length - 4 && table[i + 2] <= t) i += 2;
+  const [t0, a0, t1, a1] = [table[i], table[i + 1], table[i + 2], table[i + 3]];
+  const f = t1 > t0 ? Math.min(1, Math.max(0, (t - t0) / (t1 - t0))) : 0;
+  return a0 + (a1 - a0) * f;
+}
+
+/** GlassMaterial.opacity(dark, tintAmount). */
+const opacity = (dark, tintAmount = DEFAULT_TINT_AMOUNT) =>
+  interpolate(dark ? DARK_OPACITY : LIGHT_OPACITY, tintAmount);
+/** GlassMaterial.fineKernel: sigma of the fine kernel, dp. */
+const fineKernel = (tintAmount = DEFAULT_TINT_AMOUNT) => {
+  const u = Math.min(1, Math.max(0, tintAmount / 100));
+  return 0.5 + 1.5 * u * u;
+};
+/** GlassMaterial.fineShare: share of the fine kernel in the backdrop term. */
+const fineShare = (tintAmount = DEFAULT_TINT_AMOUNT) =>
+  Math.min(1, Math.max(0, 0.95 * Math.pow(1 - Math.min(1, Math.max(0, tintAmount / 100)), 1.5)));
+
+/** Compose stores an sRGB Color in 8 bits per channel; the shader sees the quantized value. */
+const quantize = x => Math.round(Math.min(1, Math.max(0, x)) * 255) / 255;
+
+/** GlassLight.Default: the light, above and slightly left, y negative upward. */
+const LIGHT = Object.freeze({x: -0.35, y: -0.94});
+
+/** GlassMaterial.BEVEL_RATIO: the measured band is 0.6 of the corner radius. */
+const BEVEL_RATIO = 0.6;
+
+/**
+ * Glass.Regular = GlassStyle.inApp(dark) at the default Tint Amount (measured in Kotlin).
+ * Profile 'measured': the shader's inward rest map at the corner arcs, two-kernel backdrop.
+ */
+function regularStyle(dark) {
+  const a = quantize(opacity(dark, DEFAULT_TINT_AMOUNT));
+  const grey = dark ? 0 : 241 / 255;
+  return Object.freeze({
+    variant: 'regular', profile: 'measured', dark,
+    tint: Object.freeze([grey, grey, grey, a]),
+    lift: dark ? 35 / 255 : 0,
+    fineSigma: fineKernel(), wideSigma: 10, fineShare: fineShare(),
+    // GlassStyle.inApp edge line (rim fit, 2026-09-12)
+    bevel: 1.33, bevelPeak: 0.25, specular: 0.25, specularPower: 6, counterLight: 1, edgeLight: 0,
+    fresnel: 0, innerShadow: 0, ior: 1.5, bevelPower: 2, glow: 0.05,
+    // The measured profile derives its band from the shape (0.6 R); depth is unused by its map.
+    refractionBand: null, refractionDepth: 14, legibility: 0.6,
+    light: LIGHT,
+  });
+}
+
+/**
+ * Glass.Clear = GlassStyle.Clear (authored in Kotlin: the 0.1 "legacy" model, Apple's zero adaptivity).
+ * Same in both appearances, as in Kotlin.
+ */
+function clearStyle() {
+  return Object.freeze({
+    variant: 'clear', profile: 'legacy', dark: false,
+    tint: Object.freeze([1, 1, 1, quantize(0.04)]), lift: 0,
+    // blurRadius 4 dp is a scatter disc; its sigma is about 0.6 of the radius (GlassStyle.inApp note).
+    fineSigma: 4 * 0.6, wideSigma: 0, fineShare: 1,
+    bevel: 4, bevelPeak: 0, specular: 0.70, specularPower: 6, counterLight: 0.35, edgeLight: 1,
+    fresnel: 0.14, innerShadow: 0.05, ior: 1.5, bevelPower: 2, glow: 0,
+    refractionBand: 28, refractionDepth: 16, legibility: 0,
+    mirror: 0.22, dispersion: 0.030, dimmingLayer: 0.35, highlightChroma: 0.7,
+    light: LIGHT,
+  });
+}
+
+const resolveStyle = (variant, dark) => variant === 'clear' ? clearStyle() : regularStyle(dark);
+
+/** Compose's elementSizeFactor: 0 for chrome up to 56 dp, 1 from 320 dp. */
+const sizeFactor = (width, height) =>
+  Math.min(1, Math.max(0, (Math.min(width, height) - 56) / (320 - 56)));
+
+/**
+ * The tint layer CSS paints over the (filtered) backdrop, as {rgb: [r,g,b] 0..1, alpha, exact}.
+ *
+ * The shader computes `mix(bg, tint, s) + lift` with s = tint alpha (times the legacy size term)
+ * clamped to 0.95. One normal-blend layer of colour c at alpha s gives `(1 - s) bg + s c`, which is
+ * the same thing when c = tint + lift / s. That is exact algebra, not an approximation, as long as c
+ * stays within 0..1; `exact` is false when a channel had to be clamped (a bright tint with the lift).
+ * `tint` is [r, g, b, a] sRGB 0..1 (Glass.tint replaces the style's tint, its alpha the opacity).
+ * Not reproduced: the shader's legibility term (contrast * legibility * 0.25), which reads the backdrop.
+ */
+function tintLayer(style, {tint = null, width = 0, height = 0, reducedTransparency = 0} = {}) {
+  const color = tint ? tint.map(quantize) : style.tint;
+  const sizeTerm = style.profile === 'legacy' ? 0.9 + (1.25 - 0.9) * sizeFactor(width, height) : 1;
+  const frost = Math.min(1, Math.max(0, reducedTransparency)) * 0.35;
+  const s = Math.min(0.95, Math.max(0, color[3] * sizeTerm + frost));
+  if (s <= 0) return {rgb: [0, 0, 0], alpha: 0, exact: style.lift === 0};
+  let exact = true;
+  const rgb = color.slice(0, 3).map(c => {
+    const v = c + style.lift / s;
+    if (v > 1 + 1e-9) exact = false;
+    return Math.min(1, v);
+  });
+  return {rgb, alpha: s, exact};
+}
+
+/** Parse the colour strings browsers serialize (#rgb, #rrggbb, #rrggbbaa, rgb(), rgba()).
+ * Returns [r, g, b, a] in 0..1, or null. Other syntaxes are resolved by the element in a canvas. */
+function parseColor(text) {
+  if (typeof text !== 'string') return null;
+  const s = text.trim().toLowerCase();
+  let m = /^#([0-9a-f]{3,4}|[0-9a-f]{6}|[0-9a-f]{8})$/.exec(s);
+  if (m) {
+    let h = m[1];
+    if (h.length <= 4) h = [...h].map(c => c + c).join('');
+    const n = [0, 2, 4, 6].map(i => i < h.length ? parseInt(h.slice(i, i + 2), 16) / 255 : 1);
+    return n;
+  }
+  m = /^rgba?\(\s*([^)]*)\)$/.exec(s);
+  if (!m) return null;
+  const parts = m[1].split(/\s*[,/]\s*|\s+/).filter(Boolean);
+  if (parts.length !== 3 && parts.length !== 4) return null;
+  const channel = p => p.endsWith('%') ? parseFloat(p) / 100 : parseFloat(p) / 255;
+  const alpha = p => p.endsWith('%') ? parseFloat(p) / 100 : parseFloat(p);
+  const out = [channel(parts[0]), channel(parts[1]), channel(parts[2]), parts[3] === undefined ? 1 : alpha(parts[3])];
+  if (!out.every(Number.isFinite)) return null;
+  return out.map(v => Math.min(1, Math.max(0, v)));
+}
+
+/**
+ * Where every number used by the HTML engine comes from. `kind` is 'inherited' (copied from the
+ * Kotlin library; `kotlin` says whether it is measured or authored there) or 'authored' (chosen
+ * here for CSS). The README's provenance table is this list.
+ */
+const PROVENANCE = Object.freeze([
+  {name: 'Regular light tint', value: '241/255 grey at 0.565 (quantized 144/255)', kind: 'inherited', kotlin: 'measured', source: 'GlassMaterial.lightTint, LIGHT_OPACITY'},
+  {name: 'Regular dark tint and lift', value: 'black at 0.451 (115/255) + 35/255', kind: 'inherited', kotlin: 'measured', source: 'GlassMaterial.DARK_OPACITY, DARK_LIFT'},
+  {name: 'Fine kernel sigma', value: '0.875 dp at Tint 50', kind: 'inherited', kotlin: 'measured', source: 'GlassMaterial.fineKernel'},
+  {name: 'Wide kernel sigma', value: '10 dp', kind: 'inherited', kotlin: 'measured', source: 'GlassMaterial.wideKernel'},
+  {name: 'Fine share', value: '0.95 (1 - t/100)^1.5 = 0.336 at Tint 50', kind: 'inherited', kotlin: 'measured', source: 'GlassMaterial.fineShare'},
+  {name: 'Refraction band', value: '0.6 of the corner radius', kind: 'inherited', kotlin: 'measured', source: 'GlassMaterial.BEVEL_RATIO, GlassStyle.bandPx'},
+  {name: 'Resting corner source map', value: 'restSourceLegacy table; straight runs u + 0.06 (1-u)^2', kind: 'inherited', kotlin: 'measured', source: 'GlassRestMap.kt, GlassSourceMapSource.kt foldSource'},
+  {name: 'Regular rim', value: 'bevel 1.33 dp, peak 0.25, specular 0.25, power 6, counter-light 1, glow 0.05', kind: 'inherited', kotlin: 'measured', source: 'GlassStyle.inApp, GlassShaderSource lighting'},
+  {name: 'Light direction', value: '(-0.35, -0.94)', kind: 'inherited', kotlin: 'authored', source: 'GlassLight.Default'},
+  {name: 'Clear tint', value: 'white at 0.04 x (0.9..1.25 by size)', kind: 'inherited', kotlin: 'authored', source: 'GlassStyle.Clear, shader strength term'},
+  {name: 'Clear refraction', value: 'Snell bevel, band 28 dp, depth 16 dp x (0.85..1.25 by size), IOR 1.5', kind: 'inherited', kotlin: 'authored', source: 'GlassStyle.Clear, snellShift, bevelSlope'},
+  {name: 'Clear scatter', value: 'radius 4 dp, sigma 0.6 x radius = 2.4 dp, crisp rim (1-e)^2', kind: 'inherited', kotlin: 'authored', source: 'GlassStyle.Clear.blurRadius, GlassStyle.inApp note'},
+  {name: 'Clear rim', value: 'bevel 4 dp, specular 0.70, power 6, counter-light 0.35, edge light 1, fresnel 0.14', kind: 'inherited', kotlin: 'authored', source: 'GlassStyle.Clear'},
+  {name: 'Size factor', value: '(min edge - 56) / 264 dp', kind: 'inherited', kotlin: 'authored', source: 'elementSizeFactor'},
+  {name: 'Press glow', value: '+0.06 at the pointer, Gaussian sigma = short edge', kind: 'inherited', kotlin: 'authored (tuned against a device)', source: 'GlassShaderSource touch illumination'},
+  {name: 'Press feedback', value: 'Calm controller: scale 1.03, 2 px per edge, springs', kind: 'inherited', kotlin: 'authored', source: 'ports/web interaction.mjs (Compose Calm)'},
+  {name: '1 CSS px = 1 dp', value: '', kind: 'authored', kotlin: null, source: 'this package'},
+  {name: 'Backdrop pad', value: '32 px around the element, clipped back to its shape', kind: 'authored', kotlin: null, source: 'this package'},
+  {name: 'Frost fallback blur', value: 'the same two kernels as two stacked backdrop-filter layers; no refraction', kind: 'authored', kotlin: null, source: 'this package'},
+  {name: 'Fallback saturation', value: 'saturate(1) by default (the measured model has no saturation term)', kind: 'authored', kotlin: null, source: 'this package (--liquid-glass-saturation)'},
+  {name: 'Increase Contrast solid', value: 'mix toward 0.97 (light) or 0.02 (dark) at 0.88, chosen by scheme', kind: 'authored', kotlin: null, source: 'this package; Kotlin chooses by backdrop luma'},
+]);
+
+/* ---- optics.mjs ---- */
+/** Apache-2.0. The production shader's geometry, ported to JavaScript for the HTML engine.
+ *
+ * CSS cannot run the shader, so the HTML engine bakes the parts that depend only on the shape into
+ * two images: a displacement map for an SVG feDisplacementMap (where the backdrop is sampled from)
+ * and a rim map (the edge light, added on top). The functions below are line-by-line ports of
+ * GlassShaderSource.kt, GlassSourceMapSource.kt, GlassRestMap.kt and GlassNormalSource.kt for one
+ * analytic rounded rectangle (circular corners, no fusion, no pose body, glass at rest).
+ * test/optics.test.mjs evaluates the SkSL text of the scalar functions next to these ports.
+ *
+ * Units follow the shader: lengths are DEVICE pixels, dp constants are multiplied by `density`.
+ * No DOM access: everything here runs in Node.
+ */
+
+
+const clamp = (x, lo, hi) => Math.min(hi, Math.max(lo, x));
+const mix = (a, b, t) => a + (b - a) * t;
+/** SkSL smoothstep, including reversed edges (smoothstep(1, 0.75, e) falls). */
+function smoothstep(e0, e1, x) {
+  const t = clamp((x - e0) / (e1 - e0), 0, 1);
+  return t * t * (3 - 2 * t);
+}
+
+/** sdRoundRect with one radius and cornerPower 2 (GlassShaderSource). */
+function sdRoundRect(px, py, hx, hy, radius) {
+  const r = Math.min(radius, Math.min(hx, hy));
+  const qx = Math.abs(px) - hx + r, qy = Math.abs(py) - hy + r;
+  return Math.min(Math.max(qx, qy), 0) + Math.hypot(Math.max(qx, 0), Math.max(qy, 0)) - r;
+}
+
+/** gradRoundRect at power 2 (GlassNormalSource): the closed-form outward normal. */
+function gradRoundRect(px, py, hx, hy, radius, widen) {
+  const r = Math.min(radius, Math.min(hx, hy));
+  const gradRadius = Math.min(r * widen, Math.min(hx, hy));
+  const qx = Math.abs(px) - hx + gradRadius, qy = Math.abs(py) - hy + gradRadius;
+  const sx = px < 0 ? -1 : 1, sy = py < 0 ? -1 : 1;
+  if (qx > 0 && qy > 0) {
+    const L = Math.hypot(qx, qy);
+    if (L <= 1e-5) return [sx * 0.70710678, sy * 0.70710678];
+    return [sx * qx / L, sy * qy / L];
+  }
+  const ax = qy <= qx ? 1 : 0; // step(q.y, q.x)
+  return [sx * ax, sy * (1 - ax)];
+}
+
+/** cornerWeight (GlassSourceMapSource): 1 where the nearest outline is a corner arc. */
+function cornerWeight(px, py, hx, hy, radius) {
+  const r = Math.min(radius, Math.min(hx, hy));
+  const qx = Math.abs(px) - hx + r, qy = Math.abs(py) - hy + r;
+  const soft = Math.max(r * 0.2, 1);
+  return smoothstep(-soft, 0, Math.min(qx, qy));
+}
+
+/** restSourceLegacy (GlassRestMap.kt): the shipping resting-corner map, u = d / W in, s / W out. */
+function restSourceLegacy(u) {
+  if (u >= 0.76) return u;
+  if (u >= 0.62) return 0.64 + 0.857 * (u - 0.62);
+  if (u >= 0.38) return 0.55 + 0.375 * (u - 0.38);
+  if (u >= 0.14) return 0.55;
+  return 0.55 + 0.93 * (0.14 - u);
+}
+
+/** foldSource at formation 0, edgeFold 0 (glass at rest): corner arcs use the rest map, runs a
+ * shallow inward offset. The formed fold needs a tracked drag and is not part of the element. */
+function restSource(u, corner) {
+  const v = 1 - u;
+  const straight = u + 0.06 * v * v;
+  return mix(straight, restSourceLegacy(u), clamp(corner, 0, 1));
+}
+
+/** bevelSlope (GlassShaderSource): slope of the superellipse bevel at e = depth / band. */
+function bevelSlope(e, p) {
+  const u = 1 - clamp(e, 0.002, 0.998);
+  const up = Math.pow(u, p);
+  return Math.pow(u, p - 1) / Math.pow(Math.max(1 - up, 1e-4), 1 - 1 / p);
+}
+
+/** snellShift (GlassShaderSource): exact Snell deviation for a surface of that slope. */
+function snellShift(slope, ior) {
+  const inv = 1 / Math.sqrt(1 + slope * slope);
+  const si = slope * inv, ci = inv;
+  const st = si / Math.max(ior, 1.0001);
+  const ct = Math.sqrt(Math.max(1 - st * st, 0));
+  return (si * ct - ci * st) / Math.max(ci * ct + si * st, 1e-4);
+}
+
+/**
+ * The shape for a style at a size: CSS px in, device px out. `radius` is the corner radius in
+ * CSS px (a capsule passes half its short side). Returns what every per-pixel query needs.
+ */
+function shapeFor(style, {width, height, radius, density = 1}) {
+  if (![width, height, radius, density].every(Number.isFinite) || width <= 0 || height <= 0 || density <= 0 || radius < 0)
+    throw new RangeError('Shape requires positive finite size and density and a nonnegative radius');
+  const hx = width * density / 2, hy = height * density / 2;
+  const r = Math.min(radius * density, Math.min(hx, hy));
+  // GlassStyle.bandPx: the style's own band, else 0.6 of the corner radius capped at the inradius.
+  const band = style.refractionBand != null ? style.refractionBand * density : BEVEL_RATIO * r;
+  return {width, height, density, hx, hy, r, band, scale: sizeFactor(width, height), style};
+}
+
+/**
+ * The geometry block of the material shader's main() at one point, p relative to the centre in
+ * device px: signed distance, depth, outward normal, axis fade, optical depth and e.
+ */
+function geometryAt(shape, px, py) {
+  const {hx, hy, r, band, style} = shape;
+  const d = sdRoundRect(px, py, hx, hy, r);
+  const inradius = Math.min(hx, hy);
+  const measured = style.profile === 'measured';
+  let n, axisFade;
+  if (band < inradius * 0.75) { // analyticNormalEligible
+    n = gradRoundRect(px, py, hx, hy, r, measured ? 1 : 1.5);
+    axisFade = 1;
+  } else {
+    const eps = clamp(band * 0.3, 1, 16);
+    const gx = sdRoundRect(px + eps, py, hx, hy, r) - sdRoundRect(px - eps, py, hx, hy, r);
+    const gy = sdRoundRect(px, py + eps, hx, hy, r) - sdRoundRect(px, py - eps, hx, hy, r);
+    const gLen = Math.hypot(gx, gy), inv = 1 / Math.max(gLen, 1e-5);
+    n = [gx * inv, gy * inv];
+    axisFade = smoothstep(0.15, 0.80, gLen / (2 * eps));
+  }
+  const depth = Math.max(-d, 0);
+  const aspect = Math.max(hx, hy) / Math.max(inradius, 1e-4);
+  const domeWeight = smoothstep(1.5, 3, aspect) * smoothstep(0.75, 1, band / Math.max(inradius, 1e-4));
+  let opticalDepth = depth;
+  if (domeWeight > 0.001) {
+    const qx = px / Math.max(hx, 1e-4), qy = py / Math.max(hy, 1e-4);
+    const q2x = qx * qx, q2y = qy * qy;
+    const domeRadius = Math.sqrt(clamp(q2x + q2y - q2x * q2y, 0, 1));
+    opticalDepth = mix(depth, (1 - domeRadius) * band, domeWeight);
+    const gx = qx * (1 - q2y), gy = qy * (1 - q2x), len = Math.hypot(gx, gy);
+    if (len > 1e-4) {
+      const mx = mix(n[0], gx / len, domeWeight), my = mix(n[1], gy / len, domeWeight);
+      const ml = Math.hypot(mx, my) || 1;
+      n = [mx / ml, my / ml];
+    }
+    axisFade = mix(axisFade, 1, domeWeight);
+  }
+  const e = clamp(opticalDepth / Math.max(band, 0.001), 0, 1);
+  return {d, depth, n, axisFade, domeWeight, opticalDepth, e};
+}
+
+/**
+ * Where the backdrop is sampled from, as an offset [dx, dy] in device px (the shader's `push`:
+ * it samples base + push). Measured: inward only, from the rest map. Legacy: the Snell bevel,
+ * outward, pulling the surroundings in. Dispersion and the legacy mirrored echo are not included.
+ */
+function displacementAt(shape, px, py) {
+  const g = geometryAt(shape, px, py);
+  if (g.d >= 0.75) return [0, 0]; // outside coverage
+  const {style, band, density} = shape;
+  if (style.profile === 'measured') {
+    const W = Math.max(band, 0.001);
+    const u = clamp(g.depth / W, 0, 1);
+    const corner = cornerWeight(px, py, shape.hx, shape.hy, shape.r);
+    const src = restSource(u, corner);
+    let shift = g.depth < W ? src * W - g.depth : 0;
+    shift = Math.max(shift, 0) * g.axisFade * smoothstep(0, 1.5, g.depth);
+    return [-g.n[0] * shift, -g.n[1] * shift];
+  }
+  const pw = Math.max(style.bevelPower, 1.5);
+  const slope = bevelSlope(g.e, pw);
+  let bend = snellShift(slope, style.ior) / Math.max(snellShift(bevelSlope(0, pw), style.ior), 1e-4);
+  bend *= smoothstep(1, 0.75, g.e) * g.axisFade * smoothstep(0, 1.5, g.depth);
+  bend *= mix(1, smoothstep(0, 2, g.depth), g.domeWeight);
+  bend = clamp(bend, 0, 1);
+  const lens = style.refractionDepth * density * mix(0.85, 1.25, shape.scale);
+  return [g.n[0] * bend * lens, g.n[1] * bend * lens];
+}
+
+/**
+ * The edge light added over the material at one point (device px), before coverage: the
+ * shader's `highlight` (key and counter lobes, edge line, Fresnel, the measured rim glow).
+ * Applied additively, as GlassOklabSource.applyHighlight does at highlightChroma 0.
+ */
+function highlightAt(shape, px, py, g = geometryAt(shape, px, py)) {
+  const s = shape.style, density = shape.density;
+  const bevel = s.bevel * density;
+  const facing = g.n[0] * s.light.x + g.n[1] * s.light.y;
+  const peakAt = clamp(s.bevelPeak, 0, 0.9) * bevel;
+  const bevelBand = peakAt < 0.5
+    ? smoothstep(bevel, 0, g.depth)
+    : smoothstep(0, peakAt, g.depth) * smoothstep(bevel, peakAt, g.depth);
+  const slope = bevelSlope(g.e, Math.max(s.bevelPower, 1.5));
+  const cosI = 1 / Math.sqrt(1 + slope * slope);
+  let f0 = (s.ior - 1) / (s.ior + 1); f0 *= f0;
+  const fresnel = f0 + (1 - f0) * Math.pow(Math.max(1 - cosI, 0), 5);
+  const counterLight = clamp(s.counterLight, 0, 1);
+  const counterPow = s.specularPower * mix(1.6, 1.0, smoothstep(0.35, 1.0, counterLight));
+  const key = Math.pow(Math.max(facing, 0), s.specularPower) * bevelBand;
+  const counter = Math.pow(Math.max(-facing, 0), counterPow) * bevelBand * counterLight;
+  const edge = smoothstep(2, 0, g.depth);
+  const lit = Math.max(facing, 0) + counterLight * Math.max(-facing, 0);
+  const edgeLine = edge * 0.5 * lit;
+  const glowReach = Math.max(bevel, 1);
+  const glow = s.glow * Math.exp(-Math.max(g.depth - 0.67 * bevel, 0) / glowReach) * lit;
+  return (key + counter) * s.specular + edgeLine * s.specular * s.edgeLight +
+    fresnel * s.fresnel * bevelBand + glow;
+}
+
+/** Coverage of the outline at signed distance d (the shader's 1.5 px antialiasing ramp). */
+const coverageAt = d => 1 - smoothstep(-0.75, 0.75, d);
+
+/**
+ * The displacement map for feDisplacementMap, at `scale` map pixels per CSS px, covering the
+ * element plus `pad` CSS px on every side. RGBA bytes: R and G encode the sampling offset in CSS
+ * px as 0.5 + offset / mapScale (feDisplacementMap reads `scale * (C - 0.5)`), B is the crisp-rim
+ * weight (1 - e)^2 that the Clear filter mixes its sharp and scattered copies by, A is 255.
+ * Returns {width, height, data, scale: the feDisplacementMap scale in CSS px, maxShift}.
+ */
+function displacementMap(style, {width, height, radius, density = 1, pad = 0, scale = 1}) {
+  const shape = shapeFor(style, {width, height, radius, density});
+  const mw = Math.max(1, Math.round((width + 2 * pad) * scale));
+  const mh = Math.max(1, Math.round((height + 2 * pad) * scale));
+  const offsets = new Float32Array(mw * mh * 2), crisp = new Float32Array(mw * mh);
+  let maxShift = 0;
+  for (let j = 0; j < mh; j++) {
+    for (let i = 0; i < mw; i++) {
+      // Map pixel centre -> CSS px relative to the element's centre -> device px.
+      const cx = ((i + 0.5) / scale - pad - width / 2) * density;
+      const cy = ((j + 0.5) / scale - pad - height / 2) * density;
+      const k = j * mw + i;
+      if (Math.abs(cx) > shape.hx + 1 || Math.abs(cy) > shape.hy + 1) continue;
+      const [dx, dy] = displacementAt(shape, cx, cy);
+      const ox = dx / density, oy = dy / density; // back to CSS px
+      offsets[2 * k] = ox; offsets[2 * k + 1] = oy;
+      maxShift = Math.max(maxShift, Math.abs(ox), Math.abs(oy));
+      if (style.profile === 'legacy') {
+        const g = geometryAt(shape, cx, cy);
+        crisp[k] = g.d < 0.75 ? (1 - g.e) * (1 - g.e) : 0;
+      }
+    }
+  }
+  // An exact zero is not representable in 8 bits (127.5); scale bounds the residual to scale/510.
+  const mapScale = Math.max(1, 2 * Math.ceil(maxShift + 0.5));
+  const data = new Uint8ClampedArray(mw * mh * 4);
+  for (let k = 0; k < mw * mh; k++) {
+    data[4 * k] = Math.round(255 * (0.5 + offsets[2 * k] / mapScale));
+    data[4 * k + 1] = Math.round(255 * (0.5 + offsets[2 * k + 1] / mapScale));
+    data[4 * k + 2] = Math.round(255 * crisp[k]);
+    data[4 * k + 3] = 255;
+  }
+  return {width: mw, height: mh, data, scale: mapScale, maxShift};
+}
+
+/** Decode one map pixel back into the CSS px offset feDisplacementMap will apply. */
+const decodeOffset = (byte, mapScale) => mapScale * (byte / 255 - 0.5);
+
+/**
+ * The rim image: white at alpha = highlight x coverage (straight alpha, as ImageData wants), at
+ * device resolution over the element's own box (no pad). The element composites it normally
+ * (source-over), which gives bg + a (1 - bg) where the shader adds bg + a: an authored
+ * approximation, chosen because mix-blend-mode: plus-lighter isolates the nearest stacking context
+ * and in Chromium that turns a transformed ancestor into the backdrop root (the glass would then
+ * see nothing behind it). Interior pixels beyond the reach of every term are skipped.
+ */
+function rimMap(style, {width, height, radius, density = 1}) {
+  const shape = shapeFor(style, {width, height, radius, density});
+  const w = Math.max(1, Math.round(width * density)), h = Math.max(1, Math.round(height * density));
+  const data = new Uint8ClampedArray(w * h * 4);
+  const bevel = style.bevel * density, reach = Math.max(bevel, 1);
+  const limit = Math.max(2.2 * bevel, 2, style.glow > 0 ? 0.67 * bevel + 8 * reach : 0) + 2;
+  for (let j = 0; j < h; j++) {
+    for (let i = 0; i < w; i++) {
+      const px = i + 0.5 - w / 2, py = j + 0.5 - h / 2;
+      const d = sdRoundRect(px, py, shape.hx, shape.hy, shape.r);
+      if (d > 0.75 || -d > limit) continue;
+      const g = geometryAt(shape, px, py);
+      const a = clamp(highlightAt(shape, px, py, g), 0, 1) * coverageAt(g.d);
+      const v = Math.round(a * 255);
+      const k = 4 * (j * w + i);
+      if (v > 0) { data[k] = data[k + 1] = data[k + 2] = 255; data[k + 3] = v; }
+    }
+  }
+  return {width: w, height: h, data};
+}
+
+/* ---- vendor/skia/interaction.mjs ---- */
+// Apache-2.0. Generated from ports/web/core.mjs and interaction.mjs.
+// Do not edit. npm test rejects drift; this package needs no sibling directory at runtime.
+/** Apache-2.0. Portable authored lens/feedback math; no DOM or graphics dependency. */
+function lensSource(x, y, halfWidth, halfHeight, magnification = 1.25) {
+  for (const n of [x, y, halfWidth, halfHeight, magnification])
+    if (!Number.isFinite(n)) throw new RangeError('Lens inputs must be finite');
+  if (halfWidth <= 0 || halfHeight <= 0 || magnification < 1 || magnification > 2.5)
+    throw new RangeError('Positive size and magnification 1…2.5 required');
+  const radius2 = Math.min(1, (x / halfWidth) ** 2 + (y / halfHeight) ** 2);
+  const factor = 1 - (1 - 1 / magnification) * (1 - radius2) ** 2;
+  return { x: x * factor, y: y * factor };
+}
+
+/** Exact critically damped step. Time in seconds, values in the caller's units. */
+function stepSpring(value, velocity, target, seconds, stiffness = 220) {
+  if (![value, velocity, target, seconds, stiffness].every(Number.isFinite) || seconds < 0 || stiffness <= 0)
+    throw new RangeError('Finite spring values, nonnegative time and positive stiffness required');
+  const omega = Math.sqrt(stiffness), error = value - target;
+  if (seconds === 0) return {value, velocity};
+  if (omega * seconds > 750) return {value: target, velocity: 0};
+  const b = velocity + omega * error, decay = Math.exp(-omega * seconds);
+  return { value: target + (error + b * seconds) * decay,
+    velocity: (velocity - omega * b * seconds) * decay };
+}
+
+/** Material deformation only. Keep text/hit targets outside the transformed drawing. */
+function calmFeedback(width, height, dx, dy, pressed = true, radius = Math.min(width, height) / 2) {
+  if (![width, height, dx, dy, radius].every(Number.isFinite) || width <= 0 || height <= 0 || radius < 0)
+    throw new RangeError('Finite displacement and positive dimensions required');
+  if (!pressed) return { pressX: 1, pressY: 1, along: 1, across: 1, angle: 0 };
+  const target = calmPullTarget(width, height, dx, dy);
+  return calmDeformation(width, height, target.x, target.y, 1, radius);
+}
+
+/** Internal shared geometry for the timestamped controller. Inputs are validated by callers. */
+function calmPullTarget(width, height, dx, dy,
+  pressX = calmPressScale(width), pressY = calmPressScale(height)) {
+  const limit = Math.min(width * pressX, height * pressY) * .5;
+  // Normalize before taking a length: even an enormous finite over-pull must not create NaN.
+  const scale = Math.max(Math.abs(dx), Math.abs(dy));
+  if (!scale) return {x: 0, y: 0};
+  const length = Math.hypot(dx / scale, dy / scale);
+  const resisted = limit * Math.tanh(scale * .2 / limit * length) / .2;
+  return {x: dx / scale / length * resisted, y: dy / scale / length * resisted};
+}
+
+/** Per-edge growth is in logical pixels. Zero selects percentage-only growth, as in Compose. */
+function calmPressScale(side, scale = 1.03, growth = 2) {
+  return growth > 0 ? Math.min(scale, 1 + 2 * growth / side) : scale;
+}
+
+/** Pull coordinates have already been resisted and animated; do not resist them a second time. */
+function calmDeformation(width, height, dx, dy, pressAmount, radius,
+  pressX = 1 + (calmPressScale(width) - 1) * pressAmount,
+  pressY = 1 + (calmPressScale(height) - 1) * pressAmount,
+  pullShape = 'adaptive', targetLimit = Math.min(width*pressX,height*pressY)*.5) {
+  const travel = Math.hypot(dx, dy);
+  if (!travel) return { pressX, pressY, along: 1, across: 1, angle: 0 };
+  const c = dx / travel, s = dy / travel, r = Math.min(radius, width / 2, height / 2);
+  if (pullShape === 'area-preserving') {
+    const amount = Math.max(0,Math.min(1,travel*.2/targetLimit));
+    // Same authored .047 log-strain as Compose; input compliance/timing remain independent.
+    const strain=.047*amount;
+    const roundness=Math.max(0,Math.min(1,2*Math.min(width,height)/Math.max(width,height)-1));
+    const u=strain*(c*c-s*s), v=2*strain*c*s*roundness, magnitude=Math.hypot(u,v);
+    const bias=.056*Math.min(width,height)*amount;
+    return {pressX,pressY,along:Math.exp(magnitude),across:Math.exp(-magnitude),angle:Math.atan2(v,u)/2,
+      offsetX:bias*c,offsetY:bias*s};
+  }
+  const extent = (nx, ny) => (width - 2*r)*pressX*Math.abs(nx) + (height - 2*r)*pressY*Math.abs(ny) +
+    2*r*Math.hypot(pressX*nx, pressY*ny);
+  const alongExtent=extent(c,s), acrossExtent=extent(-s,c), extension=.03*travel;
+  const t=Math.max(0,Math.min(1,(Math.max(width,height)-80)/80)), mix=t*t*(3-2*t);
+  const surfaceGain=extension<.001 ? .2 : 2*Math.tanh(.2*extension/2)/extension;
+  const gain=1+(surfaceGain-1)*mix;
+  const along=1+extension/alongExtent*gain, across=1-extension/acrossExtent*gain;
+  const roundness=Math.max(0,Math.min(1,2*Math.min(width,height)/Math.max(width,height)-1));
+  const xx=along*c*c+across*s*s, yy=along*s*s+across*c*c, xy=(along-across)*c*s*roundness;
+  const mean=(xx+yy)/2, eigenRadius=Math.hypot((xx-yy)/2,xy);
+  return { pressX,pressY,along:mean+eigenRadius,across:mean-eigenRadius,angle:Math.atan2(2*xy,xx-yy)/2 };
+}
+
+/**
+ * Compose's animation specs evaluated in closed form, for the free button: a spring is the damped
+ * oscillator `spring(dampingRatio, stiffness)` defines (unit mass), a tween is
+ * `tween(durationMillis, FastOutSlowInEasing)`. Time in seconds from the animation's start.
+ */
+function springAt(from, velocity, target, seconds, dampingRatio, stiffness) {
+  const x0 = from - target, w = Math.sqrt(stiffness), z = dampingRatio, t = Math.max(0, seconds);
+  if (z < 1) {
+    const wd = w * Math.sqrt(1 - z * z), e = Math.exp(-z * w * t), a = x0, b = (velocity + z * w * x0) / wd;
+    const c = Math.cos(wd * t), s = Math.sin(wd * t);
+    return {value: target + e * (a * c + b * s), velocity: e * ((b * wd - z * w * a) * c - (a * wd + z * w * b) * s)};
+  }
+  if (z === 1) {
+    const e = Math.exp(-w * t), b = velocity + w * x0;
+    return {value: target + (x0 + b * t) * e, velocity: (b - w * (x0 + b * t)) * e};
+  }
+  const q = w * Math.sqrt(z * z - 1), r1 = -z * w + q, r2 = -z * w - q;
+  const c2 = (velocity - r1 * x0) / (r2 - r1), c1 = x0 - c2;
+  return {value: target + c1 * Math.exp(r1 * t) + c2 * Math.exp(r2 * t),
+    velocity: c1 * r1 * Math.exp(r1 * t) + c2 * r2 * Math.exp(r2 * t)};
+}
+
+/** Compose's FastOutSlowInEasing, cubic-bezier(0.4, 0, 0.2, 1). */
+function fastOutSlowIn(u) {
+  if (u <= 0 || u >= 1) return Math.max(0, Math.min(1, u));
+  const bez = (t, p1, p2) => 3 * (1 - t) * (1 - t) * t * p1 + 3 * (1 - t) * t * t * p2 + t * t * t;
+  let lo = 0, hi = 1, t = u;
+  for (let i = 0; i < 40; i++) { t = (lo + hi) / 2; if (bez(t, .4, .2) < u) lo = t; else hi = t; }
+  return bez(t, 0, 1);
+}
+
+/** Apache-2.0. Framework-independent, anchored Calm material feedback. No DOM or timer ownership. */
+
+const identity = () => [1, 0, 0, 1];
+const clampCalm = (value, low, high) => Math.max(low, Math.min(high, value));
+
+/**
+ * Logical pixels, monotonic timestamps in SECONDS. The host owns pointer arbitration and redraws.
+ * This is whole-surface feedback, not the navigation-selector travel controller.
+ * The spring stiffnesses and steady geometry match the opt-in Compose Calm choices; timing is authored.
+ */
+function createCalmInteraction({width, height, radius = Math.min(width, height) / 2,
+  x = 0, y = 0, viewportWidth, viewportHeight, reducedMotion = false,
+  pressScale = 1.03, pressGrowth = 2, pullShape = 'adaptive'}) {
+  if (![pressScale, pressGrowth].every(Number.isFinite) || pressScale < 1 || pressScale > 2 || pressGrowth < 0)
+    throw new RangeError('Press scale must be 1..2 and per-edge growth must be nonnegative');
+  if (!['adaptive','area-preserving'].includes(pullShape))
+    throw new RangeError('Pull shape must be adaptive or area-preserving');
+  let geometry, reduced = !!reducedMotion, clock = null, held = false;
+  let pressure = {value: 0, velocity: 0}, horizontal = {...pressure}, vertical = {...pressure};
+  let target = {x: 0, y: 0};
+  function configure(options) {
+    const next = {...geometry, ...options};
+    if (![next.width, next.height, next.radius, next.x, next.y].every(Number.isFinite) ||
+        next.width <= 0 || next.height <= 0 || next.radius < 0 ||
+        next.width > 1e7 || next.height > 1e7)
+      throw new RangeError('Finite position, positive dimensions up to 10 million, and nonnegative radius required');
+    if ((next.viewportWidth !== undefined || next.viewportHeight !== undefined) &&
+        (![next.viewportWidth, next.viewportHeight].every(Number.isFinite) ||
+        next.viewportWidth <= 0 || next.viewportHeight <= 0))
+      throw new RangeError('Supply both positive viewport dimensions, or neither');
+    next.radius = Math.min(next.radius, next.width / 2, next.height / 2);
+    geometry = next;
+  }
+  configure({width, height, radius, x, y, viewportWidth, viewportHeight});
+
+  function pressTargets() {
+    const {width:w, height:h, x, y, viewportWidth:vw, viewportHeight:vh} = geometry;
+    let sx=calmPressScale(w,pressScale,pressGrowth), sy=calmPressScale(h,pressScale,pressGrowth);
+    // Constrain the target before its spring, matching Compose; clipping the animated result
+    // instead would reach an edge early and abruptly stop an otherwise gradual press.
+    if (vw !== undefined && x >= 0 && x+w <= vw)
+      sx=Math.min(sx,Math.max(1,2*Math.min(x+w/2,vw-x-w/2)/w));
+    if (vh !== undefined && y >= 0 && y+h <= vh)
+      sy=Math.min(sy,Math.max(1,2*Math.min(y+h/2,vh-y-h/2)/h));
+    return [sx,sy];
+  }
+
+  function advance(time, staleFrame = false) {
+    if (!Number.isFinite(time) || time < 0)
+      throw new RangeError('Use monotonic nonnegative timestamps in seconds');
+    if (clock !== null && time < clock) {
+      if (staleFrame) return;
+      throw new RangeError('Use monotonic nonnegative timestamps in seconds');
+    }
+    const dt = clock === null ? 0 : time - clock;
+    clock = time;
+    pressure = stepSpring(pressure.value, pressure.velocity, held && !reduced ? 1 : 0, dt, held ? 220 : 260);
+    horizontal = stepSpring(horizontal.value, horizontal.velocity, target.x, dt, held ? 350 : 260);
+    vertical = stepSpring(vertical.value, vertical.velocity, target.y, dt, held ? 350 : 260);
+    // A settled controller can stop scheduling. Snap only below a sub-pixel threshold.
+    if (!held && Math.abs(pressure.value) < 1e-5 && Math.abs(pressure.velocity) < 1e-4 &&
+        Math.hypot(horizontal.value, vertical.value) < 1e-4 &&
+        Math.hypot(horizontal.velocity, vertical.velocity) < 1e-3) clear();
+  }
+  function clear() {
+    pressure = {value: 0, velocity: 0}; horizontal = {...pressure}; vertical = {...pressure};
+    target = {x: 0, y: 0};
+  }
+  function snapshot() {
+    const {width: w, height: h, radius: r, x, y, viewportWidth: vw, viewportHeight: vh} = geometry;
+    if (reduced) return {matrix: identity(), offset: [0,0], press: 0, held, active: false};
+    const amount = clampCalm(pressure.value, 0, 1);
+    const [targetX,targetY] = pressTargets();
+    const pressX = 1 + (targetX - 1) * amount;
+    const pressY = 1 + (targetY - 1) * amount;
+    const contained = vw !== undefined && x >= 0 && y >= 0 && x + w <= vw && y + h <= vh;
+    const cx = x + w / 2, cy = y + h / 2;
+    const shape = calmDeformation(w, h, horizontal.value, vertical.value, amount, r, pressX, pressY,
+      pullShape,Math.min(w*targetX,h*targetY)*.5);
+    const c = Math.cos(shape.angle), s = Math.sin(shape.angle);
+    function matrix(gain) {
+      const a = 1 + (shape.along - 1) * gain, b = 1 + (shape.across - 1) * gain;
+      const shear = (a - b) * c * s;
+      return [(a*c*c+b*s*s)*pressX, shear*pressY, shear*pressX, (a*s*s+b*c*c)*pressY];
+    }
+    function extent(gain) {
+      const [a,b,c,d] = matrix(gain);
+      // Support of a transformed rounded rectangle, including diagonals; never clip the glass.
+      const hx = (w/2-r)*Math.abs(a) + (h/2-r)*Math.abs(b) + r*Math.hypot(a,b);
+      const hy = (w/2-r)*Math.abs(c) + (h/2-r)*Math.abs(d) + r*Math.hypot(c,d);
+      return [hx,hy];
+    }
+    function fits(gain) {
+      const [hx,hy]=extent(gain);
+      return hx <= Math.min(cx,vw-cx) && hy <= Math.min(cy,vh-cy);
+    }
+    let gain = 1;
+    if (contained && !fits(1)) {
+      let low = 0, high = 1;
+      for (let i=0;i<24;i++) {const mid=(low+high)/2;if(fits(mid))low=mid;else high=mid;}
+      gain = low;
+    }
+    let offset=[shape.offsetX??0,shape.offsetY??0];
+    if(contained) {
+      const [hx,hy]=extent(gain);
+      // Same C1 edge resistance as Compose. The material may bias; layout never does.
+      const travel=(value,before,after)=>{
+        const room=Math.max(0,value<0?before:after),free=room/2;
+        if(Math.abs(value)<=free)return value;
+        const span=room-free, result=free+(span>0?span*Math.tanh((Math.abs(value)-free)/span):0);
+        return value<0?-result:result;
+      };
+      offset=[travel(offset[0],cx-hx,vw-cx-hx),travel(offset[1],cy-hy,vh-cy-hy)];
+    }
+    const active = Math.abs(pressure.value-(held?1:0)) > 1e-5 || Math.abs(pressure.velocity) > 1e-4 ||
+      Math.hypot(horizontal.value-target.x, vertical.value-target.y) > 1e-4 ||
+      Math.hypot(horizontal.velocity, vertical.velocity) > 1e-3;
+    return {matrix: matrix(gain), offset, press: amount, held, active};
+  }
+  return {
+    /** Total displacement since pointer-down, never a per-event delta. Advance the OLD target first. */
+    press(time, dx = 0, dy = 0) {
+      if (![dx,dy].every(Number.isFinite)) throw new RangeError('Finite cumulative displacement required');
+      advance(time); held = true;
+      target = reduced ? {x: 0, y: 0} : calmPullTarget(geometry.width, geometry.height, dx, dy, ...pressTargets());
+      return snapshot();
+    },
+    /** Use for both pointer-up and cancellation; navigation selection belongs to the host. */
+    release(time) {advance(time); held = false; target = {x: 0,y: 0}; return snapshot();},
+    // A queued animation frame can predate the latest input event; it must never rewind state.
+    sample(time) {advance(time, true); return snapshot();},
+    /** Reconfigure after a layout change. Cancel the current gesture rather than keeping stale coordinates. */
+    resize(options, time) {advance(time); configure(options); held = false; clear(); return snapshot();},
+    setReducedMotion(value, time) {advance(time); reduced = !!value; held = false; clear(); return snapshot();},
+  };
+}
+
+// The free button: GlassInteraction.Pullable with GlassPullShape.Free, the Phone scene's search button
+// (measured on iOS 26's, IMG_6756). Each value restarts from where it is when its target changes, as
+// Compose's animateFloatAsState does; the laws are Modifier.liquidGlass's own (glassPressScale,
+// glassPullTargetScale, glassPullDeformation without anchoring, glassFreeLanding). Checked frame by
+// frame against the Kotlin-exported ports/skia/fixtures/free-button.json.
+const FREE_SPECS = {
+  glowIn: {tween: .09}, freeGlow: {tween: .35},
+  balloonDown: {damping: .62, stiffness: 644}, pressUp: {damping: .72, stiffness: 700},
+  pullFollow: {damping: 1, stiffness: 2500}, freeRelease: {damping: .45, stiffness: 264},
+};
+
+function animated(initial) {
+  const a = {start: 0, from: initial, velocity: 0, target: initial, spec: null};
+  const at = time => {
+    if (!a.spec) return {value: a.from, velocity: 0};
+    // Compose evaluates its animations on whole elapsed milliseconds (nanoseconds / 1e6, truncated).
+    // As (elapsed seconds * 1e9).toLong() / 1e6: truncated twice, as the Kotlin host and Compose do.
+    const tm = Math.floor(Math.trunc(Math.max(0, time - a.start) * 1e9) / 1e6) / 1000;
+    if (a.spec.tween !== undefined) {
+      // A tween reads its elapsed time to the nanosecond; a spring to the whole millisecond.
+      const u = Math.min(1, Math.trunc(Math.max(0, time - a.start) * 1e9) / 1e9 / a.spec.tween);
+      return {value: a.from + (a.target - a.from) * fastOutSlowIn(u), velocity: 0};
+    }
+    return springAt(a.from, a.velocity, a.target, tm, a.spec.damping, a.spec.stiffness);
+  };
+  return {
+    value: time => at(time).value,
+    to(time, target, spec) {
+      if (target === a.target && a.spec) return;
+      const now = at(time);
+      Object.assign(a, {start: time, from: now.value, velocity: now.velocity, target, spec});
+    },
+  };
+}
+
+/**
+ * A free-standing round glass button pulled off its place (px; time in seconds). down / move (total
+ * finger travel since down) / up drive it; sample returns the drawing transform: press scale, a
+ * stretch along and across `angle` (degrees), the offset, and the glow and its lift.
+ */
+function createFreeButton({size, density = 1, pressScale = 1.26, pressGrowth = 8, pressLift = .2,
+  pullFollow = .2, pullElongation = .124, pullWidthRatio = 1, pullLimit = .5, pullLiftShare = .65,
+  pullReleaseDampingX = .3} = {}) {
+  if (!(size > 0) || !(density > 0)) throw new RangeError('Positive size and density required');
+  const growth = pressGrowth * density, radius = size / 2;
+  const balloon = Math.min(1 + 2 * growth / size, pressScale);
+  const limit = size * balloon * pullLimit;
+  const press = animated(0), glow = animated(0), px = animated(0), py = animated(0);
+  let anchor = NaN, moved = false;
+  const extent = (sx, sy, x, y) => {
+    const len = Math.hypot(x, y);
+    if (len < 1e-5) return Math.min(size * sx, size * sy);
+    const nx = Math.abs(x) / len, ny = Math.abs(y) / len;
+    return 2 * radius * Math.hypot(sx * nx, sy * ny);
+  };
+  // glassFreeLanding: the edge away from the pull holds at rest; the overshoot lands as a squash.
+  function landing(d) {
+    if (!Number.isFinite(anchor)) return d;
+    const a = anchor * Math.PI / 180, nx = Math.cos(a), ny = Math.sin(a);
+    const restHalf = Math.hypot(radius * nx, radius * ny);
+    const c = d.tx * nx + d.ty * ny, perp = -d.tx * ny + d.ty * nx;
+    const dd = (d.angle - anchor) * Math.PI / 180, cd = Math.cos(dd), sd = Math.sin(dd);
+    const stretched = c >= 0;
+    const axis = stretched ? Math.sqrt(d.along ** 2 * cd * cd + d.across ** 2 * sd * sd) : 1;
+    const side = stretched ? Math.sqrt(d.along ** 2 * sd * sd + d.across ** 2 * cd * cd) : 1;
+    const half = restHalf * axis;
+    if (c - half >= -restHalf) return d;
+    const newHalf = Math.max((c + half + restHalf) / 2, restHalf * .5), centre = c + half - newHalf;
+    const k = newHalf / half;
+    return {along: axis * k, across: side * (1 + .2 * (1 - k)), angle: anchor,
+      tx: centre * nx - perp * ny, ty: centre * ny + perp * nx};
+  }
+  return {
+    down(time) {
+      moved = false;
+      glow.to(time, 1, FREE_SPECS.glowIn); press.to(time, 1, FREE_SPECS.balloonDown);
+      px.to(time, 0, FREE_SPECS.pullFollow); py.to(time, 0, FREE_SPECS.pullFollow);
+    },
+    move(time, dx, dy) {
+      const len = Math.hypot(dx, dy);
+      if (!moved && len > 4 * density) { moved = true; glow.to(time, pullLiftShare, FREE_SPECS.freeGlow); }
+      if (len > 4 * density) anchor = Math.atan2(dy, dx) * 180 / Math.PI;
+      const travel = len * pullFollow;
+      const k = !(len > 1e-5) || pullFollow <= 0 ? 1 : limit * Math.tanh(travel / limit) / travel;
+      px.to(time, dx * k, FREE_SPECS.pullFollow); py.to(time, dy * k, FREE_SPECS.pullFollow);
+    },
+    up(time) {
+      glow.to(time, 0, FREE_SPECS.freeGlow); press.to(time, 0, FREE_SPECS.pressUp);
+      // Compose's GlassInteraction.pullReleaseDampingX: a separate x damping on release.
+      const releaseX = Number.isFinite(pullReleaseDampingX)
+        ? {...FREE_SPECS.freeRelease, damping: Math.min(Math.max(pullReleaseDampingX, .05), 2)} : FREE_SPECS.freeRelease;
+      px.to(time, 0, releaseX); py.to(time, 0, FREE_SPECS.freeRelease);
+    },
+    sample(time) {
+      const amount = press.value(time), scale = 1 + (balloon - 1) * amount;
+      const x = px.value(time), y = py.value(time), len = Math.hypot(x, y);
+      let d = {along: 1, across: 1, angle: 0, tx: 0, ty: 0};
+      if (len >= 1e-3) {
+        const e = extent(scale, scale, x, y), across = extent(scale, scale, -y, x);
+        const along = Math.min(1 + pullElongation * len / Math.max(e, 1), 1.6);
+        const extension = (along - 1) * Math.max(e, 1);
+        d = {along, across: Math.max(1 - pullWidthRatio * extension / Math.max(across, 1), .5),
+          angle: Math.atan2(y, x) * 180 / Math.PI, tx: pullFollow * x, ty: pullFollow * y};
+      }
+      d = landing(d);
+      const g = glow.value(time);
+      return {...d, pressScale: scale, glow: g, lift: g * pressLift, pullX: x};
+    },
+  };
+}
+
+/* ---- engine.mjs ---- */
+/** Apache-2.0. Attribute parsing and engine selection for <liquid-glass>. No DOM access. */
+
+const oneOf = (allowed, fallback) => value => {
+  const v = typeof value === 'string' ? value.trim().toLowerCase() : '';
+  return allowed.includes(v) ? v : fallback;
+};
+
+const parseVariant = oneOf(['regular', 'clear'], 'regular');
+const parseShape = oneOf(['capsule', 'rect'], 'capsule');
+const parseScheme = oneOf(['auto', 'light', 'dark'], 'auto');
+const parseEngine = oneOf(['html', 'canvas'], 'html');
+const parseLensing = oneOf(['auto', 'off'], 'auto');
+
+/** Corner radius of `shape="rect"`, CSS px. Missing or invalid values give the default. */
+const DEFAULT_RECT_RADIUS = 16;
+function parseRadius(value) {
+  if (value === null || value === undefined || value === '') return DEFAULT_RECT_RADIUS;
+  const n = typeof value === 'number' ? value : Number(String(value).trim().replace(/px$/i, ''));
+  return Number.isFinite(n) && n >= 0 ? n : DEFAULT_RECT_RADIUS;
+}
+
+/** Boolean attributes follow HTML: present (any value, including "") is true; absent is false. */
+const parseBoolean = value => value !== null && value !== undefined && value !== false;
+
+/** Every attribute at once, from a `getAttribute`-like function. */
+function parseAttributes(get) {
+  return {
+    variant: parseVariant(get('variant')),
+    shape: parseShape(get('shape')),
+    radius: parseRadius(get('radius')),
+    tint: (get('tint') ?? '').trim() || null,
+    scheme: parseScheme(get('scheme')),
+    engine: parseEngine(get('engine')),
+    interactive: parseBoolean(get('interactive')),
+    lensing: parseLensing(get('lensing')),
+  };
+}
+
+/** The corner radius actually drawn, CSS px: a capsule is half its short side; a rect's radius is
+ * limited to its inradius, as the shader's sdRoundRect limits it. */
+function cornerRadius({shape, radius}, width, height) {
+  const inradius = Math.max(0, Math.min(width, height) / 2);
+  return shape === 'capsule' ? inradius : Math.min(Math.max(0, radius), inradius);
+}
+
+/** Whether the scheme is dark, given the attribute and the system preference. */
+const isDark = (scheme, prefersDark) => scheme === 'dark' || (scheme === 'auto' && !!prefersDark);
+
+/**
+ * Can this browser lens the live page? Chromium applies an SVG filter referenced by url() in
+ * backdrop-filter; Firefox parses the same value (CSS.supports reports true) but does not render
+ * it, and Safari does not support url() there. Feature detection alone therefore cannot answer, so
+ * both must hold: the CSS parser accepts it AND the engine identifies itself as Chromium through
+ * User-Agent Client Hints, which only Chromium-based browsers implement. A browser that hides its
+ * brands gets the frosted path, which is the safe failure.
+ */
+function detectLensing(env = globalThis) {
+  try {
+    const css = env.CSS;
+    if (!css || typeof css.supports !== 'function') return false;
+    const parses = css.supports('backdrop-filter', 'url(#a)') || css.supports('-webkit-backdrop-filter', 'url(#a)');
+    const brands = env.navigator?.userAgentData?.brands;
+    const chromium = Array.isArray(brands) && brands.some(b => /chromium/i.test(String(b?.brand ?? '')));
+    return parses && chromium;
+  } catch { return false; }
+}
+
+/** Whether any backdrop-filter is available (the frosted path needs it; without it the glass is a
+ * tinted surface, which keeps slotted content legible). */
+function detectBackdropFilter(env = globalThis) {
+  try {
+    const css = env.CSS;
+    return !!css?.supports && (css.supports('backdrop-filter', 'blur(1px)') || css.supports('-webkit-backdrop-filter', 'blur(1px)'));
+  } catch { return false; }
+}
+
+/**
+ * Which engine draws, and how. `optics` is what the reader sees:
+ *  - 'shader': the canvas engine, production shaders over the given source;
+ *  - 'lens':   the HTML engine with SVG refraction (Chromium);
+ *  - 'frost':  the HTML engine with blur and tint only;
+ *  - 'flat':   no backdrop-filter at all, tint only.
+ * `reason` explains a fallback from the requested engine, or is null.
+ */
+function selectEngine({engine, variant, hasSource = false, canvasFailed = false,
+  lensing = 'auto', lensingSupported = false, backdropSupported = true}) {
+  const html = reason => ({
+    engine: 'html', reason,
+    optics: !backdropSupported ? 'flat' : (lensing !== 'off' && lensingSupported) ? 'lens' : 'frost',
+  });
+  if (engine !== 'canvas') return html(null);
+  if (variant !== 'regular') return html('canvas-variant');
+  if (canvasFailed) return html('canvas-unavailable');
+  if (!hasSource) return html('canvas-no-source');
+  return {engine: 'canvas', optics: 'shader', reason: null};
+}
+
+/* ---- element.mjs ---- */
+/** Apache-2.0. <liquid-glass>: a standard custom element. Its children stay ordinary HTML above
+ * the glass; the glass itself is drawn in its shadow root and never takes clicks or focus.
+ *
+ * engine="html" (default) refracts the live page behind it with CSS backdrop-filter: an SVG
+ * displacement filter in Chromium, a frosted blur elsewhere. engine="canvas" draws the production
+ * shaders through CanvasKit over a `source` the page provides. See README.md for the trade-offs.
+ */
+
+
+
+
+
+/** Filter pad, CSS px (authored): the SVG filter region and its displacement map reach this far
+ * beyond the element, so blur and outward refraction (Clear) can read the page around it. The glass
+ * layer's own border-radius clips the result: Chromium clips backdrop-filter output to the element's
+ * rounded border box, but not to an ancestor's or a clip-path's rounding (checked 18 October 2026). */
+const PAD = 32;
+const OBSERVED = ['variant', 'shape', 'radius', 'tint', 'scheme', 'engine', 'interactive', 'lensing'];
+const Base = globalThis.HTMLElement ?? class {};
+const now = () => performance.now() / 1000;
+let serial = 0;
+
+const STYLE = `
+:host{display:inline-block;position:relative;box-sizing:border-box;vertical-align:middle;
+  -webkit-tap-highlight-color:transparent}
+:host([hidden]){display:none}
+.material{position:absolute;inset:0;pointer-events:none;transform-origin:50% 50%;border-radius:inherit}
+.glass{position:absolute;inset:0;border-radius:inherit}
+.wide{display:none}
+.tint{position:absolute;inset:0;border-radius:inherit}
+.shader,.rim{position:absolute;inset:0;width:100%;height:100%;display:block}
+.shader{display:none;border-radius:inherit}
+.highlight{position:absolute;inset:0;border-radius:inherit;opacity:0;transition:opacity .12s ease-out}
+.content{position:relative}
+svg{position:absolute;width:0;height:0;overflow:hidden}
+.probe{display:none}
+@media (prefers-reduced-motion: reduce){.highlight{transition:none}}
+`;
+
+const supportsLensing = () => (LiquidGlassElement._lensing ??= detectLensing());
+const supportsBackdrop = () => (LiquidGlassElement._backdrop ??= detectBackdropFilter());
+
+function dataUrl(map) {
+  const canvas = document.createElement('canvas');
+  canvas.width = map.width; canvas.height = map.height;
+  canvas.getContext('2d').putImageData(new ImageData(map.data, map.width, map.height), 0, 0);
+  return canvas.toDataURL('image/png');
+}
+
+/** The SVG filter primitives of the lens path, in the padded box's user space (CSS px). */
+function filterMarkup(style, {width, height, href, scale}) {
+  const box = `x="${-PAD}" y="${-PAD}" width="${width}" height="${height}"`;
+  const map = `<feImage ${box} preserveAspectRatio="none" href="${href}" result="map"/>`;
+  const displace = (input, result) =>
+    `<feDisplacementMap in="${input}" in2="map" scale="${scale}" xChannelSelector="R" yChannelSelector="G" result="${result}"/>`;
+  if (style.profile === 'measured') {
+    // Two kernels mixed by the fine share, then sampled where the rest map says.
+    const s = style.fineShare;
+    return `<feGaussianBlur in="SourceGraphic" stdDeviation="${style.fineSigma}" result="fine"/>` +
+      `<feGaussianBlur in="SourceGraphic" stdDeviation="${style.wideSigma}" result="wide"/>` +
+      `<feComposite in="fine" in2="wide" operator="arithmetic" k1="0" k2="${s}" k3="${1 - s}" k4="0" result="tone"/>` +
+      map + displace('tone', 'out');
+  }
+  // Legacy (Clear): a crisp copy at the rim, the scattered copy inside, mixed by (1 - e)^2 (map B).
+  return `<feGaussianBlur in="SourceGraphic" stdDeviation="${style.fineSigma}" result="soft"/>` + map +
+    displace('soft', 'dsoft') + displace('SourceGraphic', 'dsharp') +
+    `<feColorMatrix in="map" type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 0 0" result="crisp"/>` +
+    `<feComposite in="dsharp" in2="crisp" operator="in" result="rim"/>` +
+    `<feComposite in="dsoft" in2="crisp" operator="out" result="inside"/>` +
+    `<feComposite in="rim" in2="inside" operator="arithmetic" k1="0" k2="1" k3="1" k4="0" result="out"/>`;
+}
+
+/** The press glow: the shader's +0.06 Gaussian (sigma = short edge) as radial-gradient stops. */
+function glowGradient(sigma) {
+  const stops = [0, 0.5, 1, 1.5, 2, 3].map(k => `rgb(255 255 255 / ${(0.06 * Math.exp(-k * k)).toFixed(5)}) ${(k * sigma).toFixed(1)}px`);
+  return `radial-gradient(circle at var(--lg-gx, 50%) var(--lg-gy, 50%), ${stops.join(', ')})`;
+}
+
+class LiquidGlassElement extends Base {
+  static get observedAttributes() { return OBSERVED; }
+  /** Whether this browser lenses the live page (Chromium); otherwise the HTML engine frosts. */
+  static get lensingSupported() { return supportsLensing(); }
+
+  #root; #parts; #size = {width: 0, height: 0}; #frame = 0; #observer = null; #queries = null;
+  #cache = {}; #source = null; #canvas = null; #canvasFailed = false; #canvasLoading = null;
+  #motion = null; #motionFrame = 0; #gesture = null; #state = {engine: 'html', optics: 'frost', reason: null};
+  #listeners = []; #videoFrame = 0; #filterId = `liquid-glass-${++serial}`;
+
+  constructor() {
+    super();
+    this.#root = this.attachShadow({mode: 'open'});
+    this.#root.innerHTML = `<style>${STYLE}</style>` +
+      `<svg aria-hidden="true" focusable="false"><filter id="${this.#filterId}" filterUnits="userSpaceOnUse" ` +
+      `primitiveUnits="userSpaceOnUse" color-interpolation-filters="sRGB"></filter></svg>` +
+      `<div class="material" part="material" aria-hidden="true">` +
+      `<div class="glass base" part="glass"></div><div class="glass wide"></div>` +
+      `<div class="tint" part="tint"></div><canvas class="shader" part="canvas"></canvas>` +
+      `<canvas class="rim" part="rim"></canvas><div class="highlight" part="highlight"></div></div>` +
+      `<div class="content" part="content"><slot></slot></div><span class="probe"></span>`;
+    const q = s => this.#root.querySelector(s);
+    this.#parts = {filter: q('filter'), material: q('.material'), base: q('.base'), wide: q('.wide'),
+      tint: q('.tint'), shader: q('.shader'), rim: q('.rim'), highlight: q('.highlight'), probe: q('.probe')};
+  }
+
+  // Reflected attributes. Setting a property writes the attribute; reading parses it.
+  get variant() { return parseVariant(this.getAttribute('variant')); }
+  set variant(v) { this.setAttribute('variant', v); }
+  get shape() { return parseShape(this.getAttribute('shape')); }
+  set shape(v) { this.setAttribute('shape', v); }
+  get radius() { return parseRadius(this.getAttribute('radius')); }
+  set radius(v) { this.setAttribute('radius', String(v)); }
+  get tint() { return this.getAttribute('tint'); }
+  set tint(v) { if (v == null || v === '') this.removeAttribute('tint'); else this.setAttribute('tint', v); }
+  get scheme() { return parseScheme(this.getAttribute('scheme')); }
+  set scheme(v) { this.setAttribute('scheme', v); }
+  get engine() { return parseEngine(this.getAttribute('engine')); }
+  set engine(v) { this.setAttribute('engine', v); }
+  get interactive() { return this.hasAttribute('interactive'); }
+  set interactive(v) { this.toggleAttribute('interactive', !!v); }
+  get lensing() { return parseLensing(this.getAttribute('lensing')); }
+  set lensing(v) { this.setAttribute('lensing', v); }
+
+  /** What the canvas engine refracts: an image, canvas, video or ImageBitmap (same-origin or CORS). */
+  get source() { return this.#source; }
+  set source(value) {
+    this.#source = value ?? null;
+    this.#canvasFailed = false;
+    this.#watchSource();
+    this.#schedule();
+  }
+
+  /** What is drawing now: {engine: 'html'|'canvas', optics: 'lens'|'frost'|'flat'|'shader', reason}. */
+  get renderState() { return {...this.#state}; }
+
+  /** Draw again: call after the pixels of a canvas `source` change. The HTML engine needs no call. */
+  refresh() { this.#schedule(); }
+
+  connectedCallback() {
+    this.#observer = new ResizeObserver(entries => {
+      const box = entries[entries.length - 1].borderBoxSize?.[0];
+      const rect = box ? {width: box.inlineSize, height: box.blockSize} : this.getBoundingClientRect();
+      this.#size = {width: rect.width, height: rect.height};
+      this.#motion?.resize({width: rect.width || 1, height: rect.height || 1,
+        radius: cornerRadius(parseAttributes(n => this.getAttribute(n)), rect.width, rect.height)}, now());
+      this.#schedule();
+    });
+    this.#observer.observe(this);
+    const media = q => globalThis.matchMedia?.(q) ?? null;
+    this.#queries = {dark: media('(prefers-color-scheme: dark)'), reduced: media('(prefers-reduced-motion: reduce)'),
+      contrast: media('(prefers-contrast: more)'), transparency: media('(prefers-reduced-transparency: reduce)')};
+    for (const query of Object.values(this.#queries)) this.#listen(query, 'change', () => {
+      this.#syncReducedMotion();
+      this.#schedule();
+    });
+    this.#listen(globalThis, 'resize', () => this.#schedule(), {passive: true});
+    this.#listen(this, 'pointerdown', e => this.#down(e), {passive: true});
+    this.#listen(this, 'keydown', e => this.#key(e, true));
+    this.#listen(this, 'keyup', e => this.#key(e, false));
+    this.#watchSource();
+    this.#schedule();
+  }
+
+  disconnectedCallback() {
+    this.#observer?.disconnect(); this.#observer = null;
+    for (const [target, type, fn, options] of this.#listeners) target?.removeEventListener?.(type, fn, options);
+    this.#listeners = [];
+    this.#endGesture();
+    cancelAnimationFrame(this.#frame); this.#frame = 0;
+    cancelAnimationFrame(this.#motionFrame); this.#motionFrame = 0;
+    this.#unwatchSource();
+    this.#canvas?.renderer?.dispose(); this.#canvas = null;
+    this.#motion = null;
+  }
+
+  attributeChangedCallback(name) {
+    if (name === 'engine') this.#canvasFailed = false;
+    if (name === 'interactive' && !this.hasAttribute('interactive')) { this.#endGesture(); this.#applyMotion(null); }
+    this.#schedule();
+  }
+
+  #listen(target, type, fn, options) {
+    if (!target?.addEventListener) return;
+    target.addEventListener(type, fn, options);
+    this.#listeners.push([target, type, fn, options]);
+  }
+
+  #schedule() {
+    if (this.#frame || !this.isConnected) return;
+    this.#frame = requestAnimationFrame(() => { this.#frame = 0; this.#render(); });
+  }
+
+  #setState(state) {
+    this.#state = state;
+    // Reflect for styling and tests; never set in the constructor.
+    if (this.dataset.engine !== state.engine) this.dataset.engine = state.engine;
+    if (this.dataset.optics !== state.optics) this.dataset.optics = state.optics;
+  }
+
+  /** Any CSS colour (including var() and modern spaces) as sRGB [r, g, b, a], or null if invalid. */
+  #color(text) {
+    const probe = this.#parts.probe;
+    probe.style.color = '';
+    probe.style.color = text;
+    if (!probe.style.color) return null;
+    const computed = getComputedStyle(probe).color;
+    const parsed = parseColor(computed);
+    if (parsed) return parsed;
+    const c = (LiquidGlassElement._colorCanvas ??= document.createElement('canvas'));
+    c.width = c.height = 1;
+    const g = c.getContext('2d', {willReadFrequently: true});
+    g.clearRect(0, 0, 1, 1); g.fillStyle = computed; g.fillRect(0, 0, 1, 1);
+    const [r, gr, b, a] = g.getImageData(0, 0, 1, 1).data;
+    return a ? [r / 255, gr / 255, b / 255, a / 255] : [0, 0, 0, 0];
+  }
+
+  #render() {
+    if (!this.isConnected) return;
+    const attrs = parseAttributes(n => this.getAttribute(n));
+    let {width, height} = this.#size;
+    if (!(width > 0 && height > 0)) {
+      const rect = this.getBoundingClientRect();
+      ({width, height} = rect);
+      if (!(width > 0 && height > 0)) return;
+      this.#size = {width, height};
+    }
+    const dpr = Math.min(4, Math.max(1, globalThis.devicePixelRatio || 1));
+    const dark = isDark(attrs.scheme, this.#queries?.dark?.matches);
+    const style = resolveStyle(attrs.variant, dark);
+    const radius = cornerRadius(attrs, width, height);
+    const tint = attrs.tint ? this.#color(attrs.tint) : null;
+    const contrast = this.#queries?.contrast?.matches ? 1 : 0;
+    const transparency = this.#queries?.transparency?.matches ? 1 : 0;
+
+    // The host's own style attribute belongs to the page (and its framework): set nothing there.
+    this.#parts.material.style.borderRadius = `${radius}px`;
+    this.#updateMotion(attrs, width, height, radius);
+
+    const ready = attrs.engine === 'canvas' && this.#canvas?.renderer && this.#source && this.#sourceReady();
+    let selected = selectEngine({engine: attrs.engine, variant: attrs.variant, hasSource: !!this.#source,
+      canvasFailed: this.#canvasFailed, lensing: attrs.lensing, lensingSupported: supportsLensing(),
+      backdropSupported: supportsBackdrop()});
+    if (selected.engine === 'canvas' && !ready) {
+      this.#loadCanvas();
+      selected = {...selectEngine({engine: 'html', variant: attrs.variant, lensing: attrs.lensing,
+        lensingSupported: supportsLensing(), backdropSupported: supportsBackdrop()}),
+        reason: this.#canvas?.renderer ? 'canvas-source-pending' : 'canvas-loading'};
+    }
+
+    if (selected.engine === 'canvas') {
+      try {
+        const source = this.#source;
+        const inDocument = source instanceof Element && source.isConnected;
+        const drawn = this.#canvas.renderer.draw({source, hostRect: this.getBoundingClientRect(),
+          sourceRect: inDocument ? source.getBoundingClientRect() : null, width, height, radius, dpr, dark,
+          tint, reducedTransparency: transparency, increasedContrast: contrast,
+          ground: getComputedStyle(this).getPropertyValue('--liquid-glass-ground').trim() || '#000'});
+        if (drawn) {
+          this.#showCanvas(true);
+          this.#highlightSize(width, height);
+          this.#setState(selected);
+          return;
+        }
+      } catch (error) {
+        console.warn('<liquid-glass> canvas engine failed; using the HTML engine.', error);
+        this.#canvasFailed = true;
+        selected = {...selectEngine({engine: 'html', variant: attrs.variant, lensing: attrs.lensing,
+          lensingSupported: supportsLensing(), backdropSupported: supportsBackdrop()}), reason: 'canvas-unavailable'};
+      }
+    }
+    this.#showCanvas(false);
+    this.#renderHtml(selected, style, {width, height, radius, dpr, tint, contrast, transparency, dark});
+    this.#highlightSize(width, height);
+    this.#setState(selected);
+  }
+
+  #showCanvas(on) {
+    const p = this.#parts;
+    p.shader.style.display = on ? 'block' : 'none';
+    for (const el of [p.base, p.wide, p.tint, p.rim]) el.style.visibility = on ? 'hidden' : '';
+  }
+
+  #highlightSize(width, height) {
+    const sigma = Math.min(width, height);
+    if (this.#cache.glow !== sigma) {
+      this.#cache.glow = sigma;
+      this.#parts.highlight.style.background = glowGradient(sigma);
+    }
+  }
+
+  #renderHtml(selected, style, {width, height, radius, dpr, tint, contrast, transparency, dark}) {
+    const p = this.#parts;
+    // Tint and lift, as one exact normal-blend layer (material.mjs tintLayer).
+    const layer = tintLayer(style, {tint, width, height, reducedTransparency: transparency});
+    let alpha = layer.alpha;
+    if (selected.optics === 'flat') alpha = Math.max(alpha, 0.9); // authored: no backdrop blur at all
+    const rgb = layer.rgb.map(v => (v * 255).toFixed(2)).join(' ');
+    p.tint.style.backgroundColor = `rgb(${rgb} / ${alpha.toFixed(4)})`;
+    // Increase Contrast: the shader mixes toward a near-solid at 0.88 (solid chosen here by scheme).
+    p.tint.style.backgroundImage = contrast
+      ? `linear-gradient(rgb(${dark ? '5 5 5' : '247 247 247'} / 0.88), rgb(${dark ? '5 5 5' : '247 247 247'} / 0.88))` : '';
+
+    const saturation = 'saturate(var(--liquid-glass-saturation, 1))';
+    if (selected.optics === 'lens') {
+      const key = `${style.variant}|${style.dark}|${width}|${height}|${radius}|${dpr}`;
+      if (this.#cache.filter !== key) {
+        this.#cache.filter = key;
+        // Map resolution: one sample per CSS px, fewer for very large glass (it is smooth inside).
+        const area = (width + 2 * PAD) * (height + 2 * PAD);
+        const scale = Math.min(1, Math.sqrt(250000 / area));
+        const map = displacementMap(style, {width, height, radius, density: dpr, pad: PAD, scale});
+        p.filter.setAttribute('x', String(-PAD)); p.filter.setAttribute('y', String(-PAD));
+        p.filter.setAttribute('width', String(width + 2 * PAD));
+        p.filter.setAttribute('height', String(height + 2 * PAD));
+        p.filter.innerHTML = filterMarkup(style, {width: width + 2 * PAD, height: height + 2 * PAD,
+          href: dataUrl(map), scale: map.scale});
+      }
+      const value = `url(#${this.#filterId}) ${saturation}`;
+      p.base.style.backdropFilter = value; p.base.style.webkitBackdropFilter = value;
+      p.wide.style.display = 'none';
+    } else if (selected.optics === 'frost') {
+      const fine = `blur(${style.fineSigma}px) ${saturation}`;
+      p.base.style.backdropFilter = fine; p.base.style.webkitBackdropFilter = fine;
+      if (style.wideSigma > 0) {
+        // fineShare x fine + (1 - fineShare) x wide: the wide layer sees the fine layer's output,
+        // and blur(wide) of blur(fine) is blur(sqrt(wide^2 + fine^2)) = 10.04 px for Regular.
+        const wide = `blur(${style.wideSigma}px)`;
+        p.wide.style.display = 'block';
+        p.wide.style.backdropFilter = wide; p.wide.style.webkitBackdropFilter = wide;
+        p.wide.style.opacity = String(1 - style.fineShare);
+      } else p.wide.style.display = 'none';
+    } else {
+      p.base.style.backdropFilter = ''; p.base.style.webkitBackdropFilter = '';
+      p.wide.style.display = 'none';
+    }
+
+    const rimKey = `${style.variant}|${style.dark}|${width}|${height}|${radius}|${dpr}`;
+    if (this.#cache.rim !== rimKey) {
+      this.#cache.rim = rimKey;
+      const rim = rimMap(style, {width, height, radius, density: dpr});
+      p.rim.width = rim.width; p.rim.height = rim.height;
+      p.rim.getContext('2d').putImageData(new ImageData(rim.data, rim.width, rim.height), 0, 0);
+    }
+  }
+
+  // Canvas engine ------------------------------------------------------------------------------
+
+  #sourceReady() {
+    return this.#canvas?.ready?.(this.#source) ?? false;
+  }
+
+  #loadCanvas() {
+    if (this.#canvasLoading || this.#canvas?.renderer || this.#canvasFailed) return;
+    this.#canvasLoading = (async () => {
+      try {
+        const engine = await import('./canvas-engine.mjs');
+        const kit = await engine.loadCanvasKit();
+        if (!this.isConnected) return;
+        this.#canvas = {renderer: engine.createCanvasRenderer(kit, this.#parts.shader, () => this.#schedule()),
+          ready: engine.sourceReady};
+      } catch (error) {
+        console.warn('<liquid-glass> engine="canvas" is unavailable; using the HTML engine.', error);
+        this.#canvasFailed = true;
+      } finally {
+        this.#canvasLoading = null;
+        this.#schedule();
+      }
+    })();
+  }
+
+  #watchSource() {
+    this.#unwatchSource();
+    const source = this.#source;
+    if (!source || !this.isConnected) return;
+    const redraw = () => this.#schedule();
+    if (source instanceof (globalThis.HTMLImageElement ?? class {})) this.#listenSource(source, 'load', redraw);
+    if (source instanceof (globalThis.HTMLVideoElement ?? class {})) {
+      const tick = () => {
+        this.#schedule();
+        this.#videoFrame = source.requestVideoFrameCallback ? source.requestVideoFrameCallback(tick)
+          : requestAnimationFrame(tick);
+      };
+      this.#listenSource(source, 'loadeddata', redraw);
+      this.#videoFrame = source.requestVideoFrameCallback ? source.requestVideoFrameCallback(tick) : requestAnimationFrame(tick);
+    }
+    // A laid-out source moves relative to the glass when the page scrolls.
+    if (source instanceof (globalThis.Element ?? class {})) this.#listenSource(globalThis, 'scroll', redraw, {passive: true, capture: true});
+  }
+
+  #sourceListeners = [];
+  #listenSource(target, type, fn, options) {
+    target.addEventListener(type, fn, options);
+    this.#sourceListeners.push([target, type, fn, options]);
+  }
+
+  #unwatchSource() {
+    for (const [target, type, fn, options] of this.#sourceListeners) target.removeEventListener(type, fn, options);
+    this.#sourceListeners = [];
+    if (this.#videoFrame) {
+      const video = this.#source;
+      if (video?.cancelVideoFrameCallback) video.cancelVideoFrameCallback(this.#videoFrame);
+      else cancelAnimationFrame(this.#videoFrame);
+      this.#videoFrame = 0;
+    }
+  }
+
+  // Interaction ---------------------------------------------------------------------------------
+
+  #updateMotion(attrs, width, height, radius) {
+    if (!attrs.interactive) { this.#motion = null; return; }
+    if (!this.#motion) {
+      this.#reducedMotion = !!this.#queries?.reduced?.matches;
+      this.#motion = createCalmInteraction({width, height, radius, reducedMotion: this.#reducedMotion});
+      this.#motionSize = `${width}|${height}|${radius}`;
+    } else if (this.#motionSize !== `${width}|${height}|${radius}`) {
+      this.#motionSize = `${width}|${height}|${radius}`;
+      this.#motion.resize({width, height, radius}, now());
+    }
+  }
+  #motionSize = '';
+
+  #down(event) {
+    if (!this.interactive || this.#gesture || (event.pointerType === 'mouse' && event.button !== 0)) return;
+    if (!this.#motion) this.#render();
+    if (!this.#motion) return;
+    this.#syncReducedMotion();
+    const gesture = {id: event.pointerId, x: event.clientX, y: event.clientY};
+    this.#gesture = gesture;
+    const move = e => {
+      if (e.pointerId !== gesture.id) return;
+      this.#glowAt(e.clientX, e.clientY);
+      this.#motion?.press(now(), e.clientX - gesture.x, e.clientY - gesture.y);
+      this.#animate();
+    };
+    const end = e => { if (e.pointerId === gesture.id) this.#endGesture(); };
+    gesture.off = () => {
+      removeEventListener('pointermove', move); removeEventListener('pointerup', end); removeEventListener('pointercancel', end);
+    };
+    addEventListener('pointermove', move, {passive: true});
+    addEventListener('pointerup', end, {passive: true});
+    addEventListener('pointercancel', end, {passive: true});
+    this.#glowAt(event.clientX, event.clientY);
+    this.#motion.press(now());
+    this.#parts.highlight.style.opacity = '1';
+    this.#animate();
+  }
+
+  #key(event, down) {
+    if (!this.interactive || (event.key !== ' ' && event.key !== 'Enter')) return;
+    if (down) {
+      if (event.repeat || this.#gesture) return;
+      if (!this.#motion) this.#render();
+      if (!this.#motion) return;
+      this.#syncReducedMotion();
+      this.#gesture = {id: 'key', off() {}};
+      this.#parts.highlight.style.setProperty('--lg-gx', '50%');
+      this.#parts.highlight.style.setProperty('--lg-gy', '50%');
+      this.#motion.press(now());
+      this.#parts.highlight.style.opacity = '1';
+      this.#animate();
+    } else if (this.#gesture?.id === 'key') this.#endGesture();
+  }
+
+  // The media query's change event can arrive after the next input, so a press reads it directly.
+  // Only a real change resets the motion, so a colour-scheme change or a re-press keeps its release.
+  #syncReducedMotion() {
+    const reduced = !!this.#queries?.reduced?.matches;
+    if (!this.#motion || reduced === this.#reducedMotion) return;
+    this.#reducedMotion = reduced;
+    this.#motion.setReducedMotion(reduced, now());
+  }
+  #reducedMotion = false;
+
+  #endGesture() {
+    if (!this.#gesture) return;
+    this.#gesture.off();
+    this.#gesture = null;
+    this.#parts.highlight.style.opacity = '0';
+    this.#motion?.release(now());
+    this.#animate();
+  }
+
+  #glowAt(clientX, clientY) {
+    const rect = this.getBoundingClientRect();
+    this.#parts.highlight.style.setProperty('--lg-gx', `${clientX - rect.left}px`);
+    this.#parts.highlight.style.setProperty('--lg-gy', `${clientY - rect.top}px`);
+  }
+
+  #animate() {
+    if (this.#motionFrame) return;
+    const step = () => {
+      this.#motionFrame = 0;
+      if (!this.#motion) { this.#applyMotion(null); return; }
+      const state = this.#motion.sample(now());
+      this.#applyMotion(state);
+      if (state.active || state.held) this.#motionFrame = requestAnimationFrame(step);
+    };
+    this.#motionFrame = requestAnimationFrame(step);
+  }
+
+  #applyMotion(state) {
+    const m = this.#parts.material;
+    if (!state || (!state.active && !state.held)) { m.style.transform = ''; return; }
+    // Row-major [a, b, c, d] (x' = a x + b y) about the centre, then the material-only offset.
+    const [a, b, c, d] = state.matrix, [ox, oy] = state.offset;
+    const identity = a === 1 && b === 0 && c === 0 && d === 1 && ox === 0 && oy === 0;
+    m.style.transform = identity ? '' : `translate(${ox}px, ${oy}px) matrix(${a}, ${c}, ${b}, ${d}, 0, 0)`;
+  }
+}
+
+/** Register the element (default name `liquid-glass`). Safe to call more than once, and a no-op
+ * outside a browser. Returns the registered constructor. */
+function define(name = 'liquid-glass') {
+  const registry = globalThis.customElements;
+  if (!registry) return LiquidGlassElement;
+  const existing = registry.get(name);
+  if (existing) return existing;
+  registry.define(name, name === 'liquid-glass' ? LiquidGlassElement : class extends LiquidGlassElement {});
+  return registry.get(name);
+}
+
+globalThis.LiquidGlass = {
+  define, LiquidGlassElement,
+  resolveStyle, regularStyle, clearStyle, tintLayer, parseColor,
+  displacementMap, rimMap, createCalmInteraction,
+  detectLensing, detectBackdropFilter, filterMarkup, dataUrl,
+  sizeFactor, opacity, fineKernel, fineShare, BEVEL_RATIO, LIGHT, PROVENANCE
+};
+})();
+
+</script>
 <script>
 (()=>{
 const QC=new Map(),$=s=>{const c=QC.get(s);if(c&&c.isConnected)return c;const e=document.querySelector(s);if(e)QC.set(s,e);return e},R=document.documentElement;
+/* ===== SEARCH KEYS: paste your key(s) between the quotes. Nothing is asked in the browser. =====
+   Serper (Google results): serper.dev   Tavily: tavily.com   Exa: exa.ai   Brave: brave.com/search/api
+   Firecrawl: firecrawl.dev   Jina: jina.ai   SearXNG: your own server URL
+   If several are filled, the first one in this order is used and the next one is the backup. */
+const SEARCH_KEYS={serper:"",tavily:"tvly-3hgB98-HdnyvSQo8zMHVLpdE7LlbUon60C9grJiQX04X2NXIi",exa:"",brave:"",firecrawl:"",jina:"",searx:"",marginalia:"",wiki:"on",ddg:"on"};
 const EC=new Map(),E=s=>{const k=String(s??"");const c=EC.get(k);if(c!==undefined)return c;const r=k.replace(/[&<>"']/g,ch=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[ch]));if(EC.size<800)EC.set(k,r);return r};
 const uid=()=>Math.random().toString(36).slice(2,9);
 const ENG={wiki:["Wikipedia","https://en.wikipedia.org/w/index.php?search="],ddg:["DuckDuckGo","https://duckduckgo.com/?q="],google:["Google","https://www.google.com/search?q="],bing:["Bing","https://www.bing.com/search?q="]};
+const engChips=()=>`<div class="engrow">`+Object.keys(ENG).map(k=>`<button class="eng${k===S.set.engine?" on":""}" data-act="eng" data-v="${k}">${E(ENG[k][0])}</button>`).join("")+`</div>`;
 const WALL={auto:["Automatic",""],sunset:["Sunset","linear-gradient(160deg,#ffb36b,#ff6f91 55%,#7a5cff)"],ocean:["Ocean","linear-gradient(160deg,#5ee7df,#3a7bd5 60%,#2b2f77)"],mint:["Mint","linear-gradient(160deg,#d4fc79,#96e6a1 55%,#4ca1af)"]};
 
 const BLOCK=/(^|\.)(google|youtube|facebook|instagram|x|twitter|duckduckgo|bing|github|reddit|linkedin|netflix|amazon|paypal)\.[a-z.]+$/i;
-const DEF={tabs:[],active:null,bm:[],hist:[],closed:[],read:[],set:{theme:"system",engine:"wiki",home:"",wall:"auto",motion:true,fav:true,freq:true,rl:true,rc:true,popups:false,tilt:true,glass:60,speed:1,bounce:1,depth:1,sound:true,vol:60}};
+const DEF={tabs:[],active:null,bm:[],hist:[],closed:[],read:[],set:{theme:"system",engine:"wiki",home:"",wall:"auto",motion:true,fav:true,freq:true,rl:true,rc:true,popups:false,tilt:false,glass:100,lgv:"clear",lgb:false,speed:1,bounce:1,depth:1,sound:true,vol:60,gweb:true,gkey:"",tkey:"",ekey:"",bkey:"",fkey:"",jkey:"",sxurl:"",sp:"auto"}};
 let S;
 try{S=Object.assign({},DEF,JSON.parse(localStorage.getItem("glassbrowser")||"{}"))}catch(e){S=Object.assign({},DEF)}
 S.set=Object.assign({},DEF.set,S.set);
+if(S.set.lgb===undefined)S.set.lgb=false;if(S.set.lgg===undefined)S.set.lgg="clear";if(S.set.lga===undefined)S.set.lga="ios";if(S.set.lgv===undefined)S.set.lgv="regular";if(S.set.lgl===undefined)S.set.lgl="auto";if(S.set.lgt===undefined)S.set.lgt="default";if(S.set.lgs===undefined)S.set.lgs=1;if(S.set.lgp===undefined)S.set.lgp=true;
 if(window.matchMedia("(prefers-reduced-motion: reduce)").matches&&!localStorage.getItem("glassbrowser"))S.set.motion=false;
 let sQ=0,lastSaved="";try{lastSaved=localStorage.getItem("glassbrowser")||""}catch(e){}
 const SO={};const saveNow=()=>{try{const t=S.tabs.some(x=>x.p)?S.tabs.filter(x=>!x.p):S.tabs;SO.tabs=t;SO.active=t.find(x=>x.id===S.active)?S.active:(t[0]||{}).id;SO.bm=S.bm;SO.hist=S.hist;SO.closed=S.closed;SO.read=S.read;SO.set=S.set;const v=JSON.stringify(SO);if(v===lastSaved)return;lastSaved=v;localStorage.setItem("glassbrowser",v)}catch(e){}};const save=()=>{if(sQ)return;sQ=requestAnimationFrame(()=>{sQ=0;saveNow()})};const flush=()=>{if(sQ){cancelAnimationFrame(sQ);sQ=0;saveNow()}};addEventListener("pagehide",flush);document.addEventListener("visibilitychange",()=>{if(document.visibilityState==="hidden"){flush();stopTilt()}});
@@ -202,7 +1949,12 @@ function resolve(v){v=v.trim();if(!v)return null;
  if(/^[a-z][a-z0-9+.-]*:/i.test(v)&&!/^[\w-]+(\.[\w-]+)+:\d+/.test(v))return null;
  if(!/\s/.test(v)&&/^([\w-]+\.)+[a-z]{2,}(:\d+)?([\/?#].*)?$/i.test(v)||/^localhost(:\d+)?/.test(v))return{u:"https://"+v};
  return{u:"glass://search/"+encodeURIComponent(v),q:v}}
+function openSite(u){if(!u)return;
+ if(BLOCK.test(host(u))){let w=null;try{w=window.open(u,"_blank")}catch(e){}
+  if(!w)location.href=u;return}
+ go(u)}
 function go(v){const r=resolve(v),t=cur();if(!r){toast("That address is not supported. Use http or https.");return}
+ if(BLOCK.test(host(r.u))){openSite(r.u);return}
  t.stack=t.stack.slice(0,t.i+1);t.stack.push(r.u);t.i++;t.title=r.q||host(r.u);
  if(!t.p){const h0=S.hist[0];if(!(h0&&h0.u===r.u&&!!h0.q===!!r.q)){S.hist.unshift({id:uid(),u:r.u,t:r.q||host(r.u),d:Date.now(),q:!!r.q});if(S.hist.length>660)S.hist.length=600}}
  render();save()}
@@ -213,16 +1965,75 @@ function progClear(){pWant=0;const p=$("#prog");if(p.className!=="")p.className=
 $("#frame").onload=()=>{if(shown)progDone()};
 function real(t){const u=url(t);return u&&!u.startsWith("glass:")?u:""}
 function disp(u){return u.startsWith("glass://")?decodeURIComponent(u.slice(15)):u}
-function results(q){const l=q.toLowerCase(),has=x=>(x.t+" "+x.u).toLowerCase().includes(l),seen=new Set(),loc=[...S.bm.map(x=>({t:x.t,u:x.u,k:"Bookmark"})),...S.read.map(x=>({t:x.t,u:x.u,k:"Reading List"})),...S.hist.filter(x=>!x.q).map(x=>({t:x.t,u:x.u,k:"History"}))].filter(x=>has(x)&&!seen.has(x.u)&&seen.add(x.u)).slice(0,8);
- const order=[S.set.engine,...Object.keys(ENG).filter(k=>k!==S.set.engine)];
- const eng=order.map(k=>k==="wiki"?`<button class="row" data-go="${E(ENG.wiki[1]+encodeURIComponent(q))}"><div class="m"><b>Wikipedia</b><small>Results open inside this browser</small></div></button>`:`<a class="row" href="${E(ENG[k][1]+encodeURIComponent(q))}" target="_blank" rel="noopener noreferrer"><div class="m"><b>${E(ENG[k][0])}</b><small>Opens in a new tab on the search site</small></div></a>`).join("");
- const rh=`<h1>${E(q)}</h1><h2>Search with</h2><div class="glass list">${eng}</div><h2>In your browser</h2><div class="glass list">${loc.length?loc.map(x=>`<button class="row" data-go="${E(x.u)}"><div class="m"><b>${E(x.t)}</b><small>${E(x.k)} · ${E(host(x.u))}</small></div></button>`).join(""):'<p class="empty">No bookmarks, history or Reading List items match.</p>'}</div><p class="note">Google, DuckDuckGo and Bing do not allow their results to be shown inside another page, and this web prototype cannot fetch them. The Android WebView version can show web results directly.</p>`;if(rh!==rHtml){rHtml=rh;$("#results").innerHTML=rh}}
+const GC=new Map();let gLast="",gPg=1;
+const gUq=()=>{const u=url(cur())||"";return u.startsWith("glass://search/")?decodeURIComponent(u.slice(15)):null};
+const gHttp=u=>/^https?:\/\//i.test(u||"");
+const gT=x=>String(x||"").replace(/<[^>]+>/g,"").replace(/&amp;/g,"&").replace(/&quot;/g,'"').replace(/&#0?39;|&#x27;/g,"'").replace(/&lt;/g,"<").replace(/&gt;/g,">");
+const gOk=r=>{if(!r.ok)throw new Error(r.status===401||r.status===403?"key rejected":r.status===429?"limit reached":"error "+r.status);return r.json()};
+const gFx=(u,o)=>{const c=new AbortController(),t=setTimeout(()=>c.abort(),10000);return fetch(u,Object.assign({signal:c.signal},o)).then(r=>{clearTimeout(t);return r},e=>{clearTimeout(t);throw new Error(e&&e.name==="AbortError"?"took too long (10s)":"blocked or offline")})};
+const gPost=(u,h,b)=>gFx(u,{method:"POST",headers:Object.assign({"Content-Type":"application/json"},h),body:JSON.stringify(b)}).then(gOk);
+const gGet=(u,h)=>gFx(u,{headers:h}).then(gOk);
+const PROV={
+ serper:{n:"Google (Serper)",k:"gkey",pg:1,ph:"Serper API key",u:"serper.dev",f:(q,pg,key)=>gPost("https://google.serper.dev/search",{"X-API-KEY":key},{q:q,page:pg,num:10})},
+ tavily:{n:"Tavily",k:"tkey",pg:0,ph:"Tavily key (tvly-…)",u:"tavily.com",f:(q,pg,key)=>gPost("https://api.tavily.com/search",{"Authorization":"Bearer "+key},{query:q,max_results:10,include_answer:true}).then(d=>({organic:(d.results||[]).map(x=>({title:x.title,link:x.url,snippet:x.content})),answerBox:d.answer?{title:"Answer",answer:d.answer}:null}))},
+ exa:{n:"Exa",k:"ekey",pg:0,ph:"Exa API key",u:"exa.ai",f:(q,pg,key)=>gPost("https://api.exa.ai/search",{"x-api-key":key},{query:q,numResults:10,contents:{text:{maxCharacters:300}}}).then(d=>({organic:(d.results||[]).map(x=>({title:x.title,link:x.url,snippet:x.text}))}))},
+ brave:{n:"Brave Search",k:"bkey",pg:1,ph:"Brave subscription token",u:"brave.com/search/api",f:(q,pg,key)=>gGet("https://api.search.brave.com/res/v1/web/search?count=10&offset="+(pg-1)+"&q="+encodeURIComponent(q),{"X-Subscription-Token":key,"Accept":"application/json"}).then(d=>({organic:((d.web&&d.web.results)||[]).map(x=>({title:x.title,link:x.url,snippet:x.description}))}))},
+ firecrawl:{n:"Firecrawl",k:"fkey",pg:0,ph:"Firecrawl key (fc-…)",u:"firecrawl.dev",f:(q,pg,key)=>gPost("https://api.firecrawl.dev/v1/search",{"Authorization":"Bearer "+key},{query:q,limit:10}).then(d=>{const a=Array.isArray(d.data)?d.data:((d.data&&d.data.web)||[]);return{organic:a.map(x=>({title:x.title,link:x.url,snippet:x.description}))}})},
+ jina:{n:"Jina Search",k:"jkey",pg:0,ph:"Jina key (jina_…)",u:"jina.ai",f:(q,pg,key)=>gGet("https://s.jina.ai/?q="+encodeURIComponent(q),{"Authorization":"Bearer "+key,"Accept":"application/json"}).then(d=>({organic:(d.data||[]).map(x=>({title:x.title,link:x.url,snippet:x.description||(x.content||"").slice(0,300)}))}))},
+ marginalia:{n:"Marginalia",k:"marginalia",pg:0,ph:"public",u:"marginalia-search.com",f:(q,pg,key)=>gGet("https://api.marginalia.nu/"+encodeURIComponent(key)+"/search/"+encodeURIComponent(q)+"?count=10",{}).catch(()=>gGet("https://api2.marginalia-search.com/search?count=10&query="+encodeURIComponent(q),{"API-Key":key})).catch(()=>gGet("https://api.allorigins.win/raw?url="+encodeURIComponent("https://api.marginalia.nu/"+key+"/search/"+encodeURIComponent(q)+"?count=10"),{})).then(d=>({organic:(d.results||[]).map(x=>({title:x.title,link:x.url,snippet:x.description}))}))},
+ ddg:{n:"DuckDuckGo",k:"ddg",pg:0,ph:"",u:"duckduckgo.com",f:(q,pg,key)=>gGet("https://api.duckduckgo.com/?format=json&no_html=1&skip_disambig=1&no_redirect=1&q="+encodeURIComponent(q),{}).then(d=>{const flat=a=>(a||[]).reduce((r,x)=>x.Topics?r.concat(flat(x.Topics)):r.concat(x),[]);
+  const org=[...flat(d.Results),...flat(d.RelatedTopics)].filter(x=>x.FirstURL&&x.Text).map(x=>({title:x.Text.split(" - ")[0].slice(0,90),link:x.FirstURL,snippet:x.Text}));
+  if(!org.length&&!d.AbstractText)throw new Error("no instant answer for this search");
+  return{organic:org,answerBox:d.AbstractText?{title:d.Heading||"Answer",answer:d.AbstractText,link:d.AbstractURL}:null}})},
+ wiki:{n:"Wikipedia",k:"wiki",pg:0,ph:"",u:"wikipedia.org",f:(q,pg,key)=>gGet("https://en.wikipedia.org/w/api.php?action=query&list=search&srlimit=10&format=json&origin=*&srsearch="+encodeURIComponent(q),{}).then(d=>({organic:((d.query&&d.query.search)||[]).map(x=>({title:x.title,link:"https://en.wikipedia.org/wiki/"+encodeURIComponent(x.title.replace(/ /g,"_")),snippet:x.snippet}))}))},
+ searx:{n:"SearXNG",k:"sxurl",pg:1,ph:"https://your-searxng.example",u:"your own server",f:(q,pg,key)=>gGet(key.replace(/\/+$/,"")+"/search?format=json&pageno="+pg+"&q="+encodeURIComponent(q),{"Accept":"application/json"}).then(d=>({organic:(d.results||[]).map(x=>({title:x.title,link:x.url,snippet:x.content}))}))}
+};
+const gUsable=id=>!!(SEARCH_KEYS[id]||"").trim();
+const gProvs=()=>{const all=Object.keys(PROV).filter(gUsable),p=S.set.sp;return PROV[p]&&gUsable(p)?[p]:all};
+function gFetch(q,pg,k,L){GC.set(k,{s:"load"});const errs=[];
+ const tryN=i=>{if(i>=L.length)throw new Error(errs.join(" · "));const P=PROV[L[i]];
+  return Promise.resolve().then(()=>P.f(q,pg,(SEARCH_KEYS[L[i]]||"").trim())).then(d=>{d._src=P.n;d._pg=P.pg;return d},e=>{errs.push(P.n+": "+(e&&e.message&&e.message!=="Failed to fetch"?e.message:"blocked or offline"));return tryN(i+1)})};
+ tryN(0).then(d=>GC.set(k,{s:"ok",d:d}),e=>GC.set(k,{s:"err",m:e.message})).then(()=>{if(gUq()===q){rHtml="";D.rev++;render()}})}
+function gCards(d,pg){let h="";
+ const ab=d.answerBox;if(ab&&(ab.answer||ab.snippet)){h+=`<button class="glass list gr ab" ${gHttp(ab.link)?`data-go="${E(ab.link)}"`:""}><b class="t">${E(ab.title||"Answer")}</b><p class="big">${E(ab.answer||ab.snippet)}</p></button>`}
+ const kg=d.knowledgeGraph;if(kg&&kg.title){const at=kg.attributes?Object.entries(kg.attributes).slice(0,4).map(([a,b])=>`<small><b>${E(a)}:</b> ${E(b)}</small>`).join(""):"";h+=`<div class="glass list gr kg"><b class="t" style="color:var(--t)">${E(kg.title)}</b>${kg.type?`<small>${E(kg.type)}</small>`:""}${kg.description?`<p>${E(kg.description)}</p>`:""}${at}</div>`}
+ const org=d.organic||[];
+ h+=org.filter(x=>gHttp(x.link)).map(x=>`<button class="glass list gr" data-go="${E(x.link)}"><span class="u"><img src="https://www.google.com/s2/favicons?sz=32&domain=${encodeURIComponent(host(x.link))}" width="16" height="16" alt="" loading="lazy" referrerpolicy="no-referrer" onerror="this.remove()">${E(host(x.link))}</span><b class="t">${E(gT(x.title)||x.link)}</b>${x.snippet?`<p>${E(gT(x.snippet))}</p>`:""}</button>`).join("");
+ if(!org.length&&!ab&&!kg)h+=`<p class="empty">No results found.</p>`;
+ const pa=(d.peopleAlsoAsk||[]).filter(x=>x.question).slice(0,4);
+ if(pa.length)h+=`<h2>People also ask</h2>`+pa.map(x=>`<button class="glass list gr" ${gHttp(x.link)?`data-go="${E(x.link)}"`:""}><b class="t" style="color:var(--t);font-size:16px">${E(x.question)}</b>${x.snippet?`<p>${E(x.snippet)}</p>`:""}</button>`).join("");
+ const rs=(d.relatedSearches||[]).filter(x=>x.query).slice(0,8);
+ if(rs.length)h+=`<h2>Related searches</h2><div class="grel">`+rs.map(x=>`<button class="glass eng2" data-go="glass://search/${encodeURIComponent(x.query)}">${E(x.query)}</button>`).join("")+`</div>`;
+ h+=`<div class="gpg">${pg>1?`<button class="glass eng2" data-act="gpage" data-v="${pg-1}">‹ Previous</button>`:""}<span class="note">Page ${pg}</span>${d._pg&&org.length>=8&&pg<10?`<button class="glass eng2" data-act="gpage" data-v="${pg+1}">Next ›</button>`:""}</div>`;
+ return h}
+function gWiki(q){const k="w|"+q;if(!GC.has(k)){GC.set(k,{s:"load"});
+ fetch("https://en.wikipedia.org/w/api.php?action=query&list=search&srlimit=10&format=json&origin=*&srsearch="+encodeURIComponent(q)).then(r=>r.json()).then(d=>GC.set(k,{s:"ok",d:(d.query&&d.query.search)||[]}),()=>GC.set(k,{s:"err"})).then(()=>{if(gUq()===q){rHtml="";D.rev++;render()}})}
+ const c=GC.get(k),open=`<p style="display:flex;gap:8px;flex-wrap:wrap;margin:8px 0"><button class="btn q" data-act="site" data-u="${E(ENG.google[1]+encodeURIComponent(q))}">Open this search on Google</button></p>`;
+ let h=open+`<h2>Results</h2>`;
+ if(c.s==="load")return h+[1,2,3].map(()=>`<div class="glass list gr sk"><i style="width:30%"></i><i style="width:80%;height:18px"></i><i></i></div>`).join("");
+ if(c.s==="err"||!c.d.length)return h+`<p class="empty">No keyless results found.</p>`;
+ return h+c.d.map(x=>{const u="https://en.wikipedia.org/wiki/"+encodeURIComponent(x.title.replace(/ /g,"_"));return `<button class="glass list gr" data-go="${E(u)}"><span class="u">en.wikipedia.org</span><b class="t">${E(x.title)}</b><p>${E(x.snippet.replace(/<[^>]+>/g,"").replace(/&quot;/g,'"').replace(/&amp;/g,"&").replace(/&#039;/g,"'"))}…</p></button>`}).join("")}
+function results(q){if(q!==gLast){gLast=q;gPg=1}
+ const l=q.toLowerCase(),has=x=>(x.t+" "+x.u).toLowerCase().includes(l),seen=new Set(),loc=[...S.bm.map(x=>({t:x.t,u:x.u,k:"Bookmark"})),...S.read.map(x=>({t:x.t,u:x.u,k:"Reading List"})),...S.hist.filter(x=>!x.q).map(x=>({t:x.t,u:x.u,k:"History"}))].filter(x=>has(x)&&!seen.has(x.u)&&seen.add(x.u)).slice(0,8);
+ const gu=ENG.google[1]+encodeURIComponent(q);
+ const eng=["google","bing","ddg","wiki"].map(k=>k==="wiki"?`<button class="row" data-go="${E(ENG.wiki[1]+encodeURIComponent(q))}"><div class="m"><b>Wikipedia</b><small>Opens inside this browser</small></div></button>`:`<button class="row" data-act="site" data-u="${E(ENG[k][1]+encodeURIComponent(q))}"><div class="m"><b>${E(ENG[k][0])}</b><small>Open on ${E(ENG[k][0])}</small></div></button>`).join("");
+ const L=gProvs();let g="",src="Search";
+ const open=`<p style="display:flex;gap:8px;flex-wrap:wrap;margin:8px 0"><button class="btn q" data-act="site" data-u="${E(gu)}">Open this search on Google</button></p>`;
+ if(!L.length){g=gWiki(q)}
+ else{const k=q+"|"+gPg+"|"+L.join();if(!GC.has(k))gFetch(q,gPg,k,L);const c=GC.get(k);
+  if(c.s==="load")g=[1,2,3,4,5].map(()=>`<div class="glass list gr sk"><i style="width:30%"></i><i style="width:80%;height:18px"></i><i></i><i style="width:60%"></i></div>`).join("");
+  else if(c.s==="err")g=`<div class="glass list gr"><b class="t" style="color:var(--t)">Couldn’t load results</b><p>${E(c.m)}</p><p>If this says “blocked”, that service may not allow direct calls from a web page. Try another one in Settings.</p><button class="btn" data-act="gretry">Try again</button></div>`+gWiki(q);
+  else{g=gCards(c.d,gPg);src=c.d._src}}
+ const sel=(PROV[S.set.sp]&&gUsable(S.set.sp))?S.set.sp:"auto";
+ const chips=`<div class="grel gch">`+[["auto","Auto"],...Object.keys(PROV).filter(gUsable).map(id=>[id,PROV[id].n])].map(([id,n])=>`<button class="glass eng2${id===sel?" on":""}" data-act="gsel" data-v="${id}">${E(n)}</button>`).join("")+`</div>`;
+ const rh=`<h1>${E(q)}</h1><p class="note gtag">${E(src)}</p>${chips}${g}<h2>In your browser</h2><div class="glass list">${loc.length?loc.map(x=>`<button class="row" data-go="${E(x.u)}"><div class="m"><b>${E(x.t)}</b><small>${E(x.k)} · ${E(host(x.u))}</small></div></button>`).join(""):'<p class="empty">No bookmarks, history or Reading List items match.</p>'}</div><h2>More ways to search</h2><div class="glass list">${eng}</div>`;
+ if(rh!==rHtml){rHtml=rh;$("#results").innerHTML=rh}}
 const ic=p=>'<svg class="i" viewBox="0 0 24 24">'+p+'</svg>',STAR='<path d="M12 3l2.7 5.6 6.1.9-4.4 4.3 1 6.1L12 17l-5.4 2.9 1-6.1L3.2 9.5l6.1-.9z"',IC={s:ic('<circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/>'),l:ic('<rect x="5" y="11" width="14" height="9" rx="2.5"/><path d="M8 11V8a4 4 0 018 0v3"/>'),w:ic('<path d="M12 4l9 16H3z"/><path d="M12 10v4M12 17.5v.01"/>'),o:ic(STAR+'/>'),f:ic(STAR+' fill="currentColor" style="color:var(--a)"/>')};
 function blank(){shown="";const f=$("#frame"),s=f.getAttribute("src");if(s&&s!=="about:blank")f.src="about:blank";progClear()}
 let tK="",hK="",cK="",sHtml="",rHtml="";const D={rev:0};
 function passTheme(t){const s=S.set,k=(t.p?"1":"0")+s.theme+s.wall+(s.motion?"1":"0")+s.glass+"|"+s.speed+"|"+s.bounce+"|"+s.depth;
  if(k===tK)return;tK=k;
- R.dataset.private=t.p?1:0;theme();
+ R.dataset.private=t.p?1:0;theme();lgApply();
  R.dataset.motion=s.motion?"on":"off";fx();
  const wv=WALL[s.wall][1],bg=!t.p&&wv?wv:"",b=document.body;
  b.style.setProperty("--bg",bg);b.style.background=bg}
@@ -245,22 +2056,29 @@ function passContent(t,u){const isS=u.startsWith("glass://"),blocked=!!u&&!isS&&
  if(ch.hidden!==!web)ch.hidden=!web;
  if(rs.hidden!==!isS)rs.hidden=!isS;
  if(bk.hidden!==!blocked)bk.hidden=!blocked;
+ if(window.__site!==!!web||web){window.__site=!!web;if(window.GlassNative&&GlassNative.siteMode){try{GlassNative.siteMode(!!web)}catch(e){}}}
  if(!u)startPage();
  if(isS)results(q);
- if(blocked){const h=`<div class="glass"><h2>${E(host(u))} can’t be shown here</h2><p>This site tells browsers not to display it inside another page. A native WebView or browser engine is needed to open it in this app.</p><a class="btn" href="${E(u)}" target="_blank" rel="noopener noreferrer">Open in a new tab</a></div>`;if(bk.innerHTML!==h)bk.innerHTML=h;blank()}
- else if(u&&!isS){if(shown!==u){shown=u;$("#frame").src=u;progress()}ch.href=u;ch.target="_blank";ch.rel="noopener noreferrer"}
+ if(blocked){const h=`<div class="glass"><h2>${E(host(u))} can’t be shown here</h2><p>This site tells browsers not to display it inside another page, so it opens on its own. If it still refuses, copy the link and open it in Chrome.</p><button class="btn" data-act="site" data-u="${E(u)}">Open</button> <button class="btn q" data-act="copyu" data-u="${E(u)}">Copy link</button></div>`;if(bk.innerHTML!==h)bk.innerHTML=h;blank()}
+ else if(u&&!isS){if(shown!==u){shown=u;$("#frame").src=u;progress()}ch.dataset.u=u}
  else blank()}
 function render(){const t=cur(),u=url(t);passTheme(t);passChrome(t,u);passContent(t,u)}
 const mqD=matchMedia("(prefers-color-scheme: dark)");let tC="",darkPref=mqD.matches;function theme(){const v=(S.set.theme==="dark"||(S.set.theme==="system"&&darkPref))?"dark":"light";if(v===tC&&R.dataset.theme===v)return;tC=v;R.dataset.theme=v}
-mqD.addEventListener("change",e=>{darkPref=e.matches;theme()});
+mqD.addEventListener("change",e=>{darkPref=e.matches;theme();lgApply()});
 const tile=(n,u)=>`<button class="tile" data-go="${E(u)}"><i class="glass">${E(n[0].toUpperCase())}</i><span>${E(n)}</span></button>`;
-function startPage(){const f=S.bm.filter(b=>b.fav),fr=Object.values(S.hist.filter(h=>!h.q).reduce((a,h)=>{(a[h.u]=a[h.u]||{u:h.u,n:0}).n++;return a},{})).sort((a,b)=>b.n-a.n).slice(0,4);
- let h=`<h1>Start Page</h1>`;
- if(S.set.fav&&f.length)h+=`<h2>Favorites</h2><div class="grid">${f.map(x=>tile(x.t,x.u)).join("")}</div>`;
+function startPage(){const t0=cur();
+ if(t0&&t0.p){const ph=`<div class="privempty"><svg class="i" viewBox="0 0 24 24"><path d="M8 11V6a2 2 0 014 0v4"/><path d="M12 10V5a2 2 0 014 0v5"/><path d="M16 11V7a2 2 0 014 0v7a7 7 0 01-7 7h-1a6 6 0 01-5-3l-3-5a2 2 0 013-2l2 2"/></svg><h2>Private Browsing</h2><p class="note">Private Browsing adds additional privacy protections for tabs. After you close a tab, Glass Browser won't remember the pages you visited, your search history or your AutoFill information.</p></div>`;
+  if(ph!==sHtml){sHtml=ph;$("#start").innerHTML=ph}return}
+ const f=S.bm.filter(b=>b.fav),fr=Object.values(S.hist.filter(h=>!h.q).reduce((a,h)=>{(a[h.u]=a[h.u]||{u:h.u,n:0}).n++;return a},{})).sort((a,b)=>b.n-a.n).slice(0,4);
+ const wk=S.hist.filter(h=>!h.q&&h.t&&Date.now()-h.t<6048e5).length;
+ const person='<svg class="i" viewBox="0 0 24 24"><circle cx="12" cy="8" r="4" fill="currentColor" stroke="none"/><path d="M4 21a8 8 0 0116 0z" fill="currentColor" stroke="none"/></svg>';
+ let h='';
+ if(S.set.fav){h+=`<h2 class="fh">${person}Favorites</h2>`+(f.length?`<div class="grid">${f.map(x=>tile(x.t,x.u)).join("")}</div>`:'<p class="empty">Bookmark a page with the star to see it here.</p>')}
  if(S.set.freq&&fr.length)h+=`<h2>Frequently visited</h2><div class="grid">${fr.map(x=>tile(host(x.u),x.u)).join("")}</div>`;
- if(S.set.rl)h+=`<h2>Reading List</h2><div class="glass list">${S.read.length?S.read.slice(0,4).map(x=>`<button class="row" data-go="${E(x.u)}"><div class="m"><b>${E(x.t)}</b><small>${E(host(x.u))}</small></div></button>`).join(""):'<p class="empty">Nothing saved. Use ••• then Add to Reading List.</p>'}</div>`;
+ h+=`<h2 class="fh"><svg class="i" viewBox="0 0 24 24"><path d="M12 3l8 3v6c0 5-3.5 8-8 9-4.5-1-8-4-8-9V6z" fill="currentColor" stroke="none"/></svg>Privacy Report</h2><div class="glass pr"><svg class="i" viewBox="0 0 24 24"><path d="M12 3l8 3v6c0 5-3.5 8-8 9-4.5-1-8-4-8-9V6z"/></svg><b>${wk}</b><span>Pages opened in the last seven days. Your history stays on this device.</span></div>`;
+ if(S.set.rl)h+=`<h2 class="fh">${ic('<circle cx="7" cy="12" r="3"/><circle cx="17" cy="12" r="3"/><path d="M10 12h4"/>')}Reading List</h2>`+(S.read.length?S.read.slice(0,4).map(x=>`<button class="glass rc" data-go="${E(x.u)}"><i>${E((x.t||"?")[0].toUpperCase())}</i><div class="m"><b>${E(x.t)}</b><small>${E(host(x.u))}</small></div></button>`).join(""):'<div class="glass list"><p class="empty">Nothing saved. Use the page menu, then Add to Reading List.</p></div>');
  if(S.set.rc&&S.closed.length)h+=`<h2>Recently closed tabs</h2><div class="glass list">${S.closed.slice(0,4).map(x=>`<button class="row" data-go="${E(x.u)}"><div class="m"><b>${E(x.t)}</b><small>${E(x.u)}</small></div></button>`).join("")}</div>`;
- h+=`<h2>Customize</h2><button class="btn q" data-act="settings">Edit Start Page</button>`;
+ h+=`<button class="btn q editsp" data-act="settings">Edit Start Page</button>`;
  if(h!==sHtml){sHtml=h;$("#start").innerHTML=h}}
 let tmr;function toast(m){const e=$("#toast");e.textContent=m;e.classList.add("on");clearTimeout(tmr);tmr=setTimeout(()=>e.classList.remove("on"),2200)}
 async function copy(v){try{await navigator.clipboard.writeText(v);toast("Copied")}catch(e){toast("Copy is not available here")}}
@@ -286,13 +2104,41 @@ function sheetSync(){if(!sh||sh.k!=="tabs")return;const el=$("#sheet"),box=el.qu
  const em=el.querySelector("#emptyTabs");if(em&&em.hidden!==(ts.length>0))em.hidden=ts.length>0;
  const qi=el.querySelector("#tq");if(qi&&qi.value!==(sh.q||""))qi.value=sh.q||""}
 function finishSheet(){sh.dr=1;const q=$("#tq");if(q&&sh.fq){q.focus();q.setSelectionRange(q.value.length,q.value.length)}}
-function drawSheet(){const el=$("#sheet");let t="",b="";
+function drawSheet(){const el=$("#sheet");let t="",b="",f="";
+ if(sh.k==="share"){t="Share";const t0=cur(),u=real(t0)||"",ti=(t0&&t0.title)||host(u)||"Page",hh=host(u)||"Glass Browser";
+  const ic={copy:'<rect x="9" y="9" width="11" height="11" rx="3"/><path d="M15 5H8a3 3 0 00-3 3v7"/>',
+   mail:'<rect x="3" y="5" width="18" height="14" rx="3"/><path d="M4 7.5l8 5.5 8-5.5"/>',
+   msg:'<path d="M21 11.5a8 8 0 01-8 8H8l-4 3v-5.2A8 8 0 1121 11.5z"/>',
+   notes:'<rect x="5" y="3" width="14" height="18" rx="3"/><path d="M9 8h6M9 12h6M9 16h3"/>',
+   safari:'<circle cx="12" cy="12" r="9"/><path d="M15.5 8.5l-2 5-5 2 2-5z"/>'};
+  b=`<div class="shrhead"><span class="shric">${E(hh[0].toUpperCase())}</span><div class="shrtx"><b>${E(ti)}</b><small>${E(hh)}</small></div></div>
+  <div class="shrapps">${[["copy","Copy","copy"],["mail","Mail","mail"],["msg","Messages","msg"],["notes","Notes","notes"],["safari","Open","safari"]].map(([k,l,i])=>`<button data-act="shrapp" data-v="${k}"><i class="shrappic"><svg class="i" viewBox="0 0 24 24">${ic[i]}</svg></i><span>${l}</span></button>`).join("")}</div>
+  <div class="shrlist"><button data-act="copyu" data-u="${E(u)}">Copy Link</button><button data-act="ext">Open in New Tab</button><button data-act="rl">Add to Reading List</button><button data-act="reader">Show Reader</button><button data-act="bm">${S.bm.some(x=>x.u===u)?"Remove Bookmark":"Add Bookmark"}</button></div>`}
+ if(sh.k==="help"){t="How to use";
+  b=`<p class="note">Glass Browser is one page of glass: search, tabs, bookmarks, private mode and a reading list, all kept on this device.</p>
+  <h4 class="note">Search and browse</h4>
+  <p class="note">Tap the address bar, type and press Enter: a word searches, a link opens. The arrows go back and forward; the ← pill at the bottom left brings you back here from a website.</p>
+  <h4 class="note">Gestures</h4>
+  <p class="note">Swipe right to go back, swipe left to go forward. Hold and drag across the bottom bar to throw the glass lens between buttons.</p>
+  <h4 class="note">Tabs, bookmarks, private</h4>
+  <p class="note">The numbered square opens Tab Overview. ⋯ holds New Tab, New Private Tab, Bookmarks, History, Reading List and Reader View. Private tabs are never written to history.</p>
+  <h4 class="note">Liquid Glass</h4>
+  <p class="note">Settings → Liquid Glass sets the material, refraction, tint and whether websites open as translucent glass. Glass transparency at 100 is the thinnest, most see-through glass.</p>
+  <h4 class="note">Support the project</h4>
+  <p class="note">Star the repository, follow for updates and report anything that breaks.</p>
+  <p style="display:flex;gap:8px;flex-wrap:wrap;padding:4px 0 12px">
+    <button class="btn" data-go="https://github.com/technicalnihilist-lgtm/glass-browser-ios">Star on GitHub</button>
+    <button class="btn q" data-go="https://github.com/technicalnihilist-lgtm">Follow on GitHub</button>
+  </p>
+  <p style="padding-bottom:14px"><button class="btn q" data-act="close">Start browsing</button></p>`}
  if(sh.k==="tabs"&&el.dataset.k==="tabs"&&el.dataset.p===((sh.p??cur().p)?"1":"0")){sheetSync();finishSheet();return}
  if(sh.k==="tabs"){const p=sh.p??cur().p,ts=tabList().ts;t="Tabs";
-  b=`<div class="seg"><button data-act="tmode" data-v="0" class="${p?"":"on"}">Tabs</button><button data-act="tmode" data-v="1" class="${p?"on":""}">Private</button></div><input class="in" id="tq" placeholder="Search tabs" value="${E(sh.q||"")}">
-  ${p?'<p class="note">Private tabs stay in memory only and leave no history. They do not hide you from websites or your network.</p>':""}
+  b=`<input class="in" id="tq" placeholder="Search tabs" value="${E(sh.q||"")}">
+  ${p?'<p class="note">Private Browsing adds privacy for these tabs. After you close a tab, nothing from it is kept.</p>':""}
   <div class="cards${sh.dr?" still":""}" id="cardsHost">${ts.map(cardHTML).join("")}</div><p class="empty" id="emptyTabs"${ts.length?" hidden":""}>No tabs here.</p>
-  <p style="margin-top:14px"><button class="btn" data-act="${p?"newp":"new"}">${p?"New private tab":"New tab"}</button></p>`}
+`; f=`<div class="tabctl"><button class="circ" data-act="${p?"newp":"new"}" aria-label="New tab">+</button>
+   <div class="seg2"><button data-act="tmode" data-v="1" class="${p?"on":""}">Private</button><button data-act="tmode" data-v="0" class="${p?"":"on"}">${ts.length} Tab${ts.length===1?"":"s"}</button></div>
+   <button class="circ ok" data-act="close" aria-label="Done">✓</button></div>`}
  if(sh.k==="lib"){t="Library";const v=sh.v||"bm";
   b=`<div class="seg">${[["bm","Bookmarks"],["hist","History"],["read","Reading"]].map(x=>`<button data-act="lib" data-v="${x[0]}" class="${v===x[0]?"on":""}">${x[1]}</button>`).join("")}</div>`;
   if(v==="bm"){const fo=[...new Set(S.bm.map(x=>x.f||"Bookmarks"))].sort();b+=S.bm.length?fo.map(f=>`<h4 class="note">${E(f)}</h4>`+S.bm.filter(x=>(x.f||"Bookmarks")===f).map(x=>sh.ed===x.id?`<div class="glass list"><input class="in" id="et" value="${E(x.t)}" aria-label="Title"><input class="in" id="ef" value="${E(x.f||"")}" placeholder="Folder" aria-label="Folder"><button class="btn" data-act="bsave" data-id="${x.id}">Save</button></div>`:`<div class="row"><button class="m" data-go="${E(x.u)}" style="text-align:left"><b>${E(x.t)}</b><small>${E(x.u)}</small></button><button data-act="bfav" data-id="${x.id}" aria-label="Toggle favorite">${x.fav?"♥":"♡"}</button><button data-act="bed" data-id="${x.id}" aria-label="Edit">✎</button><button data-act="bdel" data-id="${x.id}" aria-label="Delete">🗑</button></div>`).join("")).join(""):'<p class="empty">No bookmarks yet. Tap the star on any page.</p>'}
@@ -300,19 +2146,30 @@ function drawSheet(){const el=$("#sheet");let t="",b="";
   if(v==="read")b+=S.read.length?S.read.map(x=>`<div class="row"><button class="m" data-go="${E(x.u)}" style="text-align:left"><b>${E(x.t)}</b><small>${E(x.u)}</small></button><button data-act="rdel" data-id="${x.id}" aria-label="Remove">✕</button></div>`).join(""):'<p class="empty">Reading List is empty.</p>'}
  if(sh.k==="set"){t="Settings";const s=S.set,op=(o,v)=>Object.entries(o).map(([k,x])=>`<option value="${k}" ${v===k?"selected":""}>${E(Array.isArray(x)?x[0]:x)}</option>`).join(""),ck=(k,l)=>`<label class="field">${l}<input type="checkbox" data-set="${k}" ${s[k]?"checked":""}></label>`;
   const ac=sh.acc||(sh.acc={fx:1}),A2=(k,t,c)=>`<section class="acc ${ac[k]?"open":""}" data-k="${k}"><button data-act="acc" data-k="${k}" aria-expanded="${!!ac[k]}">${t}<i>›</i></button><div class="w"><div>${c}</div></div></section>`,sl=(k,l,mn,mx,st)=>`<label class="field sl">${l}<b id="v-${k}">${lab(k,s[k])}</b><input type="range" data-set="${k}" min="${mn}" max="${mx}" step="${st}" value="${s[k]}"></label>`,fxh=sl("glass","Glass transparency",0,100,1)+sl("speed","Animation speed",0.5,2,0.1)+sl("bounce","Bounce amount",0,2.5,0.1)+sl("depth","4D depth effect",0,2,0.1)+ck("motion","Animations")+ck("tilt","Tilt and shake")+ck("sound","Water sound on delete")+sl("vol","Sound volume",0,100,1)+`<p style="padding:8px 0"><button class="btn q" data-act="rsfx">Reset glass and motion</button></p>`;
-  b=A2("fx","Glass and Motion",fxh)+A2("gen","General",`<label class="field">Theme<select data-set="theme">${op({system:"System",light:"Light",dark:"Dark"},s.theme)}</select></label>
-  <label class="field">Search engine<select data-set="engine">${op(ENG,s.engine)}</select></label>
+  b=A2("lg","Liquid Glass",(()=>{const v=s.lgv,l=s.lgl,t=s.lgt,pv='<liquid-glass id="lgPrev" variant="'+v+'" shape="rect" radius="22" interactive scheme="'+(lgDark()?"dark":"light")+'"><b>Liquid Glass</b><p class="note">Press and hold: this card is the material\'s own element, with the Calm press spring.</p></liquid-glass>';return pv+'<label class="field">Material<select data-set="lgv">'+op({regular:"Regular",clear:"Clear"},v)+'</select></label>'+'<label class="field">Refraction<select data-set="lgl">'+op({auto:"Auto",off:"Off"},l)+'</select></label>'+'<label class="field">Tint<select data-set="lgt">'+op({default:"Material default",blue:"Blue",violet:"Violet",mint:"Mint",rose:"Rose"},t)+'</select></label>'+'<label class="field">Glass style<select data-set="lgg">'+op({clear:"Clear (default)",frosted:"Frosted",crystal:"Crystal",aqua:"Aqua gel",dewdrop:"Water droplet",holo:"Holographic",vision:"visionOS",neon:"Neon glow",ice:"Ice",smoke:"Smoked dark glass",gel:"Gel jelly",chrome:"Chrome metal",mirror:"Mirror",rainbow:"Rainbow edge"},s.lgg||"clear")+'</select></label>'+'<label class="field">Open and close animation<select data-set="lga">'+op({none:"No animation",ios:"iOS spring",macos:"macOS genie",flip3d:"3D flip",tilt3d:"3D tilt up",cube3d:"3D cube",door3d:"3D door",fold3d:"3D fold",zoom:"Zoom",slideup:"Slide up (Android)",slideright:"Slide right",fade:"Fade",bounce:"Bounce",jelly:"Jelly",swirl:"Swirl",vision:"visionOS blur",fluent:"Windows 11",liquid:"Liquid drop",drop:"Drop in"},s.lga||"ios")+'</select></label>'+sl("lgs","Saturation",1,2.5,0.1)+ck("lgb","Blur")+'<p class="note">Blur off keeps the glass fully transparent and clear. Turn it on for frosted glass.</p>'+ck("lgp","Press feedback")+ck("gweb","Glass web pages")+'<p class="note">Glass web pages makes a website you open here translucent over this wallpaper instead of a flat white sheet.</p>'+'<p class="note">LiquidGlass '+LGVERSION+' (Apache-2.0): measured tint, two-kernel blur, bevel rim and light.'+' Optics: '+(R.dataset.lgMode==="1"?"refraction (SVG displacement map)":"frosted (blur and tint)")+'.</p>'+'<p class="note">Glass Browser build '+BUILD+'</p>'})())+A2("fx","Glass and Motion",fxh)+A2("gen","General",`<label class="field">Theme<select data-set="theme">${op({system:"System",light:"Light",dark:"Dark"},s.theme)}</select></label>
+  <label class="field">Search engine<select data-set="sp">${op(Object.assign({auto:"Auto (first available)"},Object.fromEntries(Object.keys(PROV).filter(gUsable).map(id=>[id,PROV[id].n]))),s.sp||"auto")}</select></label>
   <label class="field">Homepage<input type="text" data-set="home" value="${E(s.home)}" placeholder="https://"></label>
   <label class="field">Wallpaper<select data-set="wall">${op(WALL,s.wall)}</select></label>`)+A2("sp","Start Page",`
   ${ck("fav","Show Favorites")}${ck("freq","Show Frequently Visited")}${ck("rl","Show Reading List")}${ck("rc","Show Recently Closed")}`)+A2("pv","Privacy and data",`
-  <p class="note">Search engines other than Wikipedia refuse to load inside a page, so they open in a new tab. Pop-up, JavaScript, permission, translate, download and desktop-site controls need a native WebView and are not available in this web prototype.</p>
-  <p style="padding:8px 0"><button class="btn q" data-act="cdata">Clear browsing data</button></p>`)}
- el.innerHTML=`<header><h3>${t}</h3><button data-act="close" aria-label="Close" class="btn q">Done</button></header><div class="body">${b}</div>`;
+  <p class="note">Search results are shown inside the browser using the keys set in the HTML file. Pop-up, JavaScript, permission, translate, download and desktop-site controls need a native WebView and are not available in this web prototype.</p>
+  <p style="padding:8px 0"><button class="btn q" data-act="cdata">Clear browsing data</button></p>`)
+  +A2("ab","About and support",`<p class="note">Glass Browser with the LiquidGlass material. Everything runs on this device; nothing is uploaded.</p>
+  <p style="display:flex;gap:8px;flex-wrap:wrap;padding:4px 0 10px">
+    <button class="btn" data-go="https://github.com/technicalnihilist-lgtm/glass-browser-ios">Star on GitHub</button>
+    <button class="btn q" data-go="https://github.com/technicalnihilist-lgtm">Follow</button>
+    <button class="btn q" data-act="help">How to use</button>
+  </p>
+  <p class="note">Build ${BUILD}</p>`)}
+ el.innerHTML=(sh.k==="tabs"?"":`<header><button class="xbtn" data-act="close" aria-label="Close">✕</button><h3>${t}</h3><button class="btn done" data-act="close">Done</button></header>`)+`<div class="body">${b}</div>`+(f?`<div class="tabfoot">${f}</div>`:"");
  el.dataset.k=sh.k;el.dataset.p=sh.k==="tabs"?((sh.p??cur().p)?"1":"0"):"";
  CARDMAP.clear();if(sh.k==="tabs")for(const c of el.querySelectorAll("#cardsHost > .card"))CARDMAP.set(c.dataset.id,c);
  finishSheet()}
 function menu(){const m=$("#menu");if(!m.hidden){m.hidden=true;return}
- m.innerHTML=[["new","New Tab"],["newp","New Private Tab"],["tabs","Tab Overview"],["libbm","Bookmarks"],["libhist","History"],["rlist","Add to Reading List"],["reader","Reader View"],["copy","Copy Page URL"],["ext","Open in New Tab"],["settings","Settings"]].map(x=>`<button data-act="${x[0]}">${x[1]}</button>`).join("");m.hidden=false}
+ const G=[[["reader","Show Reader",'<rect x="5" y="3" width="14" height="18" rx="2"/><path d="M8.5 8h7M8.5 12h7M8.5 16h4"/>'],["share","Share",'<path d="M12 15V3M8 7l4-4 4 4"/><path d="M7 10H6a2 2 0 00-2 2v7a2 2 0 002 2h12a2 2 0 002-2v-7a2 2 0 00-2-2h-1"/>'],["bm","Add to Bookmarks",'<path d="M7 3h10a1 1 0 011 1v17l-6-4-6 4V4a1 1 0 011-1z"/>'],["rlist","Add to Reading List",'<circle cx="7" cy="12" r="3"/><circle cx="17" cy="12" r="3"/><path d="M10 12h4"/>']],
+ [["reload","Reload",'<path d="M20 12a8 8 0 11-2.6-5.9"/><path d="M20 4v5h-5"/>'],["fwd","Forward",'<path d="M9 5l7 7-7 7"/>'],["new","New Tab",'<rect x="4" y="4" width="16" height="16" rx="3"/><path d="M12 8.5v7M8.5 12h7"/>'],["newp","New Private Tab",'<path d="M8 11V6a2 2 0 014 0v4"/><path d="M12 10V5a2 2 0 014 0v5"/><path d="M16 11V7a2 2 0 014 0v7a7 7 0 01-7 7h-1a6 6 0 01-5-3l-3-5a2 2 0 013-2l2 2"/>']],
+ [["libbm","Bookmarks",'<path d="M4 5a2 2 0 012-2h12v16H6a2 2 0 00-2 2z"/><path d="M4 19V5"/>'],["libhist","History",'<circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/>'],["copy","Copy Page URL",'<rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V6a2 2 0 012-2h9"/>'],["ext","Open in New Tab",'<path d="M14 4h6v6M20 4l-9 9"/><path d="M18 14v4a2 2 0 01-2 2H6a2 2 0 01-2-2V8a2 2 0 012-2h4"/>']],
+ [["help","How to use",'<circle cx="12" cy="12" r="9"/><path d="M9.5 9.5a2.5 2.5 0 114 2c-.9.6-1.5 1-1.5 2M12 17h.01"/>'],["settings","Settings",'<circle cx="12" cy="12" r="3"/><path d="M12 3v3M12 18v3M3 12h3M18 12h3M5.6 5.6l2.1 2.1M16.3 16.3l2.1 2.1M18.4 5.6l-2.1 2.1M7.7 16.3l-2.1 2.1"/>']]];
+ m.innerHTML=G.map(g=>'<div class="mg">'+g.map(x=>`<button data-act="${x[0]}"><span>${x[1]}</span>${ic(x[2])}</button>`).join("")+'</div>').join("");m.hidden=false}
 const RC=new Map(),RF=new Map(),RD=8;let rTok=0;
 function rPut(k,v){RC.delete(k);RC.set(k,v);while(RC.size>RD){const f=RC.keys().next().value;if(f===undefined)break;RC.delete(f)}}
 function rExtract(h){const d=new DOMParser().parseFromString(h,"text/html");const m=d.querySelector("article,main")||d.body; return [...m.querySelectorAll("h1,p")].map(x=>[x.tagName,x.textContent.trim()]).filter(x=>x[1].length>40||x[0]==="H1").slice(0,60).map(x=>x[0]==="H1"?`<h1>${E(x[1])}</h1>`:`<p>${E(x[1])}</p>`).join("")}
@@ -330,14 +2187,28 @@ const RT=[["#fff","#222"],["#15161a","#d9dbe1"],["#f4ecd8","#3b3326"]];let rs={f
 function rapply(){const r=$("#reader");r.style.setProperty("--rf",rs.f+"px");r.style.setProperty("--rl",rs.l);r.style.setProperty("--rw",rs.w+"px");r.style.setProperty("--rb",RT[rs.t][0]);r.style.setProperty("--rt",RT[rs.t][1])}
 const acts={
  acc(d){const e=document.querySelector(`.acc[data-k="${d.k}"]`);if(!e)return;const o=e.classList.toggle("open");sh.acc[d.k]=o;e.querySelector("button").setAttribute("aria-expanded",o)},
- rsfx(){Object.assign(S.set,{glass:60,speed:1,bounce:1,depth:1,vol:60});save();fx();kick();drawSheet()},
+ rsfx(){Object.assign(S.set,{glass:100,speed:1,bounce:1,depth:1,vol:60,tilt:false});save();fx();kick();drawSheet()},
+ help(){open("help")},
+ site(a){openSite(a.u)},
+ gsave(){const id=(($("#gkp")||{}).value)||"serper",v=(($("#gkin")||{}).value||"").trim();if(!v||!PROV[id]){toast("Paste your key first");return}S.set[PROV[id].k]=v;S.set.sp=id;save();GC.clear();rHtml="";D.rev++;render();toast(PROV[id].n+" on")},
+ gretry(){GC.clear();rHtml="";D.rev++;render()},
+ gsel(a){const v=a.v;if(v!=="auto"&&!(PROV[v]&&gUsable(v))){toast("This engine needs a key in the HTML file");return}S.set.sp=v;save();rHtml="";D.rev++;render()},
+ gpage(a){gPg=+a.v||1;rHtml="";D.rev++;render();const r=$("#results");if(r)r.scrollTop=0},
+ focus(){$("#addr").focus()},
+ copyu(a){copy(a.u);toast("Link copied")},
+ eng(a){if(!ENG[a.v])return;S.set.engine=a.v;save();const A=$("#addr");if(A.value.trim())A.dispatchEvent(new Event("input"));else{$("#sug").innerHTML=engChips();$("#sug").hidden=false}toast("Search with "+ENG[a.v][0])},
  new(){newTab(false);closeSheet();$("#addr").focus()},newp(){newTab(true);closeSheet();$("#addr").focus()},
  tabs(){open("tabs")},tmode(a){sh.p=a.v==="1";drawSheet()},sw(a){if(!S.tabs.some(x=>x.id===a.id))return;S.active=a.id;closeSheet();render();save()},
  xt(a){const c=document.querySelector(`.card[data-id="${a.id}"]`);if(c&&S.set.motion){c.classList.add("out");setTimeout(()=>closeTab(a.id),180)}else closeTab(a.id)},
  dup(a){const t=S.tabs.find(x=>x.id===a.id);if(!t)return;const n=Object.assign({},t,{id:uid(),stack:t.stack.slice(),title:t.title});S.tabs.splice(S.tabs.indexOf(t)+1,0,n);S.active=n.id;render();save();sheetSync()},
  back(){const t=cur();if(t.i>0){t.i--;render();save()}},fwd(){const t=cur();if(t.i<t.stack.length-1){t.i++;render();save()}},
  reload(){const t=cur();if(!url(t))return;shown="";render()},clear(){$("#addr").value="";$("#addr").focus()},
- share(){const t=cur(),u=real(t);if(!u){toast("Open a page first");return}if(navigator.share)navigator.share({title:t.title,url:u}).catch(()=>{});else copy(u)},
+ share(){const t=cur(),u=real(t);if(!u){toast("Open a page first");return}open("share")},
+ shrapp(a){const u=real(cur())||"";if(!u)return;
+  if(a.v==="copy"||a.v==="notes"){copy(u);toast("Link copied");closeSheet();return}
+  if(a.v==="mail"){location.href="mailto:?subject="+encodeURIComponent(cur().title||"")+"&body="+encodeURIComponent(u);closeSheet();return}
+  if(a.v==="msg"){location.href="sms:?body="+encodeURIComponent(u);closeSheet();return}
+  closeSheet();openSite(u)},
  copy(){const u=real(cur());u?copy(u):toast("Open a page first");$("#menu").hidden=true},
  ext(){const u=real(cur());if(u)window.open(u,"_blank","noopener,noreferrer");$("#menu").hidden=true},
  bm(){const t=cur(),u=real(t);if(!u){toast("Open a page first");return}const i=S.bm.findIndex(x=>x.u===u);if(i>=0){S.bm.splice(i,1);splash();toast("Bookmark removed")}else{S.bm.unshift({id:uid(),u,t:t.title||host(u),f:"",fav:false});toast("Bookmark added")}render();save()},
@@ -358,17 +2229,21 @@ document.addEventListener("click",e=>{
  if(e.target.id==="shade")closeSheet();
  if(!e.target.closest("#menu"))$("#menu").hidden=true;
  if(!e.target.closest("#top"))$("#sug").hidden=true});
-document.addEventListener("change",e=>{const k=e.target.dataset.set;if(!k)return;D.rev++;S.set[k]=e.target.type==="checkbox"?e.target.checked:e.target.type==="range"?+e.target.value:e.target.value;save();render();if(k==="vol"||(k==="sound"&&S.set.sound))splash()});
+document.addEventListener("input",e=>{const t=e.target;if(t.dataset&&t.dataset.set==="glass"){S.set.glass=+t.value;lgApply()}});
+document.addEventListener("change",e=>{const k=e.target.dataset.set;if(!k)return;D.rev++;S.set[k]=e.target.type==="checkbox"?e.target.checked:e.target.type==="range"?+e.target.value:e.target.value;save();if(k.indexOf("lg")===0||k==="glass")lgApply();if(k==="gweb"&&window.GlassNative){try{GlassNative.setGlassWeb(!!S.set.gweb)}catch(e){}}render();if(k==="vol"||(k==="sound"&&S.set.sound))splash()});
 document.addEventListener("input",e=>{const t=e.target;if(t.id==="tq"){if(!sh)return;sh.q=t.value;sh.fq=1;drawSheet()}else if(t.type==="range"){const k=t.dataset.set;S.set[k]=+t.value;fx();kick();const l=$("#v-"+k);if(l)l.textContent=lab(k,t.value)}});
 const A=$("#addr");
 A.addEventListener("focus",()=>{document.body.classList.add("typing");A.select()});
 A.addEventListener("blur",()=>setTimeout(()=>{document.body.classList.remove("typing");$("#sug").hidden=true;A.value=disp(url(cur()))},150));
 A.addEventListener("keydown",e=>{if(e.key==="Enter"){const v=A.value;if(!v.trim())return;go(v);A.blur()}});
+document.addEventListener("pointerdown",e=>{if(e.target.closest&&e.target.closest("#sug button"))e.preventDefault()},{passive:false});
 
 let gQ=0;A.addEventListener("input",()=>{if(gQ)return;gQ=requestAnimationFrame(()=>{gQ=0;const v=A.value.trim().toLowerCase(),s=$("#sug");if(!v){s.hidden=true;return}
  const m=[...S.bm.map(x=>[x.t,x.u]),...S.hist.filter(x=>!x.q).map(x=>[x.t,x.u])].filter(x=>(x[0]+x[1]).toLowerCase().includes(v));
  const seen=new Set(),L=m.filter(x=>!seen.has(x[1])&&seen.add(x[1])).slice(0,4);
- s.innerHTML=`<button data-go="${E(A.value)}">Go or search: ${E(A.value)}</button>`+L.map(x=>`<button data-go="${E(x[1])}">${E(x[0])} <small>${E(host(x[1]))}</small></button>`).join("");s.hidden=false})});
+ const q=A.value.trim(),eu=ENG[S.set.engine][1]+encodeURIComponent(q);
+ s.innerHTML=`<button data-go="glass://search/${encodeURIComponent(q)}">${IC.s}<span>Search Google for ${E(q)}</span></button>`
+  +L.map(x=>`<button data-go="${E(x[1])}">${IC.s}<span>${E(x[0])}</span></button>`).join("");s.hidden=false})});
 const T={x:0,y:0,vx:0,vy:0,tx:0,ty:0},P={dp:1},FXT=[...document.querySelectorAll("#top,#tool,#menu,#start,#results,#sheet,#orb,#chip")];let tr=0,lm=null,hasO=0,tX=0,tY=0,tL=0;
 const DT=1e3/60,TLX=2,TLV=1.5,tiltOn=()=>!!(S.set.motion&&S.set.tilt);
 function stopTilt(){if(tr){cancelAnimationFrame(tr);tr=0}tL=0}
@@ -380,7 +2255,71 @@ function splash(){const s=S.set;if(!s.sound||+s.vol<=0)return;try{AC=AC||new(win
  drop(0,380,1100,.16);drop(.09,520,1500,.12);drop(.17,300,900,.2);
  const len=Math.round(AC.sampleRate*.3),n=AC.createBuffer(1,len,AC.sampleRate),d=n.getChannelData(0);for(let i=0;i<len;i++)d[i]=(Math.random()*2-1)*(1-i/len);
  const ns=AC.createBufferSource(),bp=AC.createBiquadFilter(),ng=AC.createGain();ns.buffer=n;bp.type="bandpass";bp.frequency.setValueAtTime(2500,t);bp.frequency.exponentialRampToValueAtTime(900,t+.3);bp.Q.value=.8;ng.gain.setValueAtTime(.35,t);ng.gain.exponentialRampToValueAtTime(.001,t+.3);ns.connect(bp);bp.connect(ng);ng.connect(out);ns.start(t)}catch(e){}}
-function fx(){const s=S.set,b=+s.bounce;R.style.setProperty("--k",(2.2-0.02*s.glass).toFixed(3));R.style.setProperty("--ts",(1/s.speed).toFixed(3));R.style.setProperty("--bn",b);R.style.setProperty("--sp","cubic-bezier(.34,"+(1+.56*b).toFixed(2)+",.64,1)");P.dp=+s.depth}
+/* ========== Liquid Glass material adapter ========== */
+const LG=window.LiquidGlass,LGNS="http://www.w3.org/2000/svg",LGPAD=32;
+const LGTINT={blue:[.04,.52,1,.5],violet:[.49,.23,.93,.5],mint:[.06,.73,.51,.45],rose:[.96,.25,.37,.42]};
+const LGVERSION="1.0.0",BUILD="2026-11-22 19:10 IST";
+let lgSeq=0,lgT=0;
+function lgDark(){return R.dataset.theme==="dark"}
+function lgStyle(){return LG.resolveStyle(S.set.lgv==="clear"?"clear":"regular",lgDark())}
+function lgRgba(c,a){return "rgba("+Math.round(c[0]*255)+","+Math.round(c[1]*255)+","+Math.round(c[2]*255)+","+Math.max(0,Math.min(1,a)).toFixed(3)+")"}
+function lgSvg(){let s=document.getElementById("lgdefs");if(!s){s=document.createElementNS(LGNS,"svg");s.id="lgdefs";s.setAttribute("aria-hidden","true");s.setAttribute("focusable","false");s.style.cssText="position:absolute;width:0;height:0;overflow:hidden";document.body.appendChild(s)}return s}
+function lgLens(st){
+ const on=S.set.lgl!=="off"&&LG.detectLensing();
+ R.dataset.lgMode=on?"1":"0";
+ const els=[...document.querySelectorAll("[data-lg-lens]")];
+ if(!on){for(const el of els){el.style.backdropFilter="";el.style.webkitBackdropFilter="";delete el.dataset.lgKey}const d=document.getElementById("lgdefs");if(d)d.innerHTML="";return}
+ const defs=lgSvg(),keep=new Set();
+ for(const el of els){
+  const r=el.getBoundingClientRect();
+  if(r.width<4||r.height<4){delete el.dataset.lgKey;continue}
+  const cs=getComputedStyle(el);
+  const radius=Math.min(parseFloat(cs.borderTopLeftRadius)||16,Math.min(r.width,r.height)/2);
+  const key=[Math.round(r.width),Math.round(r.height),Math.round(radius),st.variant,st.dark?1:0,S.set.lgb?1:0].join("|");
+  if(el.dataset.lgKey===key){keep.add(el.dataset.lgFilter);continue}
+  el.dataset.lgKey=key;
+  const id="lgf"+(++lgSeq);keep.add(id);
+  let f=defs.querySelector("#"+id);
+  if(!f){f=document.createElementNS(LGNS,"filter");f.id=id;f.setAttribute("filterUnits","userSpaceOnUse");f.setAttribute("primitiveUnits","userSpaceOnUse");f.setAttribute("color-interpolation-filters","sRGB");defs.appendChild(f)}
+  const area=(r.width+2*LGPAD)*(r.height+2*LGPAD),sc=Math.min(1,Math.sqrt(250000/area));
+  const map=LG.displacementMap(st,{width:r.width,height:r.height,radius:radius,density:1,pad:LGPAD,scale:sc});
+  f.setAttribute("x",-LGPAD);f.setAttribute("y",-LGPAD);
+  f.setAttribute("width",r.width+2*LGPAD);f.setAttribute("height",r.height+2*LGPAD);
+  f.innerHTML=LG.filterMarkup(st,{width:r.width+2*LGPAD,height:r.height+2*LGPAD,href:LG.dataUrl(map),scale:map.scale});if(!S.set.lgb)f.querySelectorAll("feGaussianBlur").forEach(g=>g.setAttribute("stdDeviation","0"));
+  const v="url(#"+id+") saturate(var(--lg-sat))";
+  el.style.backdropFilter=v;el.style.webkitBackdropFilter=v;el.dataset.lgFilter=id
+ }
+ for(const f of [...defs.querySelectorAll("filter")])if(!keep.has(f.id))f.remove();
+ for(const el of els){if(el.dataset.lgFilter&&!keep.has(el.dataset.lgFilter)){el.style.backdropFilter="";el.style.webkitBackdropFilter="";delete el.dataset.lgFilter;delete el.dataset.lgKey}}
+}
+function lgApply(){R.dataset.gs=S.set.lgg||"clear";R.dataset.anim=S.set.lga||"ios";R.dataset.lgBlur=S.set.lgb?"on":"off";R.style.setProperty("--lkt",(1-Math.max(0,Math.min(100,+S.set.glass===0?0:(+S.set.glass||100)))/100).toFixed(3));
+ const st=lgStyle();
+ const choice=LGTINT[S.set.lgt]||(R.dataset.private==="1"?[.42,.31,.72,.45]:null);
+ const layer=LG.tintLayer(st,{tint:choice,width:innerWidth,height:innerHeight});
+ const k=Math.max(0,Math.min(1,0.45+0.55*(1-(+S.set.glass===0?0:+S.set.glass||100)/100)));
+ const a=Math.max(.04,Math.min(.95,layer.alpha*k));
+ R.style.setProperty("--lg-tint",lgRgba(layer.rgb,a));
+ R.style.setProperty("--lg-tint-mid",lgRgba(layer.rgb,Math.min(.9,a+.2)));
+ R.style.setProperty("--lg-tint-tool",lgRgba(layer.rgb,Math.max(.05,a*0.34)));
+ R.style.setProperty("--lg-tint-sheet",lgRgba(layer.rgb,Math.min(.94,a+.5)));
+ R.style.setProperty("--lg-fine",st.fineSigma.toFixed(2)+"px");
+ R.style.setProperty("--lg-wide",(st.wideSigma||0).toFixed(2)+"px");
+ R.style.setProperty("--lg-wide-a",(1-st.fineShare).toFixed(3));
+ R.style.setProperty("--lg-sat",(+S.set.lgs||1.8).toFixed(2));
+ R.style.setProperty("--lg-rim",lgRgba([1,1,1],Math.min(.9,.3+st.specular*.55)));
+ R.style.setProperty("--lg-bevel",lgRgba([1,1,1],Math.min(.95,.4+st.bevelPeak*1.4)));
+ R.style.setProperty("--lg-lx",(50+LG.LIGHT.x*40).toFixed(1)+"%");
+ R.style.setProperty("--lg-ly",(50+LG.LIGHT.y*40).toFixed(1)+"%");
+ R.dataset.lgPress=S.set.lgp?"1":"0";
+ R.dataset.lgVariant=st.variant;
+ const pv=$("#lgPrev");
+ if(pv){pv.setAttribute("variant",st.variant);pv.setAttribute("scheme",st.dark?"dark":"light")}
+ lgLens(st)
+}
+LG.define("liquid-glass");
+addEventListener("resize",()=>{clearTimeout(lgT);lgT=setTimeout(lgApply,200)},{passive:true});
+
+function fx(){const s=S.set,b=+s.bounce;R.style.setProperty("--k",(0.45+0.55*(1-s.glass/100)).toFixed(3));R.style.setProperty("--ts",(1/s.speed).toFixed(3));R.style.setProperty("--bn",b);R.style.setProperty("--sp","cubic-bezier(.34,"+(1+.56*b).toFixed(2)+",.64,1)");P.dp=+s.depth;lgApply()}
 const cl=v=>Math.max(-1,Math.min(1,v));
 function kick(){if(tr||document.hidden||!tiltOn())return;tL=0;tr=requestAnimationFrame(tick)}
 function step(){T.vx+=(T.tx-T.x)*.14;T.vy+=(T.ty-T.y)*.14;const D=Math.min(.93,.74+.08*(+S.set.bounce));T.vx*=D;T.vy*=D;T.x+=T.vx;T.y+=T.vy;
@@ -411,7 +2350,65 @@ TL.addEventListener("pointerup",rel);TL.addEventListener("pointercancel",rel);
 TL.addEventListener("focusin",e=>{const b=e.target.closest("button");if(b&&!pd){pb=null;slide(b)}});
 document.addEventListener("keydown",e=>{if(e.key==="Escape"){closeSheet();$("#menu").hidden=true}});
 if(!S.tabs.length)newTab(false);else{if(!cur())S.active=S.tabs[0].id;render()}
+try{if(!localStorage.getItem("gb_help")){localStorage.setItem("gb_help","1");setTimeout(()=>{if(!sh)open("help")},900)}}catch(e){}
 if(S.tabs.length===1&&!url(cur())&&S.set.home)go(S.set.home);
+})();
+</script>
+
+<script>
+(function(){
+var SEL=".rbtn,.bar,.pr,.rc,.tile i,.btn,.card,.circ,.xbtn,.seg,.seg2,.eng,#menu,#sug,#chip,#toast,.list.glass,.shric,.shrappic";
+var cur=null,sx0=0,sy0=0,rect=null,moved=0,pid=null,anim=null;
+function rub(d,c){var a=Math.abs(d);return (d<0?-1:1)*c*(1-1/(a/c*.9+1))}
+function down(e){
+ if(e.button>0||(e.target.closest&&e.target.closest("input,select,textarea,iframe")))return;
+ var el=e.target.closest&&e.target.closest(SEL);if(!el||el.closest("[hidden]"))return;
+ if(anim){clearTimeout(anim);anim=null}
+ cur=el;pid=e.pointerId;sx0=e.clientX;sy0=e.clientY;rect=el.getBoundingClientRect();moved=0;
+ el.style.transition="transform .18s cubic-bezier(.2,.8,.3,1)";
+ el.style.transform="scale(1.05)";el.classList.add("stretching");
+}
+function move(e){
+ if(!cur||e.pointerId!==pid)return;
+ var dx=e.clientX-sx0,dy=e.clientY-sy0;moved=Math.max(moved,Math.abs(dx),Math.abs(dy));
+ if(moved<4)return;
+ var w=rect.width||1,h=rect.height||1;
+ var tx=rub(dx,Math.max(40,w*.5)),ty=rub(dy,Math.max(40,h*.9));
+ var sx=1+Math.min(Math.abs(tx)/w*1.25,.7),sy=1+Math.min(Math.abs(ty)/h*1.25,.9);
+ var vx=1/Math.sqrt(sy),vy=1/Math.sqrt(sx);
+ var ox=dx>=0?"0%":"100%",oy=dy>=0?"0%":"100%";
+ var fx=sx*vx,fy=sy*vy;
+ cur.style.transition="none";cur.style.transformOrigin=ox+" "+oy;
+ cur.style.transform="scale("+(fx*1.04).toFixed(3)+","+(fy*1.04).toFixed(3)+")";
+}
+function up(e){
+ if(!cur||(e&&e.pointerId!==pid))return;
+ var el=cur;cur=null;
+ el.style.transition="transform .75s cubic-bezier(.3,1.9,.45,1)";
+ el.style.transform="";
+ anim=setTimeout(function(){el.style.transition="";el.style.transformOrigin="";el.classList.remove("stretching");anim=null},800);
+ if(moved>8){suppress=1;setTimeout(function(){suppress=0},60)}
+}
+var suppress=0;
+document.addEventListener("pointerdown",down,{passive:true});
+addEventListener("pointermove",move,{passive:true});
+addEventListener("pointerup",up,{passive:true});
+addEventListener("pointercancel",up,{passive:true});
+document.addEventListener("click",function(e){if(suppress){e.stopPropagation();e.preventDefault()}},true);
+})();
+</script>
+<script>
+(function(){
+["#menu","#sheet","#reader"].forEach(function(sel){var el=document.querySelector(sel);if(!el)return;var t=0;
+ Object.defineProperty(el,"hidden",{configurable:true,
+  get:function(){return this.hasAttribute("hidden")||this.classList.contains("closing")},
+  set:function(v){clearTimeout(t);var me=this;
+   if(v){if(me.hasAttribute("hidden")||me.classList.contains("closing"))return;
+    var a=document.documentElement.dataset.anim;if(!a||a==="none"){me.setAttribute("hidden","");return}
+    me.classList.add("closing");
+    var d=parseFloat(getComputedStyle(me).animationDuration)*1000||400;
+    t=setTimeout(function(){me.classList.remove("closing");me.setAttribute("hidden","")},d+40)}
+   else{me.classList.remove("closing");me.removeAttribute("hidden")}}})});
 })();
 </script>
 </body>
